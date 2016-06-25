@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Security.Cryptography;
 using System.Diagnostics;
 
-namespace cellgame {
+namespace CommonPart {
     static class Save {
         const string SaveDir = "save";
         public const string SaveFile = SaveDir + "/save.dat";        

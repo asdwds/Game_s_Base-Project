@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// マウスやキーボードからの入力を行うクラス
     /// </summary>

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// シーン（ゲームの場面）を扱う基底クラス
     /// </summary>

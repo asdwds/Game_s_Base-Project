@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 効果音を再生するクラス
     /// </summary>

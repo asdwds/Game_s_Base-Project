@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cellgame {
+namespace CommonPart {
     abstract class Worker {
         #region 変数
         /// <summary>

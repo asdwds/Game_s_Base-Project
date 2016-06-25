@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace cellgame
+namespace CommonPart
 {
 #if WINDOWS
     /// <summary>
