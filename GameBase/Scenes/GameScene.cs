@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// ゲーム開始後の処理を書いたクラス
     /// </summary>

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 画像を表示するだけのWorker
     /// </summary>

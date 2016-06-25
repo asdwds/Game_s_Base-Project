@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 3D用。ただし今のところテクスチャ（と、フォグ）のみ対応
     /// </summary>

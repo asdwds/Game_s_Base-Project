@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// メッセージ履歴・表示を管理します
     /// </summary>

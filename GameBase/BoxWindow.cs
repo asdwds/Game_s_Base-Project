@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// プレイ画面上のバーなどのクラス
     /// </summary>

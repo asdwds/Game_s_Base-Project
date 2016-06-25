@@ -5,11 +5,12 @@ using System.Text;
 using NAudio;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
+using CommonPart;
 
 // NAudio（Ms-PL ライセンス）http://naudio.codeplex.com　を利用しています。
 // 上記の程度の内容をクレジットやマニュアルに記載したほうがよいでしょう。 
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// BGMを再生するためのクラス（with WASAPI in NAudio）
     /// </summary>

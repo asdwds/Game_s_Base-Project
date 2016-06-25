@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// キー設定のシーン
     /// </summary>

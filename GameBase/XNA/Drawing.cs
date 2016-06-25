@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 描画を任せるクラス（基準点はすべて中心）
     /// </summary>

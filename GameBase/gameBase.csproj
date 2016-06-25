@@ -51,6 +51,7 @@
     <Compile Include="Datas\RandomXS.cs" />
     <Compile Include="Datas\SEPlayer.cs" />
     <Compile Include="Datas\TextureManager.cs" />
+    <Compile Include="Datas\UnitType.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="MessageManager.cs" />
@@ -70,8 +71,6 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
-    <Compile Include="Workers\Map.cs" />
-    <Compile Include="Workers\Hex.cs" />
     <Compile Include="Workers\Unit.cs" />
     <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\WorkerManager.cs" />

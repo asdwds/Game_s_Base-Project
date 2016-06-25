@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Reflection;
 using MyUpdaterLib;
+using CommonPart;
+using cellgame;
 
-namespace cellgame {
+namespace CommonPart {
     class TitleScene: MenuScene {
         enum TitleIndex {
             Start, Load, Config, Save, Quit

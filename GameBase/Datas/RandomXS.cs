@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// XorShift法による乱数の生成
     /// </summary>
