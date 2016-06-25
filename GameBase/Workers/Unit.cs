@@ -4,22 +4,65 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace cellgame {
-    /// <summary>
-    /// ユニットのクラス
-    /// </summary>
-    class Unit: Worker {
+namespace minge
+{
+    class Unit
+    {
+        #region public
+        public int x_index;
+        public int y_index;
+        public int w;
+        public int h;
+        public int real_w;
+        public int real_h;
+        public double zoom_rate;
+        public int hp;
+        public int unit_type;
+        public int[] skills;
+        public int[] effects;
+        #endregion
 
-        protected Unit(WorkerManager w)
-            : base(w) {
-            // TODO
+        #region private
+        private int frame_now;
+        #endregion
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public Unit(int x_index, int y_index,UnitType unit_type,int hp)
+        {
+            this.x_index = x_index;
+            this.y_index = y_index;
+            this.unit_type = unit_type;
+            this.hp = hp;
         }
-        public override void Update() {
-            // TODO
+        public Unit(int x_index, int y_index, int unit_type) :this(x_index, y_index,unit_type,UnitType.getMaxhp())
+        {
+            //this.hp = max_hp;
         }
-        public override WorkerType Type { get; }
-        public override void Draw(Drawing d) {
-            // TODO
+
+        #region public
+        public  void add_skill()
+        {
+
         }
+        
+        public void chage_unit_type(UnitType unit_type2)
+        {
+            unit_type = unit_type2;
+        }
+
+        public void moveto_now(int x_index2,int y_index2)
+        {
+            x_index = x_index2;
+            y_index = y_index2;
+
+        }
+
+        public UnitType getUnitype()
+        {
+            return unit_type;
+        }
+
     }
 }
