@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>

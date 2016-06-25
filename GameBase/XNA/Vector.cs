@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// 位置、速度などを扱う構造体
     /// </summary>

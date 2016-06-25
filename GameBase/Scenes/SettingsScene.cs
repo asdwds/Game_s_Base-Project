@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     static class Settings {
         public static int BGMVolume { get { return SoundManager.Music.Volume / 10; } set { SoundManager.Music.Volume = value * 10; } }
         public static int SEVolume { get { return SoundManager.SE.Volume; } set { SoundManager.SE.Volume = value; } }

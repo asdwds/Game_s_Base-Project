@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// Workerをまとめる…が今回あまり使わない（TurnManagerをかわりに使うため）
     /// </summary>

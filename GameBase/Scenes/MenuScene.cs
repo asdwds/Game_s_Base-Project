@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
+using CommonPart;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// メニューのカーソル移動処理を書いたクラス
     /// </summary>

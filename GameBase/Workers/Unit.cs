@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonPart;
 
-namespace minge
+namespace CommonPart
 {
     class Unit
     {
@@ -17,7 +18,7 @@ namespace minge
         public int real_h;
         public double zoom_rate;
         public int hp;
-        public int unit_type;
+        public UnitType unit_type;
         public int[] skills;
         public int[] effects;
         #endregion
@@ -29,19 +30,17 @@ namespace minge
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public Unit(int x_index, int y_index,UnitType unit_type,int hp)
+        public Unit(int x_index, int y_index, UnitType unit_type,int hp)
         {
             this.x_index = x_index;
             this.y_index = y_index;
             this.unit_type = unit_type;
             this.hp = hp;
         }
-        public Unit(int x_index, int y_index, int unit_type) :this(x_index, y_index,unit_type,UnitType.getMaxhp())
-        {
-            //this.hp = max_hp;
-        }
+        public Unit(int x_index, int y_index, UnitType unit_type) :this(x_index, y_index,unit_type, unit_type.maxhp)
+        {        }
 
-        #region public
+        #region method
         public  void add_skill()
         {
 
@@ -63,6 +62,7 @@ namespace minge
         {
             return unit_type;
         }
+        #endregion
 
-    }
-}
+    }// Unit end
+}// namespace CommonPart End
