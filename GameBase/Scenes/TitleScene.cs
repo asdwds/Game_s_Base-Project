@@ -6,8 +6,7 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Reflection;
 using MyUpdaterLib;
-using CommonPart;
-using cellgame;
+
 
 namespace CommonPart {
     class TitleScene: MenuScene {

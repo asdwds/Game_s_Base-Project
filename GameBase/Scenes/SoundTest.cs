@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 #if DEBUG
-namespace cellgame {
+namespace CommonPart {
     class SoundTest : Scene {
         MusicPlayer2 music;
         static readonly int length = Function.GetEnumLength<BGMID>() - 1;
