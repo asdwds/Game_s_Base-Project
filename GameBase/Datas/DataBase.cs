@@ -17,10 +17,10 @@ namespace CommonPart {
         {
             Study, Unit, Minimap, Status, Arrange
         }
-        /*public static readonly Vector[] BarPos = new[] {
+        public static readonly Vector[] BarPos = new[] {
             new Vector(0d, 0d), new Vector(0d, 96d), new Vector(0d, 704d), new Vector(352d, 0d), new Vector(992d, 0d)
         };
-        */
+        
         #endregion
         #region singleton
         static DataBase database_singleton = new DataBase();

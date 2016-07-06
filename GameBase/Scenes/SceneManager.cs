@@ -42,11 +42,6 @@ namespace CommonPart {
             scene = new List<Scene>();
             new TitleScene(this);
         }
-
-        internal void AddScene(Scene scene)
-        {
-            throw new NotImplementedException();
-        }
         
 
         double time;

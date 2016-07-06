@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// パッド動作を確認するシーン
     /// </summary>
