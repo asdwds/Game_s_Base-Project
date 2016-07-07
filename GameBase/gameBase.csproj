@@ -43,7 +43,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BoxWindow.cs" />
+    <Compile Include="Boxes\WindowBox.cs" />
+    <Compile Include="Boxes\StringBox.cs" />
     <Compile Include="Datas\DataBase.cs" />
     <Compile Include="Datas\HitShape.cs" />
     <Compile Include="Datas\MusicPlayer.cs" />
