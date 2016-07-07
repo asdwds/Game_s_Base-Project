@@ -47,7 +47,7 @@ namespace CommonPart {
             if(!enabled[i]) return;
             switch((TitleIndex)i) {
                 case TitleIndex.Start:
-                    new GameScene(scenem);
+                    new MapScene(scenem);
                     break;
                 case TitleIndex.Load:
                     new SoundTest(scenem);

@@ -8,7 +8,7 @@ namespace CommonPart {
     /// <summary>
     /// ゲーム開始後の処理を書いたクラス
     /// </summary>
-    class GameScene : Scene {
+    class MapScene : Scene {
         #region Variable
         // ボックスウィンドウ（ユニットボックスとか）のリスト
         List<WindowBox> bars;
@@ -16,7 +16,7 @@ namespace CommonPart {
 
         #endregion
         #region Method
-        public GameScene(SceneManager s)
+        public MapScene(SceneManager s)
             : base(s) {
             bars = new List<WindowBox>();
             for(int i = 0; i < DataBase.BarIndexNum; i++) {
