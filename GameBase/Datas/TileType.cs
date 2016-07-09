@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace cellgame {
+namespace CommonPart {
     class TileType　{
         #region 変数
         public string name;
