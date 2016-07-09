@@ -43,7 +43,13 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BoxWindow.cs" />
+    <Compile Include="Boxes\ArrangeBox.cs" />
+    <Compile Include="Boxes\MinimapBox.cs" />
+    <Compile Include="Boxes\StatusBox.cs" />
+    <Compile Include="Boxes\StudyBox.cs" />
+    <Compile Include="Boxes\UnitBox.cs" />
+    <Compile Include="Boxes\WindowBox.cs" />
+    <Compile Include="Boxes\StringBox.cs" />
     <Compile Include="Datas\DataBase.cs" />
     <Compile Include="Datas\HitShape.cs" />
     <Compile Include="Datas\MusicPlayer.cs" />
@@ -58,7 +64,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
-    <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Scenes\MapScene.cs" />
     <Compile Include="Scenes\KeyConfig.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Scenes\PadConfig.cs" />
