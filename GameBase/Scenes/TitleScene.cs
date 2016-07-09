@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Reflection;
 using MyUpdaterLib;
 
-
 namespace CommonPart {
     class TitleScene: MenuScene {
         enum TitleIndex {

@@ -42,7 +42,6 @@ namespace CommonPart {
             scene = new List<Scene>();
             new TitleScene(this);
         }
-        
 
         double time;
         public bool Update() {

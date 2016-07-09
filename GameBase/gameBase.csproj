@@ -50,13 +50,16 @@
     <Compile Include="Boxes\UnitBox.cs" />
     <Compile Include="Boxes\WindowBox.cs" />
     <Compile Include="Boxes\StringBox.cs" />
+    <Compile Include="Datas\SkillAndEffect.cs" />
     <Compile Include="Datas\DataBase.cs" />
     <Compile Include="Datas\HitShape.cs" />
     <Compile Include="Datas\MusicPlayer.cs" />
     <Compile Include="Datas\MusicPlayer2.cs" />
     <Compile Include="Datas\RandomXS.cs" />
+    <Compile Include="Datas\MapDataSave.cs" />
     <Compile Include="Datas\SEPlayer.cs" />
     <Compile Include="Datas\TextureManager.cs" />
+    <Compile Include="Datas\TileType.cs" />
     <Compile Include="Datas\UnitType.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Game1.cs" />
@@ -65,6 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
     <Compile Include="Scenes\MapScene.cs" />
+    <Compile Include="Scenes\MapEditorScene.cs" />
     <Compile Include="Scenes\KeyConfig.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Scenes\PadConfig.cs" />
@@ -77,6 +81,8 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\Window.cs" />
+    <Compile Include="Workers\Tile.cs" />
     <Compile Include="Workers\Unit.cs" />
     <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\WorkerManager.cs" />
@@ -158,7 +164,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

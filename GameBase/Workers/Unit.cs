@@ -30,12 +30,12 @@ namespace CommonPart
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public Unit(int x_index, int y_index, UnitType unit_type,int hp)
+        public Unit(int _x_index, int _y_index, UnitType _unit_type, int _hp)
         {
-            this.x_index = x_index;
-            this.y_index = y_index;
-            this.unit_type = unit_type;
-            this.hp = hp;
+            x_index = _x_index;
+            y_index = _y_index;
+            unit_type = _unit_type;
+            hp = _hp;
         }
         public Unit(int x_index, int y_index, UnitType unit_type) :this(x_index, y_index,unit_type, unit_type.maxhp)
         {        }
@@ -46,7 +46,7 @@ namespace CommonPart
 
         }
         
-        public void chage_unit_type(UnitType unit_type2)
+        public void change_unit_type(UnitType unit_type2)
         {
             unit_type = unit_type2;
         }
