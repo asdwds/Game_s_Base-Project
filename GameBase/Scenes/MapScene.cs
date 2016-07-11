@@ -13,7 +13,17 @@ namespace CommonPart {
         #region Variable
         // ボックスウィンドウ（ユニットボックスとか）のリスト
         List<WindowBox> bars;
-        Vector camera;
+        Vector Camera { get { return _camera; } }
+        double CameraX {
+            get { return _camera.X; }
+            set { _camera.X = Math.Max(-Game1._WindowSizeX / 2, Math.Min(DataBase.HexWidth * DataBase.MAP_MAX - Game1._WindowSizeX / 2, value)); }
+        }
+        double CameraY
+        {
+            get { return _camera.Y; }
+            set { _camera.Y = Math.Max(-Game1._WindowSizeY / 2, Math.Min(DataBase.HexHeight * 3 / 4 * DataBase.MAP_MAX - Game1._WindowSizeY / 2, value)); }
+        }
+        Vector _camera = new Vector(DataBase.HexWidth * DataBase.MAP_MAX / 2 - Game1._WindowSizeX / 2, DataBase.HexHeight * DataBase.MAP_MAX / 2 - Game1._WindowSizeY / 2);
         Map nMap;
         int cameraVel = 5;
         // ゲーム内変数
@@ -28,7 +38,6 @@ namespace CommonPart {
         public MapScene(SceneManager s)
             : base(s) {
             nMap = new Map();
-            camera = new Vector(DataBase.HexWidth * DataBase.MAP_MAX / 2 - Game1._WindowSizeX / 2, DataBase.HexHeight * DataBase.MAP_MAX / 2 - Game1._WindowSizeY / 2);
             bars = new List<WindowBox>();
             for(int i = 0; i < DataBase.BarIndexNum; i++) {
                 bars.Add(new WindowBox(DataBase.BarPos[i],DataBase.BarWidth[i],DataBase.BarHeight[i]));
@@ -41,7 +50,7 @@ namespace CommonPart {
         /// <param name="d"></param>
         public override void SceneDraw(Drawing d) {
             // マップの描画
-            nMap.Draw(d, camera);
+            nMap.Draw(d, Camera);
             // それぞれのバーの描画
             for (int i = 0; i < DataBase.BarIndexNum; i++) {
                 switch ((DataBase.BarIndex)i) {
@@ -71,13 +80,13 @@ namespace CommonPart {
             base.SceneUpdate();
 
             if (Mouse.GetState().X <= 0)
-                camera.X -= cameraVel;
+                CameraX -= cameraVel;
             if (Mouse.GetState().X >= Game1._WindowSizeX)
-                camera.X += cameraVel;
+                CameraX += cameraVel;
             if (Mouse.GetState().Y <= 0)
-                camera.Y -= cameraVel;
+                CameraY -= cameraVel;
             if (Mouse.GetState().Y >= Game1._WindowSizeY)
-                camera.Y += cameraVel;
+                CameraY += cameraVel;
 
             // Zキーが押されると終了
             if (Input.GetKeyPressed(KeyID.Select)) Delete = true;
