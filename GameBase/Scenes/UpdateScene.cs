@@ -8,7 +8,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 
-namespace cellgame {
+namespace CommonPart {
     /// <summary>
     /// アップデート用のファイルをダウンロードするシーン
     /// </summary>

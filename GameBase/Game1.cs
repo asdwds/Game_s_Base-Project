@@ -38,6 +38,8 @@ namespace CommonPart
             //タイトル
             this.Window.Title = "WAR in vivo";
 
+            this.IsMouseVisible = true;
+
             graphics = new GraphicsDeviceManager(this);
 
             ChangeWindowSize(Settings.WindowStyle);
