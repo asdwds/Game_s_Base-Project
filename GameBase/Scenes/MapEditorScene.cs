@@ -9,39 +9,31 @@ namespace CommonPart {
     /// マップ作成のシーンのクラス
     /// </summary>
     class MapEditorScene : Scene {
-        static private List<UnitType>;
-        static private List<TileType>;
-        static private List<Window>;
+        static private List< List<Unit> > units = new List<List<Unit>>();
+        static private List< List<Tile> >tiles = new List<List<Tile>>();
+        static private List< Window > windows = new List<Window>();
+        static public bool ready { get; private set; } = false;
+        static public int w, h;
+         
         public MapEditorScene(SceneManager s)　: base(s)
         {
 
         }
-
-        public override void SceneDraw(Drawing d) {
-            for (int i = 0; i < DataBase.BarIndexNum; i++) {
-                switch ((DataBase.BarIndex)i) {
-                    case DataBase.BarIndex.Study:
-                        bars[i].Draw(d);
-                        break;
-                    case DataBase.BarIndex.Unit:
-                        bars[i].Draw(d);
-                        break;
-                    case DataBase.BarIndex.Minimap:
-                        if (Settings.WindowStyle == 1)
-                            bars[i]._pos = DataBase.BarPos[i];
-                        else
-                            bars[i]._pos = new Vector(DataBase.BarPos[i].X, DataBase.BarPos[i].Y - 240);
-                        bars[i].Draw(d);
-                        break;
-                    case DataBase.BarIndex.Status:
-                        bars[i].Draw(d);
-                        break;
-                    case DataBase.BarIndex.Arrange:
-                        bars[i].Draw(d);
-                        break;
+        public void initialize_Basic(int _w, int _h ) {
+            w = _w;
+            h = _h;
+            for (int x = 0; x < _w; x++) {
+                units[x] = new List<Unit>(h);
+                for (int y = 0; y < _h; y++) {
+                        
                 }
             }
         }
+
+        public override void SceneDraw(Drawing d) {
+            
+        }//SceneDraw
+
         public override void SceneUpdate() {
             base.SceneUpdate();
 
