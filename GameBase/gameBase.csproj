@@ -81,6 +81,7 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\PoorText.cs" />
     <Compile Include="Window\Window.cs" />
     <Compile Include="Workers\Tile.cs" />
     <Compile Include="Workers\Unit.cs" />
