@@ -104,9 +104,9 @@ namespace CommonPart {
 
             string show;
             if(Settings.WindowStyle == 1)
-                show = String.Format("{0}x{1} (4 : 3)", Game1.WindowSizeX, Game1.WindowSizeY);
+                show = String.Format("{0}x{1} (4 : 3)", DataBase.WindowDefaultSizeX, DataBase.WindowDefaultSizeY);
             else
-                show = String.Format("{0}x{1} (16 : 9)", Game1.WindowSizeX, Game1.WindowSizeY - 240);
+                show = String.Format("{0}x{1} (16 : 9)", DataBase.WindowDefaultSizeX, DataBase.WindowSlimSizeY);
             new RichText(show).Draw(d, new Vector2(240, 30 + 26 * (int)SettingID.WindowSize), DepthID.Message);
         }
         public static void DrawMeter(Drawing d, Vector2 pos, int value, string str, int min, int max) {
