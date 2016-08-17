@@ -9,9 +9,13 @@ namespace CommonPart {
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>
-    class DataBase　{
+    class DataBase {
 
         #region Variable
+
+        public static readonly Dictionary<string, UnitType> UnitTypeDictionary;
+        public static readonly Dictionary<string, TileType> TileTypeDictionary;
+
         public static readonly int WindowDefaultSizeX = Game1.WindowSizeX;
         public static readonly int WindowDefaultSizeY = Game1.WindowSizeY;
         public static readonly int WindowSlimSizeY = 720;
@@ -30,7 +34,7 @@ namespace CommonPart {
             new Vector(0d, 0d), new Vector(0d, 96d), new Vector(0d, 704d), new Vector(352d, 0d), new Vector(992d, 0d)
         };
         public static readonly int MAP_MAX = 10;
-        
+
         #endregion
         #region singleton
         static DataBase database_singleton = new DataBase();
@@ -42,6 +46,19 @@ namespace CommonPart {
         #endregion
 
         #region Method
+        public UnitType getUnitType(string typename)
+        {
+            return UnitTypeDictionary[typename];
+        }
+        public TileType getTileType(string typename)
+        {
+            return TileTypeDictionary[typename];
+        }
+
+        private static void setup_UnitTypeDictionary()
+        {
+            UnitTypeDictionary.Add("example1", );
+        }
         #endregion
     }// DataBase end
 }// namespace end

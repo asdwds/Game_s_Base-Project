@@ -68,8 +68,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
-    <Compile Include="Scenes\MapEditorScene.cs" />
     <Compile Include="Scenes\MapScene.cs" />
+    <Compile Include="Scenes\MapEditorScene.cs" />
     <Compile Include="Scenes\KeyConfig.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Scenes\PadConfig.cs" />
@@ -82,6 +82,7 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\PoorText.cs" />
     <Compile Include="Window\Window.cs" />
     <Compile Include="Workers\Tile.cs" />
     <Compile Include="Workers\Unit.cs" />
