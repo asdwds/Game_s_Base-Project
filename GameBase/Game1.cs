@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using System.Runtime.InteropServices;
+
+
 namespace CommonPart
 {
     /// <summary>
@@ -31,7 +34,10 @@ namespace CommonPart
         //倍率込みのサイズ　ふつうは扱わなくてよい　staticなのは苦しまぎれ
         public static int _WindowSizeX;
         public static int _WindowSizeY;
-        
+
+
+        [DllImport("kernel32")]
+        static extern bool AllocConsole();
 
         public Game1()
         {
@@ -45,7 +51,7 @@ namespace CommonPart
             ChangeWindowSize(Settings.WindowStyle);
 
             Content.RootDirectory = "Content";
-        }
+    }
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -62,6 +68,10 @@ namespace CommonPart
             Settings.WindowStyle = 1;
 
             scenem = new SceneManager(new Drawing(spriteBatch, new Drawing3D(GraphicsDevice), this));
+            AllocConsole();// may be we do not need to write this twice.
+            Console.WriteLine("input now: ");// this for example,
+            string strssss = Console.ReadLine();
+            Console.WriteLine(strssss);
         }
 
         /// <summary>

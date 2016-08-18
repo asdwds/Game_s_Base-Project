@@ -13,8 +13,8 @@ namespace CommonPart {
 
         #region Variable
 
-        public static readonly Dictionary<string, UnitType> UnitTypeDictionary;
-        public static readonly Dictionary<string, TileType> TileTypeDictionary;
+        public static readonly UnitTypeDataBase utDictionary;
+        
 
         public static readonly int WindowDefaultSizeX = Game1.WindowSizeX;
         public static readonly int WindowDefaultSizeY = Game1.WindowSizeY;
@@ -48,16 +48,7 @@ namespace CommonPart {
         #region Method
         public UnitType getUnitType(string typename)
         {
-            return UnitTypeDictionary[typename];
-        }
-        public TileType getTileType(string typename)
-        {
-            return TileTypeDictionary[typename];
-        }
-
-        private static void setup_UnitTypeDictionary()
-        {
-            UnitTypeDictionary.Add("example1", );
+            return utDictionary.getUnitTypeWithName(typename);
         }
         #endregion
     }// DataBase end

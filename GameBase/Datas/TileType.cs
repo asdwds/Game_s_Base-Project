@@ -7,16 +7,35 @@ using System.Threading.Tasks;
 namespace CommonPart {
     class TileType　{
         #region 変数
-        public string name;
-        private string type_name;
+        private string typename;
         private string label;
         public int texture_max_id { get; private set; }
         public int texture_min_id { get; private set; }
         public int passable_type { get; private set; }
         #endregion
+        #region get property in int[] + string[]
+        public int[] getIntData() {
+            return new int[] {
+                texture_max_id, //0th
+                texture_min_id, //1st
+                passable_type   //2nd
+
+                //any other int variables should be added here
+            };
+        }
+        public string[] getStringData()
+        {
+            return new string[] {
+                typename, //0th
+                label, //1st
+
+                //any other int variables should be added here
+            };
+        }
+        #endregion
         #region 関数
-        TileType(string Type_name, string Label, int Texture_max_id, int Texture_min_id, int Passable_type) {
-            type_name = Type_name;
+        public TileType(string Type_name, string Label, int Texture_max_id, int Texture_min_id, int Passable_type) {
+            typename = Type_name;
             label = Label;
             texture_max_id = Texture_max_id;
             texture_min_id = Texture_min_id;
