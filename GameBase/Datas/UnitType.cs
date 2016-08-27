@@ -119,6 +119,7 @@ namespace CommonPart
         public int maxhp { get; private set; }
         public int maxatk { get; private set; }
         //public int //something// { get; private set; }
+        public string texture_name { get; private set; }
         public int texture_max_id { get; private set; }
         public int texture_min_id { get; private set; }
         #endregion
@@ -134,7 +135,7 @@ namespace CommonPart
         /// コンストラクタ
         /// </summary>
 
-        public UnitType(string typename, string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
+        public UnitType(string typename, string _texture_name,string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
         {
             this.typename = typename;
             this.label = label;

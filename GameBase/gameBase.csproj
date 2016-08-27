@@ -82,6 +82,7 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\Coloum.cs" />
     <Compile Include="Window\PoorText.cs" />
     <Compile Include="Window\Window.cs" />
     <Compile Include="Workers\Tile.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="XNA\Image.cs" />
     <Compile Include="XNA\InputManager.cs" />
     <Compile Include="XNA\JoyPadManager.cs" />
+    <Compile Include="XNA\MouseManager.cs" />
     <Compile Include="XNA\SoundManager.cs" />
     <Compile Include="XNA\Vector.cs" />
   </ItemGroup>

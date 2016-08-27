@@ -9,6 +9,7 @@ namespace CommonPart {
         #region 変数
         private string typename;
         private string label;
+        public string texture_name { get; private set; } 
         public int texture_max_id { get; private set; }
         public int texture_min_id { get; private set; }
         public int passable_type { get; private set; }

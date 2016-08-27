@@ -14,8 +14,14 @@ namespace CommonPart {
         #region Variable
 
         public static readonly UnitTypeDataBase utDictionary;
-        
 
+        /// <summary>
+        /// string is its path, maybe from "Content".  and also string key contains a size of texture's single unit
+        /// </summary>
+        public static readonly Dictionary<string,Texture2D> TexturesDictionary;
+
+        public Dictionary<string, int> a= new Dictionary<string, int>();
+        
         public static readonly int WindowDefaultSizeX = Game1.WindowSizeX;
         public static readonly int WindowDefaultSizeY = Game1.WindowSizeY;
         public static readonly int WindowSlimSizeY = 720;
