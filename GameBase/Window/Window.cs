@@ -15,9 +15,12 @@ namespace CommonPart
 
         #region private Variable
         private List<RichText> richTexts=new List<RichText>();
-        private List<Vector> richTextsPositions = new List<Vector>();
-        private List<int> textureIDs = new List<int>();
-        private List<Vector> texturesPositions = new List<Vector>();
+        /// <summary>
+        /// i+1番目のrichtextは　i番目のRichTextの左下の点+richTextsRelativePos[i+1]　の位置にある。
+        /// </summary>
+        private List<Vector> richTextsRelativePos = new List<Vector>();
+        private List<string> texturePaths = new List<string>();
+        private List<Vector> texturesPos = new List<Vector>();
         private int NumberOfCharasEachLine= 20;
         #endregion
 
@@ -30,6 +33,26 @@ namespace CommonPart
         }
         #endregion
 
+        public void draw(Drawing d)
+        {
+            if (richTexts.Count() > 0)
+            {
+                richTexts[0].Draw(d, new Vector(x + richTextsRelativePos[0].X, y + richTextsRelativePos[0].Y), DepthID.Message);
+                double ix = x + richTextsRelativePos[0].X;
+                for (int i = 1; i < richTexts.Count(); i++)
+                {
+                    ix += richTextsRelativePos[i].X;
+                    richTexts[i].Draw(d, new Vector( ix, richTexts[i-1].Y+richTextsRelativePos[i].Y), DepthID.Message);
+                }
+            }
+            if (texturePaths.Count() > 0)
+            {
+                for (int i = 1; i < richTexts.Count(); i++)
+                {
+                    d.Draw(new Vector(texturesPos[0].X, texturesPos[0].Y), DataBase.TexturesDictionary[texturePaths[0]] , DepthID.Message);
+                }
+            }
+        }
         #region Method
         public void AddRichText(string text, Vector _vector) {
             AddRichText(text, _vector, NumberOfCharasEachLine);
@@ -37,18 +60,18 @@ namespace CommonPart
         public void AddRichText(string text, Vector _vector, int m) { 
         // m is "max number of chars in a line"
             richTexts.Add(new RichText(new PoorString(text, m).str));
-            richTextsPositions.Add(_vector);
+            richTextsRelativePos.Add(_vector);
         }
 
-        public void AddTexture(int texture_id, Vector _vector)
+        public void AddTexture(string texture_path, Vector _vector)
         {
-            AddTexture(texture_id, _vector, NumberOfCharasEachLine);
+            AddTexture(texture_path, _vector, NumberOfCharasEachLine);
         }
-        public void AddTexture(int texture_id, Vector _vector, int m)
+        public void AddTexture(string texture_path, Vector _vector, int m)
         {
             // m is "max number of chars in a line"
-            textureIDs.Add(texture_id);
-            texturesPositions.Add(_vector);
+            texturePaths.Add(texture_path);
+            texturesPos.Add(_vector);
         }
         #endregion
     } // class Window end
