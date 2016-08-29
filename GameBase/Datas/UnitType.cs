@@ -160,6 +160,8 @@ namespace CommonPart
             n++;
 
             n = 0;
+            texture_name= stringdatas[n];
+            n++;
             typename = stringdatas[n];
             n++;
             label = stringdatas[n];
@@ -184,8 +186,9 @@ namespace CommonPart
         public string[] getStringData()
         {
             return new string[] {
-                typename, //0th
-                label, //1st
+                texture_name,
+                typename,
+                label,
 
                 //any other int variables should be added here
             };

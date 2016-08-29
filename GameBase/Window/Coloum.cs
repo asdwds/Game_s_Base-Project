@@ -50,15 +50,31 @@ namespace CommonPart
     
     class Blank : Coloum
     {
-        public Blank(int _x, int _y, string _str, int _reply) : base(_x,_y,_str,_reply)
+        private int dx,dy;
+        public string content;
+        const int default_distance = 10;
+        /// <summary>
+        /// 内容書き換え可能の項目
+        /// </summary>
+        /// <param name="_x"></param>
+        /// <param name="_y"></param>
+        /// <param name="_str">この項目の名前</param>
+        /// <param name="_content">書き換えできる内容</param>
+        /// <param name="_reply"></param>
+        /// <param name="_dx">名前と内容の距離差</param>
+        public Blank(int _x, int _y, string _str, string _content, int _reply,int _dx=default_distance,int _dy=0) : base(_x,_y,_str,_reply)
         {    }
 
+        public new void draw(Drawing d){
+            new RichText(str, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, pos, DepthID.Message);
+            new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(pos.X+dx,pos.Y+dy), DepthID.Message);
+        }
         public new int is_selected()
         {
             base.is_selected();
             Console.WriteLine(str);
             Console.Write("changes to : ");
-            str = Console.ReadLine();
+            content = Console.ReadLine();
             base.is_left();
             return base.is_applied();
         }

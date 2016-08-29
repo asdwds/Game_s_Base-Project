@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CommonPart {
+
+    public enum Command { apply_int = 110, apply_string = 111 };
+    
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>
@@ -14,7 +17,6 @@ namespace CommonPart {
         #region Variable
 
         public static readonly UnitTypeDataBase utDictionary;
-
         /// <summary>
         /// string is its path, maybe from "Content".  and also string key contains a size of texture's single unit
         /// </summary>

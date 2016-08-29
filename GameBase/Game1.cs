@@ -42,7 +42,7 @@ namespace CommonPart
         public Game1()
         {
             //タイトル
-            this.Window.Title = "WAR in vivo";
+            this.Window.Title = "PoorEditor";
 
             this.IsMouseVisible = true;
 
