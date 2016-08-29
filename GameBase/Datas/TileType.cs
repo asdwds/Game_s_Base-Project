@@ -27,8 +27,9 @@ namespace CommonPart {
         public string[] getStringData()
         {
             return new string[] {
-                typename, //0th
-                label, //1st
+                texture_name,
+                typename,
+                label,
 
                 //any other int variables should be added here
             };
