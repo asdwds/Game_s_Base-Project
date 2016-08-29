@@ -75,4 +75,69 @@ namespace CommonPart
         }
         #endregion
     } // class Window end
+
+
+    class Window_UnitType : Window
+    {
+        public UnitType ut;
+        public List<int> utIntList=new List<int>();
+        public List<string> utStringList = new List<string>();
+        public List<Coloum> coloums = new List<Coloum>();
+
+        public Window_UnitType(UnitType _ut, int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
+        {
+            ut = _ut;
+            setup_unitType_window();
+        }
+
+        /// <summary>
+        /// これはUnitTypeの設定に応じて書き換えが必要あるでしょう。
+        /// </summary>
+        public void setup_unitType_window()
+        {
+            int dy = 12;
+            int ny = y;
+            clear_old_data_and_put_in_now_data();
+
+            /*texture_max_id, //0th
+                texture_min_id, 
+                maxhp,          
+                maxatk,         
+                passableType,   
+                */
+            int n = 0;
+            coloums.Add(create_blank(Command.apply_int,x,ny,"texture_max_id",utIntList[n].ToString() ));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_min_id", utIntList[n].ToString()));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "maxhp", utIntList[n].ToString()));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "maxatk", utIntList[n].ToString()));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "passableType", utIntList[n].ToString()));
+            n++; ny += dy;
+
+            /* texture_name,
+               typename,
+               label,
+            */
+            n = 0;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_name", utStringList[n]));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "typename", utStringList[n]));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "label", utStringList[n]));
+            n++; ny += dy;
+        }
+        public Blank create_blank(Command c,int x,int ny,string str,string content) {
+            return new Blank(x, ny, str, content, (int)c);
+        }
+        public void clear_old_data_and_put_in_now_data() {
+            utIntList.Clear();
+            utStringList.Clear();
+            utIntList.AddRange(ut.getIntData());
+            utStringList.AddRange(ut.getStringData());
+        }
+
+    }
 }// namespace CommonPart End
