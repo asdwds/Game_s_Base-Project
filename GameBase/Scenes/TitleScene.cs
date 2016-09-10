@@ -6,8 +6,6 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Reflection;
 using MyUpdaterLib;
-using CommonPart;
-using cellgame;
 
 namespace CommonPart {
     class TitleScene: MenuScene {
@@ -48,7 +46,7 @@ namespace CommonPart {
             if(!enabled[i]) return;
             switch((TitleIndex)i) {
                 case TitleIndex.Start:
-                    new GameScene(scenem);
+                    new MapScene(scenem);
                     break;
                 case TitleIndex.Load:
                     new SoundTest(scenem);

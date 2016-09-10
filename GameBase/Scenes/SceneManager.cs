@@ -40,14 +40,8 @@ namespace CommonPart {
         public SceneManager(Drawing d) {
             draw = d;
             scene = new List<Scene>();
-            new TitleScene(this);
+            new MapEditorScene(this);
         }
-
-        internal void AddScene(Scene scene)
-        {
-            throw new NotImplementedException();
-        }
-        
 
         double time;
         public bool Update() {

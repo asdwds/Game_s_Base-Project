@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using System.Runtime.InteropServices;
+
+
 namespace CommonPart
 {
     /// <summary>
@@ -21,6 +24,7 @@ namespace CommonPart
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SceneManager scenem;
+        DataBase database = DataBase.dataBase();
 
         public const int WindowSizeX = 1280;
         public const int WindowSizeY = 960;
@@ -31,19 +35,24 @@ namespace CommonPart
         //倍率込みのサイズ　ふつうは扱わなくてよい　staticなのは苦しまぎれ
         public static int _WindowSizeX;
         public static int _WindowSizeY;
-        
+
+
+        [DllImport("kernel32")]
+        static extern bool AllocConsole();
 
         public Game1()
         {
             //タイトル
-            this.Window.Title = "WAR in vivo";
+            this.Window.Title = "PoorEditor";
+
+            this.IsMouseVisible = true;
 
             graphics = new GraphicsDeviceManager(this);
 
             ChangeWindowSize(Settings.WindowStyle);
 
             Content.RootDirectory = "Content";
-        }
+    }
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -60,6 +69,7 @@ namespace CommonPart
             Settings.WindowStyle = 1;
 
             scenem = new SceneManager(new Drawing(spriteBatch, new Drawing3D(GraphicsDevice), this));
+            AllocConsole();//from now on, you can use Console. anywhere
         }
 
         /// <summary>
@@ -70,7 +80,16 @@ namespace CommonPart
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            DataBase.hex1 = Content.Load<Texture2D>("hex1.png");
+
+
+            // DataBase-- Contentを使った読み込みを実行する。
+            database.Load_Contents(Content);
+
+            // へクス画像の読み込み
+            DataBase.hex = new List<Texture2D>();
+            DataBase.hex.Add(Content.Load<Texture2D>("hex1.png"));
+
+            // ボックスの画像読み込み
             DataBase.box_flame = new List<Texture2D>();
             for (int i = 0; i < 9; i++) {
                 DataBase.box_flame.Add(Content.Load<Texture2D>(string.Format("box_flame{0}.png", i)));
@@ -85,6 +104,7 @@ namespace CommonPart
         /// </summary>
         protected override void UnloadContent()
         {
+
             // TODO: Unload any non ContentManager content here
             SoundManager.Music.Close();
         }
@@ -127,9 +147,9 @@ namespace CommonPart
 
         public void ChangeWindowSize(int style)
         {
-            _WindowSizeX = WindowSizeX;
-            if (style == 1) _WindowSizeY = WindowSizeY;
-            else _WindowSizeY = WindowSizeY - 240;
+            _WindowSizeX = DataBase.WindowDefaultSizeX;
+            if (style == 1) _WindowSizeY = DataBase.WindowDefaultSizeY;
+            else _WindowSizeY = DataBase.WindowSlimSizeY;
 
             graphics.PreferredBackBufferWidth = _WindowSizeX;
             graphics.PreferredBackBufferHeight = _WindowSizeY;
