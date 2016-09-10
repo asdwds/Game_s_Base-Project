@@ -9,15 +9,20 @@ namespace CommonPart {
     /// マップ作成のシーンのクラス
     /// </summary>
     class MapEditorScene : Scene {
-        static private List< List<Unit> > units = new List<List<Unit>>();
-        static private List< List<Tile> >tiles = new List<List<Tile>>();
-        static private List< Window > windows = new List<Window>();
+        static private List<List<Unit>> units = new List<List<Unit>>();
+        static private List<List<Tile>> tiles = new List<List<Tile>>();
+        static private List<Window> windows = new List<Window>();
         static public bool ready { get; private set; } = false;
         static public int w, h;
-         
-        public MapEditorScene(SceneManager s)　: base(s)
-        {
 
+
+        public MapEditorScene(SceneManager s) : base(s)
+        {
+            setup_windows();
+        }
+        public void setup_windows() {
+            windows.Add(new Window_WithColoum(20, 20, 200, 400));
+            ((Window_WithColoum)windows[0]).AddColoum(new Coloum(0, 0, "", Command.apply_int));
         }
         public void initialize_Basic(int _w, int _h ) {
             w = _w;
@@ -37,8 +42,9 @@ namespace CommonPart {
         public override void SceneUpdate() {
             base.SceneUpdate();
 
-            // Zキーが押されると終了
-            if (Input.GetKeyPressed(KeyID.Select)) Delete = true;
+
         }
     }
+
+
 }

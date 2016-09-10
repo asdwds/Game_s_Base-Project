@@ -35,7 +35,14 @@ namespace CommonPart
         /// 描画する文字列
         /// </summary>
         public readonly string str;
-
+        /// <summary>
+        /// 使うFontID。これから文字の大きさがわかる。
+        /// </summary>
+        public readonly FontID fontId;
+        /// <summary>
+        /// 改行以外の処理を行ったかどうか。trueで行った。
+        /// </summary>
+        private bool modified;
         /*
         /// <summary>
         /// 何も処理していない文字列。
@@ -69,19 +76,24 @@ namespace CommonPart
             colored_strings_list.Add(new List<string> {"virus" });
         }
 
-        public PoorString(string _ostr, int _max_number_of_chars) : this(_ostr,_max_number_of_chars,defaultFont) { }
-        public PoorString(string _ostr, int _max_number_of_chars, FontID _fontid)
+        public PoorString(string _ostr, int _max_number_of_chars,bool _modified = true) : this(_ostr,_max_number_of_chars,defaultFont,_modified) { }
+        public PoorString(string _ostr, int _max_number_of_chars, FontID _fontid, bool _modified= true)
         {
             str = _ostr;
+            fontId = _fontid;
             font = TextureManager.GetFont(_fontid);
-
-            for (int i = 0; i < colors_list.Count;i++)
+            modified = _modified;
+            if (str == "") { return; }
+            if (modified)
             {
-                for(int j=0; j < colored_strings_list[i].Count; j++)
+                for (int i = 0; i < colors_list.Count; i++)
                 {
-                    str.Replace(colored_strings_list[i][j], ");[,%"+i+"'?_{@"+ colored_strings_list[i][j]);
+                    for (int j = 0; j < colored_strings_list[i].Count; j++)
+                    {
+                        str.Replace(colored_strings_list[i][j], ");[,%" + i + "'?_{@" + colored_strings_list[i][j]);
+                    }
                 }
-            }
+            }// modify end
             int k = 0;
             int l = 0; bool inchanging = false;// ");[,%"が発生したならtrueになり、その後"?_{@"が発生したらfalseになる
             while (k < str.Length) {
@@ -105,10 +117,30 @@ namespace CommonPart
                         }
                     }
                 }
+                if (str[k] == '\n') { l = 0;k++; continue; }
                 l++;// count the str[k] as a character.
                 if (l >= _max_number_of_chars) { l = 0; str = str.Insert(k, "\n"); }
                 k++;
+            }// count char and add \n end
+            if(str[k-1] == '\n') { str.Remove(k - 1, 1); }// the last \n is Removed.
+        }//constructor end
+        public int getCharSizeX() { return fontId.GetDefaultFontSizeX(); }
+        public int getCharSizeY() { return fontId.GetDefaultFontSizeY(); }
+        /// <summary>
+        /// ある文字がした回数を返す。引数は'/n'が黙認になっています。コンストラクタによるが、最後の行に\nはない。
+        /// </summary>
+        /// <returns></returns>
+        public int CountChar(char a='\n')
+        {
+            int ans = 0;
+            for(int i = 0; i < str.Length; i++)
+            {
+                if(str[i] == a)
+                {
+                    ans++;
+                }
             }
+            return ans;
         }
-    }
-}
+    }// class PoorString end
+}// namespace CommonPart end
