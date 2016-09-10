@@ -12,8 +12,8 @@ namespace CommonPart
     {
         static char interval_of_each_type = ';';//ut1;ut2
         static char interval_of_each_datatype = ',';// int ...ij,string kl...
-        public List<UnitType> UnitTypeList=new List<UnitType>();
-        public Dictionary<string, UnitType> UnitTypeDictionary= new Dictionary<string, UnitType>();
+        public List<UnitType> UnitTypeList = new List<UnitType>();
+        public Dictionary<string, UnitType> UnitTypeDictionary = new Dictionary<string, UnitType>();
         public UnitTypeDataBase(BinaryReader br)
         {
             setup_from_BinaryReader(br);
@@ -21,7 +21,8 @@ namespace CommonPart
 
         public void setup_from_BinaryReader(BinaryReader br)
         {
-            int n=0;
+            if (br == null) { return; }
+            int n = 0;
             while (true)
             {
                 try
@@ -42,7 +43,7 @@ namespace CommonPart
                         {
 
                             next_is_str = false;
-                            UnitTypeList.Add(new UnitType(intdatas, stringdatas,n));
+                            UnitTypeList.Add(new UnitType(intdatas, stringdatas, n));
                             n++;
                             br.ReadChar();
                             break;
@@ -60,12 +61,12 @@ namespace CommonPart
                         }
                     }// while end. one UnitType has been created and added to the List
                 }
-                catch(EndOfStreamException e)
+                catch (EndOfStreamException e)
                 {
                     break;
                 }
             }// Finished reading file. List should be alright.
-            foreach(UnitType ut in UnitTypeList)
+            foreach (UnitType ut in UnitTypeList)
             {
                 UnitTypeDictionary.Add(ut.getTypename(), ut);
             }//Dictionaryをつくる
@@ -89,6 +90,10 @@ namespace CommonPart
         }
 
         #region method
+        public UnitType CreateBlankUt()
+        {
+            return new UnitType("test " + UnitTypeList.Count.ToString(), DataBase.defaultBlankTextureName, "test", 1, 1, 0,0);
+        }
         public void Add(UnitType ut)
         {
             UnitTypeList.Add(ut);
@@ -124,17 +129,14 @@ namespace CommonPart
         public int texture_min_id { get; private set; }
         #endregion
 
-        #region private
-        private string typename; //UnitTypeDictionaryにペアとなるstringである。他と重複しないように設定する必要がある。
+        #region protected
+        protected string typename; //UnitTypeDictionaryにペアとなるstringである。他と重複しないように設定する必要がある。
                                  //これとは別にUnitは独自のstring変数 name を持っています。
-        private string label;   //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい。
-        private int passableType;
+        protected string label;   //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい。
+        protected int passableType;
         #endregion
 
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-
+        #region constructor
         public UnitType(string typename, string _texture_name,string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
         {
             this.typename = typename;
@@ -167,11 +169,10 @@ namespace CommonPart
             label = stringdatas[n];
             n++;
         }
-        /// <summary>
-        /// 関数
-        /// </summary>
+        #endregion
+
         #region get property in int[] + string[]
-        public int[] getIntData()
+        public virtual int[] getIntData()
         {
             return new int[] {
                 texture_max_id, //0th
@@ -183,7 +184,7 @@ namespace CommonPart
                 //any other int variables should be added here
             };
         }
-        public string[] getStringData()
+        public virtual string[] getStringData()
         {
             return new string[] {
                 texture_name,
@@ -194,7 +195,8 @@ namespace CommonPart
             };
         }
         #endregion
-        public bool passable()
+        #region Method
+        public virtual bool passable()
         {
             return true;//要変更
         }
@@ -208,5 +210,6 @@ namespace CommonPart
         {
             return label;
         }
+        #endregion
     }
 }

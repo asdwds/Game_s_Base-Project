@@ -24,6 +24,7 @@ namespace CommonPart
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SceneManager scenem;
+        DataBase database = DataBase.dataBase();
 
         public const int WindowSizeX = 1280;
         public const int WindowSizeY = 960;
@@ -68,10 +69,7 @@ namespace CommonPart
             Settings.WindowStyle = 1;
 
             scenem = new SceneManager(new Drawing(spriteBatch, new Drawing3D(GraphicsDevice), this));
-            AllocConsole();// may be we do not need to write this twice.
-            Console.WriteLine("input now: ");// this for example,
-            string strssss = Console.ReadLine();
-            Console.WriteLine(strssss);
+            AllocConsole();//from now on, you can use Console. anywhere
         }
 
         /// <summary>
@@ -82,6 +80,10 @@ namespace CommonPart
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+
+            // DataBase-- Contentを使った読み込みを実行する。
+            database.Load_Contents(Content);
 
             // へクス画像の読み込み
             DataBase.hex = new List<Texture2D>();
@@ -102,6 +104,7 @@ namespace CommonPart
         /// </summary>
         protected override void UnloadContent()
         {
+
             // TODO: Unload any non ContentManager content here
             SoundManager.Music.Close();
         }

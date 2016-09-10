@@ -40,7 +40,7 @@ namespace CommonPart {
         public SceneManager(Drawing d) {
             draw = d;
             scene = new List<Scene>();
-            new TitleScene(this);
+            new MapEditorScene(this);
         }
 
         double time;
