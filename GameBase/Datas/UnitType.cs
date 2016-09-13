@@ -10,6 +10,7 @@ namespace CommonPart
 {
     class UnitTypeDataBase
     {
+        static int versionOfEditor;
         static char interval_of_each_type = ';';//ut1;ut2
         static char interval_of_each_datatype = ',';// int ...ij,string kl...
         public List<UnitType> UnitTypeList = new List<UnitType>();
@@ -23,6 +24,7 @@ namespace CommonPart
         {
             if (br == null) { return; }
             int n = 0;
+            versionOfEditor = br.Read();
             while (true)
             {
                 try
@@ -74,6 +76,7 @@ namespace CommonPart
 
         public void save_into_BinaryWriter(BinaryWriter bw)
         {
+            bw.Write(DataBase.ThisSystemVersionNumber);
             foreach (UnitType ut in UnitTypeList)
             {
                 foreach (int i in ut.getIntData())

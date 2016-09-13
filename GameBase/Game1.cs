@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 
 
 namespace CommonPart
-{
+{ 
     /// <summary>
     /// This is the main type for your game
     /// プログラム自動生成のゲームの中核のクラス。あんまり触らない。
@@ -24,7 +24,6 @@ namespace CommonPart
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SceneManager scenem;
-        DataBase database = DataBase.dataBase();
 
         public const int WindowSizeX = 1280;
         public const int WindowSizeY = 960;
@@ -42,6 +41,7 @@ namespace CommonPart
 
         public Game1()
         {
+            AllocConsole();//from now on, you can use Console. anywhere
             //タイトル
             this.Window.Title = "PoorEditor";
 
@@ -69,7 +69,7 @@ namespace CommonPart
             Settings.WindowStyle = 1;
 
             scenem = new SceneManager(new Drawing(spriteBatch, new Drawing3D(GraphicsDevice), this));
-            AllocConsole();//from now on, you can use Console. anywhere
+
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CommonPart
 
 
             // DataBase-- Contentを使った読み込みを実行する。
-            database.Load_Contents(Content);
+            DataBase.Load_Contents(Content);
 
             // へクス画像の読み込み
             DataBase.hex = new List<Texture2D>();
@@ -104,7 +104,7 @@ namespace CommonPart
         /// </summary>
         protected override void UnloadContent()
         {
-
+            DataBase.dispose();
             // TODO: Unload any non ContentManager content here
             SoundManager.Music.Close();
         }
