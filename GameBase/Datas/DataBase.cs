@@ -10,7 +10,11 @@ using Microsoft.Xna.Framework;
 
 namespace CommonPart {
 
-    public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111, button_on = 112, button_off = 113, previousPage = 114, nextPage = 115 };
+    public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
+        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115,
+        UTDutButtonPressed=201,
+
+    };
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>
@@ -19,9 +23,9 @@ namespace CommonPart {
         /// このDataBaseなどに使われている読み込み、Editorでのファイルの読み方法が何時の物かの判断に使われる。確実に大きく変化したら更新していくように。
         /// 日付になっている。年月日で, 9月は 09
         /// </summary>
-        static readonly int ThisSystemVersionNumber = 160910;
+        public static readonly int ThisSystemVersionNumber = 160910;
         #region Variable
-        static FileStream ut_file = File.Open("Datas/uts.dat", FileMode.OpenOrCreate);
+        public static FileStream ut_file;
         public static readonly UnitTypeDataBase utDataBase;
         /// <summary>
         /// 必ずTexturesDataDictionaryに読み込まれる画像.
@@ -33,10 +37,10 @@ namespace CommonPart {
         /// </summary>
         public static  Dictionary<string, Texture2Ddata> TexturesDataDictionary = new Dictionary<string, Texture2Ddata>();
 
-        private ContentManager Content;
+        private static ContentManager Content;
 
-        public static readonly int WindowDefaultSizeX = Game1.WindowSizeX;
-        public static readonly int WindowDefaultSizeY = Game1.WindowSizeY;
+        public static readonly int WindowDefaultSizeX = 1280;
+        public static readonly int WindowDefaultSizeY = 960;
         public static readonly int WindowSlimSizeY = 720;
         public static readonly int BarIndexNum = 5;
         public static readonly int[] BarWidth = new[] { 22, 22, 22, 40, 18 };
@@ -56,16 +60,20 @@ namespace CommonPart {
 
         #endregion
         #region singleton
-        public static DataBase database_singleton;
-        public static DataBase dataBase() { if (database_singleton == null) { database_singleton = new DataBase(); } return database_singleton; }
+        public static DataBase database_singleton= new DataBase();
+        public DataBase get() { return database_singleton; }
         static DataBase() {
+            if (!Directory.Exists("Datas")){ Directory.CreateDirectory("Datas"); }
+            Directory.SetCurrentDirectory("Datas");
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            ut_file = File.Open("uts.dat",FileMode.OpenOrCreate);
             BinaryReader ut_br = new BinaryReader(ut_file);
             utDataBase = new UnitTypeDataBase(ut_br);
             ut_br.Close();
         }
         private DataBase() { }
         #endregion
-        public void Dispose()
+        public static void Dispose()
         {
             ut_file.Close();
         }
@@ -73,7 +81,7 @@ namespace CommonPart {
         /// <summary>
         /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
         /// </summary>
-        private void tda(string name)
+        private static void tda(string name)
         {
             TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
         }
@@ -81,7 +89,7 @@ namespace CommonPart {
         /// Game1からのCotentを使って、DataBaseの内容を埋める
         /// </summary>
         /// <param name="content"></param>
-        public void Load_Contents(ContentManager c)
+        public static void Load_Contents(ContentManager c)
         {
             Content = c;
             tda(defaultBlankTextureName);
@@ -90,17 +98,18 @@ namespace CommonPart {
             tda("16-16 tama1.png");
 
         }
-        static public Texture2D getTex(string name)
+        public static Texture2D getTex(string name)
         {
             if (TexturesDataDictionary.ContainsKey(name))
             {
-                return TexturesDataDictionary[name].getTex();
+                return TexturesDataDictionary[name].texture;
             }
             else
             {
-                return TexturesDataDictionary[defaultBlankTextureName].getTex();
+                return TexturesDataDictionary[defaultBlankTextureName].texture;
             }
         }
+        public static Texture2Ddata getTexD(string name) { return TexturesDataDictionary[name]; }
         public static Rectangle getRectFromTextureNameAndIndex(string name, int id)
         {
             int w = TexturesDataDictionary[name].w_single;
@@ -137,25 +146,34 @@ namespace CommonPart {
             int y = id / max_forX * h;
             if (id >= max_forX * max_forY) { x = y = 0; }
             return new Rectangle(x, y, w, h);
-        }*/
+        }*///上のメソッドの別バージョン、多分使わない。
         public static UnitType getUnitType(string typename)
         {
             return utDataBase.getUnitTypeWithName(typename);
         }
+        public static int getUTDcount() { return utDataBase.UnitTypeList.Count; }
         #endregion
     }// DataBase end
 
     class Texture2Ddata
     {
+        #region variables
         /// <summary>
         /// Textureのファイル名を使って得た、画像の1コマの width, height
         /// </summary>
-        public int w_single=0 , h_single=0;
-        public int x_max , y_max;
-        public Texture2D texture; public string texName;
+        public int w_single { get; private set; } = 0;
+        public int h_single { get; private set; } = 0;
+        public int x_max { get; private set; }
+        public int y_max { get; private set; }
+        public Texture2D texture { get; private set; }
+        public string texName { get; private set; }
+        #endregion
+        #region constructor
         public Texture2Ddata(Texture2D tex, string name)
         {
             int r = 0;//nameのstringとしての位置　変数。
+            texture = tex;
+            texName = name;
             while (r < name.Length)
             {
                 if (!char.IsNumber(name[r])) { r++; }
@@ -173,15 +191,9 @@ namespace CommonPart {
             }//heightを読む
             if (w_single == 0) { w_single = texture.Width; }
             if (h_single == 0) { h_single = texture.Height; }
-            texture = tex;
-            texName = name;
             x_max = texture.Width / w_single;
             y_max = texture.Height / h_single;
         }
-        public Texture2D getTex()
-        {
-            return texture;
-        }
-
+        #endregion
     }
 }// namespace end
