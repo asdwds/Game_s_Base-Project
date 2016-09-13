@@ -271,13 +271,53 @@ namespace CommonPart
     }
 
     /// <summary>
-    /// DataBaes.utDataBase is required;
+    /// DataBaes.utDataBase is required; a poorly made
     /// </summary>
     class Window_utsList : Window_WithColoum
     {
+        protected const int white_space_size = 40;
+        /// <summary>
+        /// UTDutButtonはUnitTypeDataBaseとUnitTypeが存在することが前提で使えるもの
+        /// </summary>
+        protected List<UTDutButton> UTDutButtons = new List<UTDutButton>();
+        #region constructor
         public Window_utsList(int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
         {
+            
+        }
+        #endregion
+        private void setUp_UTDutButtons()
+        {
+            if (UTDutButtons.Count > 0) { foreach (UTDutButton ub in UTDutButtons) { ub.clear(); } }
+            UTDutButtons.Clear();
+            //now UTDutButtons is an empty list
+            int nx = white_space_size, ny = white_space_size;
+            int max_dy = 0;
+            for (int i = 0; i < DataBase.getUTDcount(); i++)
+            {
+                AddUTDut(nx, ny, DataBase.utDataBase.UnitTypeList[i].getTypename());
+                max_dy = Math.Max(max_dy, UTDutButtons[i].h);
+                nx += UTDutButtons[i].w;
+                if (nx + white_space_size + UTDutButtons[i].w > this.w)
+                {
+                    nx = white_space_size;
+                    ny += max_dy;
+                }
+            }
+        }
+        public void reloadUTDutButtons() {
+            if (DataBase.getUTDcount() == UTDutButtons.Count) {
+                foreach (UnitType ut in DataBase.utDataBase.UnitTypeList) {
 
+                }
+            }
+        }
+        public void AddUTDut(int x, int y, string str, string content = "", Command c = Command.UTDutButtonPressed)
+        {
+            UTDutButtons.Add(createUTDutButton(x, y, str, content, c));
+        }
+        public UTDutButton createUTDutButton(int x, int y, string str,string content="",Command c=Command.UTDutButtonPressed) {
+            return new UTDutButton(x,y,str,content,c);
         }
     }// class Window_utsList end
 
