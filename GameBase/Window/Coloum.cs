@@ -316,6 +316,24 @@ namespace CommonPart
             h = DataBase.getTexD(ut.texture_name).h_single;
         }
 
+        #region method 
+        public void changeStrTo(string s, string _content = null, int _dx = default_distance, int _dy= 0)
+        {
+            if (DataBase.utDataBase.UnitTypeDictionary.ContainsKey(s))
+            {
+                str = s; ut = DataBase.getUnitType(str);
+                w = DataBase.getTexD(ut.texture_name).w_single;
+                h = DataBase.getTexD(ut.texture_name).h_single;
+            }
+            else {
+                Console.WriteLine(s+" isNotFoundInUTD");
+            }
+            content = _content;
+            dx = _dx; dy = _dy;
+        }
+        #endregion
+
+        #region update
         public override Command update(KeyManager k, MouseManager m)
         {
             if (m != null) { return update_with_mouse_manager(m); }
@@ -327,7 +345,8 @@ namespace CommonPart
             }
             return Command.nothing;
         }
-
+        #endregion
+        #region draw
         public override void draw(Drawing d)
         {
             if (str != null && str != "")
@@ -352,5 +371,7 @@ namespace CommonPart
                 new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
             }
         }
-    }
-}
+        #endregion
+
+    }// UTDutButton class end
+}//namespace CommonPart End
