@@ -307,8 +307,9 @@ namespace CommonPart
         }
         public void reloadUTDutButtons() {
             if (DataBase.getUTDcount() == UTDutButtons.Count) {
+                int i = 0;
                 foreach (UnitType ut in DataBase.utDataBase.UnitTypeList) {
-
+                    UTDutButtons[i].changeStrTo(ut.typename);
                 }
             }
         }

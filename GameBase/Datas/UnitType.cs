@@ -123,19 +123,19 @@ namespace CommonPart
     class UnitType
     {
         #region public
-        public int index_in_List { get; private set; }
-        public int maxhp { get; private set; }
-        public int maxatk { get; private set; }
-        //public int //something// { get; private set; }
-        public string texture_name { get; private set; }
-        public int texture_max_id { get; private set; }
-        public int texture_min_id { get; private set; }
+        public int index_in_List { get; protected set; }
+        public int maxhp { get; protected set; }
+        public int maxatk { get; protected set; }
+        //public int //something// { get; protected set; }
+        public string typename { get; protected set; }
+        public string texture_name { get; protected set; }        //UnitTypeDictionaryにペアとなるstringである。他と重複しないように設定する必要がある。
+                                                                  //これとは別にUnitは独自のstring変数 name を持っています。
+        public string label { get; protected set; } //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい.
+        public int texture_max_id { get; protected set; }
+        public int texture_min_id { get; protected set; }
         #endregion
 
         #region protected
-        protected string typename; //UnitTypeDictionaryにペアとなるstringである。他と重複しないように設定する必要がある。
-                                 //これとは別にUnitは独自のstring変数 name を持っています。
-        protected string label;   //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい。
         protected int passableType;
         #endregion
 
