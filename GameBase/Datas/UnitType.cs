@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using CommonPart;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CommonPart
 {
     class UnitTypeDataBase
     {
         static int versionOfEditor;
-        static char interval_of_each_type = ';';//ut1;ut2
-        static char interval_of_each_datatype = ',';// int ...ij,string kl...
+
         public List<UnitType> UnitTypeList = new List<UnitType>();
         public Dictionary<string, UnitType> UnitTypeDictionary = new Dictionary<string, UnitType>();
         public UnitTypeDataBase(BinaryReader br)
@@ -25,23 +25,24 @@ namespace CommonPart
             if (br == null) { return; }
             int n = 0;
             versionOfEditor = br.Read();
-            while (true)
+            while (br.BaseStream.Position < br.BaseStream.Length)
             {
+                
                 try
                 {
                     bool next_is_str = false;
                     List<int> intdatas = new List<int>();
                     List<string> stringdatas = new List<string>();
-                    while (true) // load in every int and string data for one unit type 
+                    while (br.BaseStream.Position < br.BaseStream.Length) // load in every int and string data for one unit type 
                     {
-                        if (!next_is_str && br.PeekChar() == interval_of_each_datatype)
+                        if (!next_is_str && br.PeekChar() == DataBase.interval_of_each_datatype)
                         //intのデータの一部を読み込み,それがちょうどintervalと一致するすることもあり得る
                         //これはまだ解決されていません。
                         {
                             next_is_str = true;
                             br.ReadChar();
                         }
-                        else if (next_is_str && br.PeekChar() == interval_of_each_type) //stringdataがなくてもintervalは必ずあります。
+                        else if (next_is_str && br.PeekChar() == DataBase.interval_of_each_type) //stringdataがなくてもintervalは必ずあります。
                         {
 
                             next_is_str = false;
@@ -58,7 +59,7 @@ namespace CommonPart
                             }
                             else
                             {
-                                intdatas.Add(br.ReadInt16());
+                                intdatas.Add(br.ReadInt32());
                             }
                         }
                     }// while end. one UnitType has been created and added to the List
@@ -70,7 +71,7 @@ namespace CommonPart
             }// Finished reading file. List should be alright.
             foreach (UnitType ut in UnitTypeList)
             {
-                UnitTypeDictionary.Add(ut.getTypename(), ut);
+                UnitTypeDictionary.Add(ut.typename, ut);
             }//Dictionaryをつくる
         }// end of setup
 
@@ -83,13 +84,13 @@ namespace CommonPart
                 {
                     bw.Write(i);
                 }
-                bw.Write(interval_of_each_datatype);
+                bw.Write(DataBase.interval_of_each_datatype);
                 foreach (string str in ut.getStringData())
                 {
                     bw.Write(str);
                 }
             }
-            bw.Write(interval_of_each_type);
+            bw.Write(DataBase.interval_of_each_type);
         }
 
         #region method
@@ -100,21 +101,28 @@ namespace CommonPart
         public void Add(UnitType ut)
         {
             UnitTypeList.Add(ut);
-            UnitTypeDictionary.Add(ut.getTypename(), ut);
+            UnitTypeDictionary.Add(ut.typename, ut);
         }
         public void Remove(UnitType ut)
         {
-            UnitTypeDictionary.Remove(ut.getTypename());
+            UnitTypeDictionary.Remove(ut.typename);
             UnitTypeList.Remove(ut);
         }
         public void RemoveAt(int id)
         {
-            UnitTypeDictionary.Remove(UnitTypeList[id].getTypename());
+            UnitTypeDictionary.Remove(UnitTypeList[id].typename);
             UnitTypeList.RemoveAt(id);
         }
         public UnitType getUnitTypeWithName(string name)
         {
-            return UnitTypeDictionary[name];
+            if (UnitTypeDictionary.ContainsKey(name))
+            {
+                return UnitTypeDictionary[name];
+            }else
+            {
+                Console.WriteLine("UTD error: " + name + " does no exist.");
+                return CreateBlankUt();
+            }
         }
         #endregion
 
@@ -128,11 +136,22 @@ namespace CommonPart
         public int maxatk { get; protected set; }
         //public int //something// { get; protected set; }
         public string typename { get; protected set; }
+        /// <summary>
+        /// animation UnitTypeでは、animationのtexture_nameと同じ値になります
+        /// </summary>
         public string texture_name { get; protected set; }        //UnitTypeDictionaryにペアとなるstringである。他と重複しないように設定する必要がある。
                                                                   //これとは別にUnitは独自のstring変数 name を持っています。
         public string label { get; protected set; } //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい.
         public int texture_max_id { get; protected set; }
         public int texture_min_id { get; protected set; }
+        /// <summary>
+        /// false = animation UnitTypeでないことの印
+        /// </summary>
+        public readonly bool animated;
+        /// <summary>
+        /// animationにアクセスするためのkeyの一部
+        /// </summary>
+        public string animation_name;
         #endregion
 
         #region protected
@@ -140,8 +159,19 @@ namespace CommonPart
         #endregion
 
         #region constructor
+        /// <summary>
+        /// これはAnimation UnitType専用のコンストラクタ です.　animatedがtrueになります,animation_nameが代入されます
+        /// </summary>
+        protected UnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk) {
+            animated = true;
+            animation_name = _texture_name;
+            texture_name = DataBase.getAniD(animation_name).texture_name;
+            typename = _typename; label = _label;
+            maxhp = _maxhp;maxatk = _maxatk;
+        }
         public UnitType(string typename, string _texture_name,string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
         {
+            animated = false;
             this.typename = typename;
             this.label = label;
             this.maxhp = maxhp;
@@ -151,6 +181,8 @@ namespace CommonPart
         }
         public UnitType(List<int> intdatas, List<string> stringdatas,int id) // id is the index of the UnitTypeList
         {
+            animated = false;
+
             index_in_List = id;
 
             int n = 0;
@@ -198,21 +230,45 @@ namespace CommonPart
             };
         }
         #endregion
+        public virtual void drawIcon(Drawing d, Vector pos)
+        {
+            d.Draw(pos, DataBase.getTex(texture_name), DataBase.getRectFromTextureNameAndIndex(texture_name, texture_min_id), DepthID.Message);
+        }
         #region Method
         public virtual bool passable()
         {
             return true;//要変更
         }
-
-        public string getTypename()
-        {
-            return typename;
-        }
-
-        public string getlabel()
-        {
-            return label;
-        }
         #endregion
+    }
+
+    class AnimatedUnitType:UnitType
+    {
+        //texture_nameはanimationへのアクセスkeyです
+
+        #region public
+        public AnimationAdvanced animation;
+        #endregion
+
+        /// <summary>
+        /// ほぼUnitTypeにあるAnimationUnitType専用のコンストラクタによって構成される
+        /// </summary>
+        /// <param name="_texture_name">animationにアクセスするための一部のkeyです</param>
+        public AnimatedUnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk)
+            :base(_typename,_texture_name,_label,_maxhp,_maxatk)
+        {
+            
+        }
+
+        public override void drawIcon(Drawing d, Vector pos)
+        {
+            if (animation != null)
+            {
+                animation.Draw(d, pos, DepthID.Message);
+            }
+        }
+        public void playAnimation(string addOn) {
+            animation =　new AnimationAdvanced(DataBase.getAniD(animation_name,addOn));
+        }
     }
 }

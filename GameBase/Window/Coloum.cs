@@ -217,9 +217,16 @@ namespace CommonPart
         }
         public override Command is_applied()
         {
-            Console.WriteLine(str);
-            Console.Write("changes to : ");
-            content = Console.ReadLine();
+            while (true) {
+                Console.WriteLine(str);
+                Console.Write("changes to : ");
+                content = Console.ReadLine();
+                int ap;
+                if ( content != "" && (content == DataBase.BlankDefaultContent || int.TryParse(content, out ap) )) { }
+                else{
+                    break;
+                }
+            }
             return base.is_applied();
         }
     }// class Blank end
@@ -351,7 +358,7 @@ namespace CommonPart
         {
             if (str != null && str != "")
             {
-                d.Draw(pos, DataBase.getTex(ut.texture_name), DataBase.getRectFromTextureNameAndIndex(ut.texture_name, ut.texture_min_id), DepthID.Message);
+                ut.drawIcon(d, pos);
             }
             if (content != null && content != "")
             {
