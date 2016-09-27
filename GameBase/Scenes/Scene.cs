@@ -12,7 +12,11 @@ namespace CommonPart {
         #region 変数
         protected readonly SceneManager scenem;
         protected readonly WorkerManager manager;
+        /// <summary>
+        /// KeyboardManagerだけかもしれない。mouseがMouseManagerです
+        /// </summary>
         protected InputManager Input { get { return scenem.Input; } }
+        protected MouseManager mouse { get { return scenem.mouse; } }
         /// <summary>
         /// 削除フラグ　trueで終了
         /// </summary>

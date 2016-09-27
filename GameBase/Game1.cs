@@ -78,22 +78,14 @@ namespace CommonPart
         /// </summary>
         protected override void LoadContent()
         {
+            base.LoadContent();
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-
             // DataBase-- Contentを使った読み込みを実行する。
+            var a = Content.Load<Texture2D>("white");
             DataBase.Load_Contents(Content);
 
-            // へクス画像の読み込み
-            DataBase.hex = new List<Texture2D>();
-            DataBase.hex.Add(Content.Load<Texture2D>("hex1.png"));
-
-            // ボックスの画像読み込み
-            DataBase.box_flame = new List<Texture2D>();
-            for (int i = 0; i < 9; i++) {
-                DataBase.box_flame.Add(Content.Load<Texture2D>(string.Format("box_flame{0}.png", i)));
-            }
             // TODO: use this.Content to load your game content here
             TextureManager.Load(Content);
         }
@@ -104,9 +96,10 @@ namespace CommonPart
         /// </summary>
         protected override void UnloadContent()
         {
-            DataBase.dispose();
+            //DataBase.database_singleton.Dispose();
             // TODO: Unload any non ContentManager content here
             SoundManager.Music.Close();
+            Content.Unload();
         }
 
         bool exited;
@@ -141,7 +134,6 @@ namespace CommonPart
             GraphicsDevice.Clear(Color.CornflowerBlue);
             // TODO: Add your drawing code here
             scenem.Draw();
-
             base.Draw(gameTime);
         }
 

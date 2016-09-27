@@ -14,6 +14,10 @@ namespace CommonPart
         public int x, y;
         public int w, h;
         public bool mouse_dragable = false;
+        /// <summary>
+        /// このwindowを持つSceneなどに伝えたいCommandが書いている。
+        /// </summary>
+        public Command commandForTop;
         #endregion
 
         #region private Variable
@@ -107,6 +111,12 @@ namespace CommonPart
             texturePaths.Add(texture_path);
             texturesPos.Add(_vector);
         }
+        
+        public virtual void AddColoum(Coloum c) { }
+        public virtual int getColoumiContent_int(int i) { return DataBase.InvaildColoumContentReply_int; }
+        public virtual string getColoumiContent_string(int i) { return DataBase.InvaildColoumContentReply_string; }
+        public virtual string getNowColoumContent_string() { return DataBase.InvaildColoumContentReply_string; }
+        public virtual int getNowColoumContent_int() { return DataBase.InvaildColoumContentReply_int; }
         #endregion
     } // class Window end
 
@@ -122,7 +132,28 @@ namespace CommonPart
         public Window_WithColoum(int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
         { }
 
-        public void AddColoum(Coloum c) { coloums.Add(c); }
+        public override void AddColoum(Coloum c) { coloums.Add(c); }
+        public override int getColoumiContent_int(int i)
+        {
+            if (coloums.Count > i){
+                int ans;
+                if (int.TryParse(coloums[i].content, out ans))
+                {
+                    return ans;
+                }
+            }
+            return DataBase.InvaildColoumContentReply_int;
+        }
+        public override string getColoumiContent_string(int i)
+        {
+            if (coloums.Count > i)
+            {
+                return coloums[i].content;
+            }
+            return DataBase.InvaildColoumContentReply_string;
+        }
+        public override string getNowColoumContent_string() { return getColoumiContent_string(now_coloums_index);}
+        public override int getNowColoumContent_int() { return getColoumiContent_int(now_coloums_index); }
 
         protected Blank create_blank(Command c, int x, int ny, string str, string content)
         {
@@ -137,7 +168,9 @@ namespace CommonPart
             if (c != Command.nothing)
             {
                 left_coloum();
+                commandForTop = c;
             }
+            
         }
         public override void draw(Drawing d)
         {
@@ -283,9 +316,10 @@ namespace CommonPart
         #region constructor
         public Window_utsList(int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
         {
-            
+            setUp_UTDutButtons();
         }
         #endregion
+
         private void setUp_UTDutButtons()
         {
             if (UTDutButtons.Count > 0) { foreach (UTDutButton ub in UTDutButtons) { ub.clear(); } }
@@ -295,7 +329,7 @@ namespace CommonPart
             int max_dy = 0;
             for (int i = 0; i < DataBase.getUTDcount(); i++)
             {
-                AddUTDut(nx, ny, DataBase.utDataBase.UnitTypeList[i].getTypename());
+                AddUTDut(nx, ny, DataBase.utDataBase.UnitTypeList[i].typename);
                 max_dy = Math.Max(max_dy, UTDutButtons[i].h);
                 nx += UTDutButtons[i].w;
                 if (nx + white_space_size + UTDutButtons[i].w > this.w)
@@ -337,12 +371,12 @@ namespace CommonPart
         /// <summary>
         /// これはUnitTypeの設定に応じて書き換えが必要あるでしょう。
         /// </summary>
-        public void setup_unitType_window()
+        public void setup_unitType_window(UnitType _ut=null)
         {
             int dy = 12;
             int ny = y;
             clear_old_data_and_put_in_now_data();
-
+            if (_ut != null) { ut = _ut; }
             /*texture_max_id, //0th
                 texture_min_id, 
                 maxhp,          

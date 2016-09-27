@@ -14,6 +14,7 @@ namespace CommonPart {
         /// 入力を扱うクラス　ゲーム内で基本的にはこれ一つ
         /// </summary>
         public readonly InputManager Input = new KeyManager();
+        public readonly MouseManager mouse = MouseManager.mouse_manager;//#####追加
         /// <summary>
         /// 現在のScene
         /// </summary>
@@ -40,7 +41,7 @@ namespace CommonPart {
         public SceneManager(Drawing d) {
             draw = d;
             scene = new List<Scene>();
-            new MapEditorScene(this);
+            new TitleScene(this);
         }
 
         double time;
