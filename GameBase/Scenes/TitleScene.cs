@@ -12,7 +12,7 @@ namespace CommonPart {
         enum TitleIndex {
             Start, Load, Config, Save, Quit
         }
-        static readonly string[] choiceDefault = new[] { "ニューゲーム", "ロード", "オプション", "記録", "ゲーム終了" };
+        static readonly string[] choiceDefault = new[] { "マップエディタ-", "", "オプション", "記録", "ゲーム終了" };
         readonly string[] choice = (string[])choiceDefault.Clone();
         bool[] enabled = new bool[] { true, false, true, false, true };
         Color[] defaultColor = new Color[] { Color.White, Color.White, Color.White, Color.Gold, Color.White };
@@ -46,7 +46,7 @@ namespace CommonPart {
             if(!enabled[i]) return;
             switch((TitleIndex)i) {
                 case TitleIndex.Start:
-                    new MapScene(scenem);
+                    new MapEditorScene(scenem);
                     break;
                 case TitleIndex.Load:
                     new SoundTest(scenem);

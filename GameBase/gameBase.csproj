@@ -43,13 +43,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Boxes\ArrangeBox.cs" />
-    <Compile Include="Boxes\MinimapBox.cs" />
-    <Compile Include="Boxes\StatusBox.cs" />
-    <Compile Include="Boxes\StudyBox.cs" />
-    <Compile Include="Boxes\UnitBox.cs" />
-    <Compile Include="Boxes\WindowBox.cs" />
-    <Compile Include="Boxes\StringBox.cs" />
     <Compile Include="Datas\SkillAndEffect.cs" />
     <Compile Include="Datas\DataBase.cs" />
     <Compile Include="Datas\HitShape.cs" />
@@ -63,12 +56,11 @@
     <Compile Include="Datas\UnitType.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Map.cs" />
     <Compile Include="MessageManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
-    <Compile Include="Scenes\MapScene.cs" />
+    <Compile Include="Scenes\UnitTypeDataEditor.cs" />
     <Compile Include="Scenes\MapEditorScene.cs" />
     <Compile Include="Scenes\KeyConfig.cs" />
     <Compile Include="Scenes\MenuScene.cs" />
@@ -89,6 +81,7 @@
     <Compile Include="Workers\Unit.cs" />
     <Compile Include="Workers\Worker.cs" />
     <Compile Include="Workers\WorkerManager.cs" />
+    <Compile Include="XNA\AnimationAdvanced.cs" />
     <Compile Include="XNA\Drawing.cs" />
     <Compile Include="XNA\Drawing3D.cs" />
     <Compile Include="XNA\Image.cs" />
@@ -112,61 +105,64 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\16-16 tama1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\16-16box_flame.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\36-40 enemy1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\36-40 hex1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame0.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame4.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame5.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame6.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame7.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\box_flame8.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\hex1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\KMC.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\None.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\None\None.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\scroll.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
     <Content Include="UpdateUnziper.exe" />

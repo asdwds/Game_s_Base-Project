@@ -12,21 +12,57 @@ namespace CommonPart {
 
     public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
         button_on = 112, button_off = 113, previousPage = 114, nextPage = 115,
-        UTDutButtonPressed=201,
-
+        openUTD=200, UTDutButtonPressed=201, closeUTD=204,
+        openAniD =202, addTex=203,  closeAniD=205,// open animation DataBase, add Texture
+        CreateNewMapFile=1001,LoadMapFile=1002,
     };
+
+    /// <summary>
+    /// Commandとそれと対応した整数、文字列データを格納するための物
+    /// </summary>
+    class CommandData
+    {
+        public readonly Command c;
+        public readonly int[] ints;
+        public readonly string[] strings;
+        public CommandData(Command _c,int[] its=null,string[] strs=null)
+        {
+            c = _c;
+            if (its != null) { ints = new int[its.Length]; for (int i = 0; i < its.Length; i++) ints[i] = its[i]; }
+            if (strs != null) { strings = new string[strs.Length]; for (int j = 0; j < strs.Length; j++) strings[j] = strs[j]; }
+        }
+        public CommandData(Command _c, string[] strs) : this(_c, null, strs) { }
+    }
+    
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>
-    class DataBase {
+    class DataBase :IDisposable {
+        #region about Editor
+
         /// <summary>
         /// このDataBaseなどに使われている読み込み、Editorでのファイルの読み方法が何時の物かの判断に使われる。確実に大きく変化したら更新していくように。
         /// 日付になっている。年月日で, 9月は 09
         /// </summary>
         public static readonly int ThisSystemVersionNumber = 160910;
-        #region Variable
+        /// <summary>
+        /// used between UnitType, etc.-- ut1;ut2
+        /// </summary>
+        public static char interval_of_each_type = ';';
+        /// <summary>
+        /// used between int and string , etc.--int ...ij,string kl...
+        /// </summary>
+        public static char interval_of_each_datatype = ',';
+        #endregion
+
+        #region UTD
+        public static string utFileName = "uts.dat";
         public static FileStream ut_file;
         public static readonly UnitTypeDataBase utDataBase;
+        #endregion
+        #region Textures
+        public static readonly string texDFileName = "texNames.dat";
+
         /// <summary>
         /// 必ずTexturesDataDictionaryに読み込まれる画像.
         /// </summary>
@@ -35,69 +71,213 @@ namespace CommonPart {
         /// <summary>
         /// string is its path, maybe from "Content".  and also string key contains a size of texture's single unit
         /// </summary>
+        //keyを使って読み込みできるので、class化していない。そのままバイナリ-ファイルからkeyを読み取り、Content.Loadをする。
         public static  Dictionary<string, Texture2Ddata> TexturesDataDictionary = new Dictionary<string, Texture2Ddata>();
 
-        private static ContentManager Content;
+        /// <summary>
+        /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
+        /// </summary>
+        private static void tda(string name)
+        {
 
+            Directory.SetCurrentDirectory(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            Directory.SetCurrentDirectory(Content.RootDirectory);
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            Console.WriteLine(File.Exists(name));
+
+            if (!TexturesDataDictionary.ContainsKey(name))
+            {
+                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>("..\\white.png"), name));
+            }
+            else { Console.WriteLine("tda:" + name + " already exists"); }
+            
+        }
+        /// <summary>
+        /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
+        /// </summary>
+        public static void tdaA(string name)
+        {
+            if (Content.Load<Texture2D>(name) != null)
+            {
+                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
+            }
+            else
+            {
+                Console.WriteLine("Tex " + name + "is Null. Maybe Not Found directly in the Content?");
+            }
+        }
+
+        #endregion
+        #region Animation
+        public static AnimationDataAdvanced defaultBlankAnimationData;
+        public const string defaultAnimationNameAddOn = "-stand";
+        public static string aniDFileName = "animationNames.dat";
+        public static Dictionary<string, AnimationDataAdvanced> AnimationAdDictionary = new Dictionary<string, AnimationDataAdvanced>();
+        
+        /// <summary>
+        /// TexturesDataDictionaryが構成できてからこれをcall/使用してください。
+        /// </summary>
+        private static void setup_Animation() {
+            defaultBlankAnimationData = new AnimationDataAdvanced("defaultblank", 5, 1, defaultBlankTextureName);
+            FileStream aniD_file = File.Open(aniDFileName, FileMode.OpenOrCreate);
+            aniD_file.Position = 0;
+            BinaryReader aniD_br = new BinaryReader(aniD_file);
+            while (aniD_br.BaseStream.Position < aniD_br.BaseStream.Length)
+            {
+                try
+                {
+                    bool repeat = aniD_br.ReadBoolean();
+                    int min_index = aniD_br.ReadInt32();
+                    int max_index = aniD_br.ReadInt32();
+                    int length = aniD_br.ReadInt32();
+                    int[] frames = new int[length];
+                    for(int i = 0; i < length; i++) { frames[i] = aniD_br.ReadInt32(); }
+                    //ints end, strings start
+                    string animeName = aniD_br.ReadString();
+                    string textureName = aniD_br.ReadString();
+                    string preName = aniD_br.ReadString();
+                    string nexN = aniD_br.ReadString();
+                    AnimationAdDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
+                }
+                catch (EndOfStreamException e) { break; }
+            }
+            aniD_br.Close(); aniD_file.Close();
+
+        }
+        private void save_Animation()
+        {
+            FileStream aniD_file = File.Open(aniDFileName, FileMode.Create);
+            aniD_file.Position = 0;
+
+            BinaryWriter aniD_bw = new BinaryWriter(aniD_file);
+            foreach (AnimationDataAdvanced ad in AnimationAdDictionary.Values)
+            {
+                aniD_bw.Write(ad.repeat);
+                foreach(int d in ad.getIntsData()) { aniD_bw.Write(d); }
+                foreach (string str in ad.getStringsData()) { aniD_bw.Write(str); }
+            }
+            aniD_bw.Close(); aniD_file.Close();
+        }
+
+        public static AnimationDataAdvanced getAniD(string name,string addOn=null) {
+            if(addOn == null && AnimationAdDictionary.ContainsKey(name))
+            {
+                return AnimationAdDictionary[name];
+                
+            }
+            else if (AnimationAdDictionary.ContainsKey(name+addOn))
+            {
+                return AnimationAdDictionary[name+addOn];
+            }
+
+            if (AnimationAdDictionary.ContainsKey(name + defaultAnimationNameAddOn))
+            {
+                return AnimationAdDictionary[name + defaultAnimationNameAddOn];
+            }
+            else
+            {
+                return defaultBlankAnimationData;
+            }
+        }
+
+        #endregion
+
+        private static ContentManager Content;
+        public static string DirectoryWhenGameStart;
+
+        #region about Coloum
+        public const string BlankDefaultContent = "ClickAndType";
+        public const string ButtonDefaultContent = "Click";
+        public const int InvaildColoumContentReply_int = -99999;
+        public const string InvaildColoumContentReply_string = "fobagnufabo";
+        #endregion
+
+        #region GameScreen
         public static readonly int WindowDefaultSizeX = 1280;
         public static readonly int WindowDefaultSizeY = 960;
         public static readonly int WindowSlimSizeY = 720;
-        public static readonly int BarIndexNum = 5;
-        public static readonly int[] BarWidth = new[] { 22, 22, 22, 40, 18 };
-        public static readonly int[] BarHeight = new[] { 6, 23, 16, 4, 6 };
-        public static readonly int HexWidth = 180;
-        public static readonly int HexHeight = 200;
-        public static List<Texture2D> hex;
-        public static List<Texture2D> box_flame;
-        public enum BarIndex
-        {
-            Study, Unit, Minimap, Status, Arrange
-        }
-        public static readonly Vector[] BarPos = new[] {
-            new Vector(0d, 0d), new Vector(0d, 96d), new Vector(0d, 704d), new Vector(352d, 0d), new Vector(992d, 0d)
-        };
-        public static readonly int MAP_MAX = 10;
 
         #endregion
-        #region singleton
+
+        #region Unload And Save
+        public void Dispose()
+        {
+            ut_file.Close();
+            #region texture
+            FileStream texD_file = File.Open(texDFileName, FileMode.Create);
+            texD_file.Position = 0;
+
+            BinaryWriter texD_bw = new BinaryWriter(texD_file);
+            foreach (string s in TexturesDataDictionary.Keys)
+            {
+                texD_bw.Write(s);
+            }
+            texD_bw.Close(); texD_file.Close();
+            #endregion
+            #region anime
+            save_Animation();
+            #endregion
+            AnimationAdDictionary.Clear();
+            TexturesDataDictionary.Clear();
+
+            Content = null;
+        }
+        #endregion
+        #region singleton and setup
         public static DataBase database_singleton= new DataBase();
-        public DataBase get() { return database_singleton; }
-        static DataBase() {
-            if (!Directory.Exists("Datas")){ Directory.CreateDirectory("Datas"); }
+        //public DataBase get() { return database_singleton; }
+        static DataBase()
+        {
+            DirectoryWhenGameStart = Directory.GetCurrentDirectory();
+            
+            if(Directory.GetCurrentDirectory() == "Datas") { }
+            else if ( !Directory.Exists("Datas")){ Directory.CreateDirectory("Datas"); }
             Directory.SetCurrentDirectory("Datas");
             Console.WriteLine(Directory.GetCurrentDirectory());
-            ut_file = File.Open("uts.dat",FileMode.OpenOrCreate);
+            ut_file = File.Open(utFileName,FileMode.OpenOrCreate);
             BinaryReader ut_br = new BinaryReader(ut_file);
             utDataBase = new UnitTypeDataBase(ut_br);
             ut_br.Close();
         }
         private DataBase() { }
         #endregion
-        public static void Dispose()
-        {
-            ut_file.Close();
-        }
-        #region Method
+
         /// <summary>
-        /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
-        /// </summary>
-        private static void tda(string name)
-        {
-            TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
-        }
-        /// <summary>
-        /// Game1からのCotentを使って、DataBaseの内容を埋める
+        /// Game1からのCotentを使って、DataBaseの内容を埋める.Tex/Animationはここで読み込む
         /// </summary>
         /// <param name="content"></param>
         public static void Load_Contents(ContentManager c)
         {
             Content = c;
+            #region textures
+            FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate);
+            texD_file.Position = 0;
+            BinaryReader texD_br = new BinaryReader(texD_file);
+            while (texD_br.BaseStream.Position < texD_br.BaseStream.Length)
+            {
+                try
+                {
+                    string n = texD_br.ReadString();
+                    if (n != defaultBlankTextureName)
+                    {
+                        tda(n);
+                    }
+                }
+                catch(EndOfStreamException e) { break; }
+            }
+            texD_br.Close(); texD_file.Close();
             tda(defaultBlankTextureName);
             tda("36-40 enemy1.png");
             tda("36-40 hex1.png");
             tda("16-16 tama1.png");
-
+            #endregion
+            #region animation
+            setup_Animation();
+            #endregion
         }
+
+        #region Method
         public static Texture2D getTex(string name)
         {
             if (TexturesDataDictionary.ContainsKey(name))
@@ -149,6 +329,10 @@ namespace CommonPart {
         }*///上のメソッドの別バージョン、多分使わない。
         public static UnitType getUnitType(string typename)
         {
+            if (typename == null) {
+                if (utDataBase.UnitTypeList.Count > 0) return utDataBase.UnitTypeList[0];
+                else return utDataBase.CreateBlankUt();
+            }
             return utDataBase.getUnitTypeWithName(typename);
         }
         public static int getUTDcount() { return utDataBase.UnitTypeList.Count; }

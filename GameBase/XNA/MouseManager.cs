@@ -12,7 +12,7 @@ namespace CommonPart
         MouseState now;
         MouseState old;
         #region singleton
-        static MouseManager mouse_manager = new MouseManager();
+        public static MouseManager mouse_manager = new MouseManager();
         static MouseManager() { }
         private MouseManager() { }
         #endregion

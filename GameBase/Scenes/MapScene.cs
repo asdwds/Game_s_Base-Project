@@ -14,7 +14,7 @@ namespace CommonPart {
         // ボックスウィンドウ（ユニットボックスとか）のリスト
         List<WindowBox> bars;
         Vector Camera { get { return _camera; } }
-        double CameraX {
+      /*  double CameraX {
             get { return _camera.X; }
             set { _camera.X = Math.Max(-Game1._WindowSizeX / 2, Math.Min(DataBase.HexWidth * DataBase.MAP_MAX - Game1._WindowSizeX / 2, value)); }
         }
@@ -25,6 +25,7 @@ namespace CommonPart {
         }
         Vector _camera = new Vector(DataBase.HexWidth * DataBase.MAP_MAX / 2 - Game1._WindowSizeX / 2, DataBase.HexHeight * DataBase.MAP_MAX / 2 - Game1._WindowSizeY / 2);
         Map nMap;
+        */
         int cameraVel = 5;
         // ゲーム内変数
         int studypoint = 0;
