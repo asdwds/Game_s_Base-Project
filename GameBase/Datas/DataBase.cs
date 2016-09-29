@@ -33,10 +33,10 @@ namespace CommonPart {
         /// </summary>
         public static  Dictionary<string, Texture2Ddata> TexturesDataDictionary = new Dictionary<string, Texture2Ddata>();
 
-        private ContentManager Content;
+        private static ContentManager Content;
 
-        public static readonly int WindowDefaultSizeX = Game1.WindowSizeX;
-        public static readonly int WindowDefaultSizeY = Game1.WindowSizeY;
+        public static readonly int WindowDefaultSizeX = 1280;
+        public static readonly int WindowDefaultSizeY = 960;
         public static readonly int WindowSlimSizeY = 720;
         public static readonly int BarIndexNum = 5;
         public static readonly int[] BarWidth = new[] { 22, 22, 22, 40, 18 };
@@ -73,7 +73,7 @@ namespace CommonPart {
         /// <summary>
         /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
         /// </summary>
-        private void tda(string name)
+        private static void tda(string name)
         {
             TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
         }
@@ -81,7 +81,7 @@ namespace CommonPart {
         /// Game1からのCotentを使って、DataBaseの内容を埋める
         /// </summary>
         /// <param name="content"></param>
-        public void Load_Contents(ContentManager c)
+        public static void Load_Contents(ContentManager c)
         {
             Content = c;
             tda(defaultBlankTextureName);

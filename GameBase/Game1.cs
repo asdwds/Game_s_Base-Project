@@ -24,7 +24,6 @@ namespace CommonPart
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SceneManager scenem;
-        DataBase database = DataBase.dataBase();
 
         public const int WindowSizeX = 1280;
         public const int WindowSizeY = 960;
@@ -83,7 +82,7 @@ namespace CommonPart
 
 
             // DataBase-- Contentを使った読み込みを実行する。
-            database.Load_Contents(Content);
+            DataBase.Load_Contents(Content);
 
             // へクス画像の読み込み
             DataBase.hex = new List<Texture2D>();
