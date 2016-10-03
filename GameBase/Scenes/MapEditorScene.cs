@@ -45,32 +45,34 @@ namespace CommonPart {
         /// </summary>
         public void setup_windows() {
             int nx = 0;int ny = 0;
-            int dx = 0; 
+            int dx = 0; int dy = 25;
             //windows[0] starts
-            windows.Add(new Window_WithColoum(20, 20, 120, 120));
+            windows.Add(new Window_WithColoum(20, 20, 240, 180));
+            
             ((Window_WithColoum) windows[0] ).AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
-            ny += 20;
+            ny += dy;
             ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "MapFileName: ", DataBase.BlankDefaultContent, Command.apply_string));
-            nx = 5; ny += 20; dx = 10;
+            nx = 5; ny += dy; dx = 90;
             ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "x: ",DataBase.BlankDefaultContent, Command.apply_int));
-            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx+dx, ny, "y: ", DataBase.BlankDefaultContent, Command.apply_int));
-            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx+dx*3, ny, "MapName: ", DataBase.BlankDefaultContent, Command.apply_string));
-            nx = 80;  ny += 15;
-            ((Window_WithColoum)windows[0]).AddColoum(new Button(nx, ny, "", "ApplyMap", Command.CreateNewMapFile,false));
+            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx+dx*2, ny, "y: ", DataBase.BlankDefaultContent, Command.apply_int));
+            ny += dy;
+            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "MapName: ", DataBase.BlankDefaultContent, Command.apply_string));
+            ny += dy;
             nx = 10;
             ((Window_WithColoum)windows[0]).AddColoum(new Button(nx, ny, "", "LoadMap", Command.LoadMapFile, false));
-            nx = 5; ny += 15;dx = 20;
+            nx += dx;
+            ((Window_WithColoum)windows[0]).AddColoum(new Button(nx, ny, "", "ApplyMap", Command.CreateNewMapFile,false));
+            nx = 5; ny += dy;
             windows[0].AddColoum(new Button(nx, ny, "", "open UTD", Command.openUTD, false));
-            nx += dx;
+            nx += dx+10;
             windows[0].AddColoum(new Button(nx, ny, "", "open AniD", Command.openAniD, false));
-            nx = 5; ny += 20; dx = 20;
-            
-            nx += dx;
+            nx = 5; ny += dy;
             windows[0].AddColoum(new Button(nx, ny, "", "add Texture", Command.addTex, false));
-            // windows[0] is finished.
 
+            // windows[0] is finished.
+            dy = 48; ny += dy;
             // windows[1] starts
-            windows.Add(new Window_utsList(20, ny + 20, 150, 150));
+            windows.Add(new Window_utsList(20, ny, 200, 300));
         }
 
 
@@ -120,7 +122,9 @@ namespace CommonPart {
 
 
         public override void SceneDraw(Drawing d) {
-
+            foreach (Window w in windows) { w.draw(d); }
+            Vector MousePosition = mouse.MousePosition();
+            new RichText("x:" + MousePosition.X + " y:" + MousePosition.Y, FontID.Medium).Draw(d,new Vector(10,Game1._WindowSizeY-40),DepthID.Message);
             if (mapDataS != null)
             {
                 #region map line draw
@@ -189,7 +193,7 @@ namespace CommonPart {
                         case Command.nothing:
                             break;
                         default:
-                            Console.WriteLine("window" + i + " " + "strangeCommand");
+                            Console.WriteLine("window" + i + " " + windows[i].commandForTop);
                             break;
 
                     }

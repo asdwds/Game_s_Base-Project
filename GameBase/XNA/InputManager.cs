@@ -13,6 +13,7 @@ namespace CommonPart {
         public bool IsEnd { get; protected set; }
         public abstract bool IsKeyDown(KeyID k);
         public abstract bool IsKeyDownOld(KeyID k);
+        public abstract bool IsKeyDownOnce(KeyID k);
         static readonly int keys = Function.GetEnumLength(typeof(KeyID));
         int[] times = new int[keys];
         public int KeyDownTime(KeyID k) {
@@ -95,6 +96,8 @@ namespace CommonPart {
         }
         public override bool IsKeyDown(KeyID k) { return now.IsKeyDown(GetKey(k)) || JoyPadManager.IsKeyPressed(k); }
         public override bool IsKeyDownOld(KeyID k) { return old.IsKeyDown(GetKey(k)) || JoyPadManager.IsKeyPressedOld(k); }
+        // 離されている状態から押した状態になった時にtrueになる。
+        public override bool IsKeyDownOnce(KeyID k) { return IsKeyDown(k) && !IsKeyDownOld(k); }
     }
 	/// <summary>
 	/// キーの状態（4種）
