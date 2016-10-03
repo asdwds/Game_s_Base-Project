@@ -25,8 +25,8 @@ namespace CommonPart
         SpriteBatch spriteBatch;
         SceneManager scenem;
 
-        public const int WindowSizeX = 1280;
-        public const int WindowSizeY = 960;
+        public const int WindowSizeX = 960;
+        public const int WindowSizeY = 720;
         internal static readonly Vector WindowSize = new Vector(WindowSizeX, WindowSizeY);
 
         public static bool AvailbleSpeedup = true;
@@ -83,7 +83,6 @@ namespace CommonPart
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // DataBase-- Contentを使った読み込みを実行する。
-            var a = Content.Load<Texture2D>("white");
             DataBase.Load_Contents(Content);
 
             // TODO: use this.Content to load your game content here
@@ -99,6 +98,7 @@ namespace CommonPart
             //DataBase.database_singleton.Dispose();
             // TODO: Unload any non ContentManager content here
             SoundManager.Music.Close();
+            DataBase.database_singleton.Dispose();
             Content.Unload();
         }
 

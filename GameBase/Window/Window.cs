@@ -17,7 +17,7 @@ namespace CommonPart
         /// <summary>
         /// このwindowを持つSceneなどに伝えたいCommandが書いている。
         /// </summary>
-        public Command commandForTop;
+        public Command commandForTop=Command.nothing;
         #endregion
 
         #region private Variable
@@ -58,7 +58,7 @@ namespace CommonPart
         { }
         public virtual void update_with_mouse_manager(MouseManager m)
         {
-            if (mouse_dragable == true && PosInside(m.MousePosition()))
+            if (mouse_dragable == true && PosInside(m.MousePosition()) && m.IsButtomDown(MouseButton.Left))
             {
                 x += (int)(m.MousePosition().X - m.OldMousePosition().X);
                 y += (int)(m.MousePosition().Y - m.OldMousePosition().Y);
@@ -169,7 +169,7 @@ namespace CommonPart
             {
                 left_coloum();
                 commandForTop = c;
-            }
+            }else { c = Command.nothing; }
             
         }
         public override void draw(Drawing d)
@@ -183,7 +183,8 @@ namespace CommonPart
             base.update(k, m);
             if (!keyResponseToWindow && !mouseResponseToWindow)
             {
-                deal_with_command(coloums[now_coloums_index].update(k, m));
+                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) { deal_with_command(coloums[now_coloums_index].update(k, m)); }
+                else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
             }
         }
         public override void update_with_key_manager(KeyManager k) {
@@ -191,17 +192,21 @@ namespace CommonPart
             {
                 if (coloums.Count > 0)
                 {
-                    if (k.IsKeyDown(KeyID.Down))
+                    if (k.IsKeyDownOnce(KeyID.Down))
                     {
+                        coloums[now_coloums_index].is_left();
                         now_coloums_index++;
                         if (now_coloums_index >= coloums.Count) { now_coloums_index = 0; }
+                        coloums[now_coloums_index].is_selected();
                     }
-                    else if (k.IsKeyDown(KeyID.Up))
+                    else if (k.IsKeyDownOnce(KeyID.Up))
                     {
+                        coloums[now_coloums_index].is_left();
                         now_coloums_index--;
                         if (now_coloums_index < 0) { now_coloums_index = coloums.Count - 1; }
+                        coloums[now_coloums_index].is_selected();
                     }
-                    if (k.IsKeyDown(KeyID.Select))
+                    if (k.IsKeyDownOnce(KeyID.Select))
                     {
                         selected();
                     }
@@ -210,29 +215,28 @@ namespace CommonPart
         }//update_with_key_manager end
         public override void update_with_mouse_manager(MouseManager m)
         {
-            if (mouseResponseToWindow)
+            if (coloums.Count > 0)
             {
-                if (coloums.Count > 0)
+                if (m.IsButtomDownOnce(MouseButton.Left))
                 {
-                    if (m.IsButtomDown(MouseButton.Left))
+                    for (int ii = 0; ii < coloums.Count; ii++)
                     {
-                        for (int ii = 0; ii < coloums.Count; ii++)
+                        if (coloums[ii].PosInside(m.MousePosition(), x, y))
+                        // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                         {
-                            if (coloums[ii].PosInside(m.MousePosition()))
-                            {
-                                now_coloums_index = ii;
-                                selected();
-                                return;
-                            }
+                            now_coloums_index = ii;
+                            selected();
+                            return;
                         }
-                    }// if has any coloum or not
-                }
-                base.update_with_mouse_manager(m);
+                    }
+                }// if has any coloum or not
             }
+            base.update_with_mouse_manager(m);
         }//update_with_mouse_manager end
         #endregion
         protected virtual void selected()
         {
+            coloums[now_coloums_index].is_left();
             keyResponseToWindow = false;
             mouseResponseToWindow = false;
             coloums[now_coloums_index].is_selected();
@@ -317,6 +321,7 @@ namespace CommonPart
         public Window_utsList(int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
         {
             setUp_UTDutButtons();
+            mouse_dragable = true;
         }
         #endregion
 

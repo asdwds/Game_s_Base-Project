@@ -9,13 +9,18 @@ namespace CommonPart
     {
         #region Variables
         ///<summary>
-        ///absolute Position in the screen.
+        ///absolute Position in the window.
         ///</summary>
         public Vector pos;
+        protected PoorString pstr;
         /// <summary>
-        /// Coloum' text content
+        /// Coloum' text explanation
         /// </summary>
-        public string str;
+        public string str
+        {
+            get { if (pstr == null) return null; else return pstr.old_str; }
+            set { if (pstr != null) pstr = new PoorString(value, pstr); else pstr = new PoorString(value,maximumOfCharsEachLine,false); }
+        }
         /// <summary>
         /// a int enum "Command" command returned if the coloum gots "apply" 
         /// </summary>
@@ -27,7 +32,7 @@ namespace CommonPart
         /// <summary>
         /// default distance that between str and content. is used in Blank
         /// </summary>
-        protected const int default_distance = 10;
+        protected const int default_distance = 5;
         /// <summary>
         /// Coloum size
         /// </summary>
@@ -37,7 +42,7 @@ namespace CommonPart
         /// Coloumでは無意味。書き換えの内容に当たる。
         /// </summary>
         public string content;
-        protected const int maximumOfCharsEachLine = 10;
+        protected const int maximumOfCharsEachLine = 12;
         protected const FontID default_fontId = FontID.Medium;
         #endregion
         /// <summary>
@@ -79,7 +84,7 @@ namespace CommonPart
             return Command.nothing;
         }
         public virtual Command update_with_mouse_manager(MouseManager m) {
-            if (m.IsButtomDown(MouseButton.Left) && PosInside(m.MousePosition()))
+            if (m.IsButtomDown(MouseButton.Left))
             {
                 if (selected == false)
                 {
@@ -96,6 +101,11 @@ namespace CommonPart
         public virtual bool PosInside(Vector v){
             if(v.X < pos.X+w && v.X> pos.X && v.Y < pos.Y + h && v.Y > pos.Y) { return true; }
             return false;    
+        }
+        public virtual bool PosInside(Vector v,int addx,int addy)
+        {
+            if (v.X < pos.X + w+addx && v.X >= pos.X+addx-2 && v.Y < pos.Y + h+addy && v.Y >= pos.Y+addy-2) { return true; } //Console.Write(addx+"+"+pos.X.ToString()+"+"+w);
+            return false;
         }
         public virtual void is_selected() {
             selected = true;
@@ -138,27 +148,26 @@ namespace CommonPart
         /// </summary>
         public void setup_W_H(int _w,int _h,string _c) {
             w = _w; h = _h;
-            PoorString pst = new PoorString(str, maximumOfCharsEachLine, default_fontId, false);
             PoorString pco = new PoorString(_c, maximumOfCharsEachLine, default_fontId, false);
             if (w == -1)
             {
-                if (pst.CountChar() <= 0)
+                if (pstr.CountChar() <= 0)
                 {
-                    w = pst.str.Length * pst.getCharSizeX();
+                    w = pstr.str.Length * pstr.getCharSizeX();
                 }
-                else { w = maximumOfCharsEachLine * pst.getCharSizeX(); }
+                else { w = maximumOfCharsEachLine * pstr.getCharSizeX(); }
             }
             if (h == -1)
             {
-                h = (pst.CountChar() + 1) * pst.getCharSizeY();
+                h = (pstr.CountChar() + 1) * pstr.getCharSizeY();
             }
             if (w == -2)
             {
-                if (pst.CountChar() <= 0)
+                if (pstr.CountChar() <= 0)
                 {
-                    w = pst.str.Length * pst.getCharSizeX();
+                    w = pstr.str.Length * pstr.getCharSizeX();
                 }
-                else { w = maximumOfCharsEachLine * pst.getCharSizeX(); }
+                else { w = maximumOfCharsEachLine * pstr.getCharSizeX(); }
                 w += dx;
                 if (pco.CountChar() <= 0)
                 {
@@ -168,7 +177,7 @@ namespace CommonPart
             }
             if (h == -2)
             {
-                h = pst.CountChar() > pco.CountChar() ? (pst.CountChar() + 1) * pst.getCharSizeY() : (pco.CountChar() + 1) * pco.getCharSizeY();
+                h = ( Math.Min(pstr.CountChar(),pco.CountChar()) + 1) * pco.getCharSizeY();
                 h += dy;
             }
         }
@@ -200,7 +209,7 @@ namespace CommonPart
             }
             if (content != null && content != "")
             {
-                new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(pos.X + dx, pos.Y + dy), DepthID.Message);
+                new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(pos.X+pstr.Width + dx, pos.Y + dy), DepthID.Message);
             }
         }
         public override void draw(Drawing d, int x, int y)
@@ -212,7 +221,7 @@ namespace CommonPart
             }
             if (content != null && content != "")
             {
-                new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
+                new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X+pstr.Width + dx, posNew.Y + dy), DepthID.Message);
             }
         }
         public override Command is_applied()
@@ -222,10 +231,10 @@ namespace CommonPart
                 Console.Write("changes to : ");
                 content = Console.ReadLine();
                 int ap;
-                if ( content != "" && (content == DataBase.BlankDefaultContent || int.TryParse(content, out ap) )) { }
-                else{
+                if (content == DataBase.BlankDefaultContent || (reply==Command.apply_int && int.TryParse(content, out ap) ) || content!=""    ){
                     break;
                 }
+
             }
             return base.is_applied();
         }
@@ -263,7 +272,7 @@ namespace CommonPart
                 base.draw(d);
                 if (content != null && content != "")
                 {
-                    new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(pos.X + dx, pos.Y + dy), DepthID.Message);
+                    new RichText(content, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, new Vector(pos.X + dx, pos.Y + dy), DepthID.Message);
                 }
             }
             else
@@ -286,7 +295,7 @@ namespace CommonPart
                 base.draw(d);
                 if (content != null && content != "")
                 {
-                    new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
+                    new RichText(content, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
                 }
             }
             else
