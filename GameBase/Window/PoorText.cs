@@ -32,6 +32,10 @@ namespace CommonPart
         const FontID defaultFont = FontID.Medium;
         // FontID is in TextureManager.cs. directly located at namespace CommonPart
         /// <summary>
+        /// 処理する前の文字列
+        /// </summary>
+        public readonly string old_str;
+        /// <summary>
         /// 描画する文字列
         /// </summary>
         public readonly string str;
@@ -43,16 +47,12 @@ namespace CommonPart
         /// 改行以外の処理を行ったかどうか。trueで行った。
         /// </summary>
         private bool modified;
-        /*
-        /// <summary>
-        /// 何も処理していない文字列。
-        /// </summary>
-        readonly string o_str;
         /// <summary>
         /// 一行に描画できる文字数。この数字ごとに改行が処理中に追加される。
         /// </summary> 
-        readonly int max_number_of_chars;
-        */
+        public readonly int max_number_of_chars;
+        
+        public int Width { get { return Math.Min(max_number_of_chars, str.Length) * getCharSizeX(); } }
 
         /// <summary>
         /// 描画用フォント
@@ -79,6 +79,8 @@ namespace CommonPart
         public PoorString(string _ostr, int _max_number_of_chars,bool _modified = true) : this(_ostr,_max_number_of_chars,defaultFont,_modified) { }
         public PoorString(string _ostr, int _max_number_of_chars, FontID _fontid, bool _modified= true)
         {
+            old_str = _ostr;
+            max_number_of_chars = _max_number_of_chars;
             str = _ostr;
             fontId = _fontid;
             font = TextureManager.GetFont(_fontid);
@@ -124,6 +126,7 @@ namespace CommonPart
             }// count char and add \n end
             if(str[k-1] == '\n') { str.Remove(k - 1, 1); }// the last \n is Removed.
         }//constructor end
+        public PoorString(string _ostr, PoorString pstr) : this(_ostr, pstr.max_number_of_chars,pstr.fontId, pstr.modified) { }
         public int getCharSizeX() { return fontId.GetDefaultFontSizeX(); }
         public int getCharSizeY() { return fontId.GetDefaultFontSizeY(); }
         /// <summary>
@@ -142,5 +145,6 @@ namespace CommonPart
             }
             return ans;
         }
+
     }// class PoorString end
 }// namespace CommonPart end

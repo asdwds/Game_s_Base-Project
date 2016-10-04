@@ -50,6 +50,7 @@ namespace CommonPart {
             if(scene.Count == 0) return false;
             //各種更新
             Input.Update();
+            mouse.Update_();
             JoyPadManager.Update();
             draw.Update();
             Scene ns = nowScene;

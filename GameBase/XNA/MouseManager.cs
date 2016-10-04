@@ -70,5 +70,9 @@ namespace CommonPart
 
             }
         }
+        public bool IsButtomDownOnce(MouseButton b)
+        {
+            return IsButtomDown(b) && !IsOldButtomDown(b);
+        }
     }// class MouseManager end
 }// namespace end

@@ -33,11 +33,11 @@ namespace CommonPart {
         }
         public CommandData(Command _c, string[] strs) : this(_c, null, strs) { }
     }
-    
+
     /// <summary>
     /// 不変なデータをまとめたクラス
     /// </summary>
-    class DataBase :IDisposable {
+    class DataBase : IDisposable {
         #region about Editor
 
         /// <summary>
@@ -66,13 +66,13 @@ namespace CommonPart {
         /// <summary>
         /// 必ずTexturesDataDictionaryに読み込まれる画像.
         /// </summary>
-        public static readonly string defaultBlankTextureName = "None.png";
+        public static readonly string defaultBlankTextureName = "None";
 
         /// <summary>
         /// string is its path, maybe from "Content".  and also string key contains a size of texture's single unit
         /// </summary>
         //keyを使って読み込みできるので、class化していない。そのままバイナリ-ファイルからkeyを読み取り、Content.Loadをする。
-        public static  Dictionary<string, Texture2Ddata> TexturesDataDictionary = new Dictionary<string, Texture2Ddata>();
+        public static Dictionary<string, Texture2Ddata> TexturesDataDictionary = new Dictionary<string, Texture2Ddata>();
 
         /// <summary>
         /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
@@ -88,24 +88,33 @@ namespace CommonPart {
 
             if (!TexturesDataDictionary.ContainsKey(name))
             {
-                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>("..\\white.png"), name));
+                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
             }
             else { Console.WriteLine("tda:" + name + " already exists"); }
-            
+
         }
         /// <summary>
         /// TexturesDataDictionaryにTexture2Ddataを追加するメッソド。
         /// </summary>
         public static void tdaA(string name)
         {
-            if (Content.Load<Texture2D>(name) != null)
+            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
+            if (Directory.Exists("Content"))
             {
+                Directory.SetCurrentDirectory("Content");
+                if (File.Exists(name))
+                {
+                    Console.WriteLine("Found in " + Directory.GetCurrentDirectory());
+                    TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
+                }
+                else
+                {
+                    Console.WriteLine("Tex " + name + "is Null. Maybe Not Found directly in the Content?");
+                }
+            }else {
+                Console.WriteLine("tdaA: CurrentDirectory -" + Directory.GetCurrentDirectory());
                 TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
-            }
-            else
-            {
-                Console.WriteLine("Tex " + name + "is Null. Maybe Not Found directly in the Content?");
-            }
+            }//Contentを見つけていない場合
         }
 
         #endregion
@@ -114,7 +123,7 @@ namespace CommonPart {
         public const string defaultAnimationNameAddOn = "-stand";
         public static string aniDFileName = "animationNames.dat";
         public static Dictionary<string, AnimationDataAdvanced> AnimationAdDictionary = new Dictionary<string, AnimationDataAdvanced>();
-        
+
         /// <summary>
         /// TexturesDataDictionaryが構成できてからこれをcall/使用してください。
         /// </summary>
@@ -132,7 +141,7 @@ namespace CommonPart {
                     int max_index = aniD_br.ReadInt32();
                     int length = aniD_br.ReadInt32();
                     int[] frames = new int[length];
-                    for(int i = 0; i < length; i++) { frames[i] = aniD_br.ReadInt32(); }
+                    for (int i = 0; i < length; i++) { frames[i] = aniD_br.ReadInt32(); }
                     //ints end, strings start
                     string animeName = aniD_br.ReadString();
                     string textureName = aniD_br.ReadString();
@@ -154,21 +163,21 @@ namespace CommonPart {
             foreach (AnimationDataAdvanced ad in AnimationAdDictionary.Values)
             {
                 aniD_bw.Write(ad.repeat);
-                foreach(int d in ad.getIntsData()) { aniD_bw.Write(d); }
+                foreach (int d in ad.getIntsData()) { aniD_bw.Write(d); }
                 foreach (string str in ad.getStringsData()) { aniD_bw.Write(str); }
             }
             aniD_bw.Close(); aniD_file.Close();
         }
 
-        public static AnimationDataAdvanced getAniD(string name,string addOn=null) {
-            if(addOn == null && AnimationAdDictionary.ContainsKey(name))
+        public static AnimationDataAdvanced getAniD(string name, string addOn = null) {
+            if (addOn == null && AnimationAdDictionary.ContainsKey(name))
             {
                 return AnimationAdDictionary[name];
-                
+
             }
-            else if (AnimationAdDictionary.ContainsKey(name+addOn))
+            else if (AnimationAdDictionary.ContainsKey(name + addOn))
             {
-                return AnimationAdDictionary[name+addOn];
+                return AnimationAdDictionary[name + addOn];
             }
 
             if (AnimationAdDictionary.ContainsKey(name + defaultAnimationNameAddOn))
@@ -195,6 +204,7 @@ namespace CommonPart {
 
         #region GameScreen
         public static readonly int WindowDefaultSizeX = 1280;
+        public static readonly int WindowSlimSizeX = 960;
         public static readonly int WindowDefaultSizeY = 960;
         public static readonly int WindowSlimSizeY = 720;
 
@@ -203,9 +213,14 @@ namespace CommonPart {
         #region Unload And Save
         public void Dispose()
         {
+            Console.WriteLine("DisposeDataBase");
+            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
+            if (!Directory.Exists("Datas")) { Directory.CreateDirectory("Datas"); }
+            Directory.SetCurrentDirectory("Datas");
+            Console.WriteLine(Directory.GetCurrentDirectory());
             ut_file.Close();
             #region texture
-            FileStream texD_file = File.Open(texDFileName, FileMode.Create);
+            FileStream texD_file = File.Open(texDFileName, FileMode.Create,FileAccess.Write);
             texD_file.Position = 0;
 
             BinaryWriter texD_bw = new BinaryWriter(texD_file);
@@ -225,17 +240,17 @@ namespace CommonPart {
         }
         #endregion
         #region singleton and setup
-        public static DataBase database_singleton= new DataBase();
+        public static DataBase database_singleton = new DataBase();
         //public DataBase get() { return database_singleton; }
         static DataBase()
         {
             DirectoryWhenGameStart = Directory.GetCurrentDirectory();
-            
-            if(Directory.GetCurrentDirectory() == "Datas") { }
-            else if ( !Directory.Exists("Datas")){ Directory.CreateDirectory("Datas"); }
+
+            if (Directory.GetCurrentDirectory() == "Datas") { }
+            else if (!Directory.Exists("Datas")) { Directory.CreateDirectory("Datas"); }
             Directory.SetCurrentDirectory("Datas");
             Console.WriteLine(Directory.GetCurrentDirectory());
-            ut_file = File.Open(utFileName,FileMode.OpenOrCreate);
+            ut_file = File.Open(utFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             BinaryReader ut_br = new BinaryReader(ut_file);
             utDataBase = new UnitTypeDataBase(ut_br);
             ut_br.Close();
@@ -251,7 +266,7 @@ namespace CommonPart {
         {
             Content = c;
             #region textures
-            FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate);
+            FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate, FileAccess.Read);
             texD_file.Position = 0;
             BinaryReader texD_br = new BinaryReader(texD_file);
             while (texD_br.BaseStream.Position < texD_br.BaseStream.Length)
@@ -264,13 +279,10 @@ namespace CommonPart {
                         tda(n);
                     }
                 }
-                catch(EndOfStreamException e) { break; }
+                catch (EndOfStreamException e) { break; }
             }
             texD_br.Close(); texD_file.Close();
             tda(defaultBlankTextureName);
-            tda("36-40 enemy1.png");
-            tda("36-40 hex1.png");
-            tda("16-16 tama1.png");
             #endregion
             #region animation
             setup_Animation();
@@ -289,7 +301,10 @@ namespace CommonPart {
                 return TexturesDataDictionary[defaultBlankTextureName].texture;
             }
         }
-        public static Texture2Ddata getTexD(string name) { return TexturesDataDictionary[name]; }
+        public static Texture2Ddata getTexD(string name) {
+            if (name == null || name == "" || !TexturesDataDictionary.ContainsKey(name)) { return TexturesDataDictionary[defaultBlankTextureName]; }
+            else { return TexturesDataDictionary[name]; }
+        }
         public static Rectangle getRectFromTextureNameAndIndex(string name, int id)
         {
             int w = TexturesDataDictionary[name].w_single;
