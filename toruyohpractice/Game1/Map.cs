@@ -15,8 +15,8 @@ namespace CommonPart {
         public int enemyexist = 0;
         public Vector scroll_speed;
         public Vector bar_pos = new Vector(300,600);
-        public Vector life_pos = new Vector(1100, 95);
-        public Vector score_pos = new Vector(1100, 150);
+        public Vector life_pos = new Vector(1050, 95);
+        public Vector score_pos = new Vector(1100, 180);
 
         int total_height = 0;
         public int scroll_start;
@@ -42,6 +42,8 @@ namespace CommonPart {
         public static int leftside = 280;
         public static int rightside = 1000;
 
+        public string life_tex_name = "testlife.png";
+
         public Vector camera = new Vector(leftside, 0);
 
 
@@ -54,7 +56,7 @@ namespace CommonPart {
             v.Add(new Vector(leftside, v[0].Y - DataBase.getTex(background_names[1]).Height));
            
             scroll_speed = new Vector(defaultspeed_x, defaultspeed_y);
-            player = new Player(DataBase.WindowDefaultSizeX/2, 500, 6, 10, 5);
+            player = new Player(DataBase.WindowDefaultSizeX/2, 500, 6, 10, 5,"60 105-player.png");
 
             set_change_scroll(600,20,120);
 
@@ -144,7 +146,7 @@ namespace CommonPart {
                 {
                     double random = Function.GetRandomDouble(280, 1000);
                     double random_y = Function.GetRandomDouble(100, 100);
-                    enemys.Add(new Enemy(random, random_y, 0, 1, 10, 10, 100,10));
+                    enemys.Add(new Enemy(random, random_y, 0, 1, 10, 10, 100,10,"140 220-enemy1.png"));
                     enemyexist++;
                 }
             }
@@ -234,7 +236,7 @@ namespace CommonPart {
 
             for(int i = 0; i < player.life; i++)
             {
-                d.Draw(new Vector(life_pos.X + DataBase.getTex(player.texture_name).Width * i + 5, life_pos.Y), DataBase.getTex(player.texture_name), DepthID.Item);
+                d.Draw(new Vector(life_pos.X + DataBase.getTex(life_tex_name).Width * i , life_pos.Y), DataBase.getTex(life_tex_name), DepthID.Item);
             }
 
             RichText scoreboard = new RichText(score.ToString());

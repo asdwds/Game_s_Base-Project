@@ -17,7 +17,7 @@ namespace CommonPart {
         #region Method
         public MapScene(SceneManager s)
             : base(s) {
-            nMap = new Map();
+            nMap = new Map("background3.png");
             /*bars = new List<WindowBox>();
             for(int i = 0; i < DataBase.BarIndexNum; i++) {
                 bars.Add(new WindowBox(DataBase.BarPos[i],DataBase.BarWidth[i],DataBase.BarHeight[i]));

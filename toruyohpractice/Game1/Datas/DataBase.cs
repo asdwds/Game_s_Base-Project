@@ -71,6 +71,10 @@ namespace CommonPart {
             tda("16-16 tama1.png");
             tda("leftside1.jpg");
             tda("rightside1.jpg");
+            tda("60 105-player.png");
+            tda("background3.png");
+            tda("testlife.png");
+            tda("140 220-enemy1.png");
         }
         static public Texture2D getTex(string name)
         {

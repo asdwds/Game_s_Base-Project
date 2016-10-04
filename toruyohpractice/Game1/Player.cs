@@ -30,7 +30,7 @@ namespace CommonPart
         public bool acceralation_mode = true;
 
         public int skill_stop = 6;
-        public int skill_speed = 20;
+        public int skill_speed = 15;
         public int shouhi_sword = 10;
         public int default_speed=6;
         public int atk = 100;
