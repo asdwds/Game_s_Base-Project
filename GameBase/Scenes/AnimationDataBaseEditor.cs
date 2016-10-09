@@ -7,12 +7,12 @@ namespace CommonPart {
     /// <summary>
     /// マップ作成のシーンのクラス
     /// </summary>
-    class UTDEditorScene : Scene {
+    class AniDEditorScene : Scene {
         static private List<Window> windows = new List<Window>();
         static public bool ready { get; private set; } = false;
-        static public Window_UnitType window_ut;
+        static public Window_WithColoum window_AniD;
 
-        public UTDEditorScene(SceneManager s) : base(s)
+        public AniDEditorScene(SceneManager s) : base(s)
         {
             setup_windows();
         }
@@ -35,7 +35,7 @@ namespace CommonPart {
             windows.Add(new Window_utsList(20, ny + 20, 150, 150));
 
             // windows[2] starts
-            window_ut= new Window_UnitType(DataBase.getUnitType(null),60, ny + 20, 150, 150);
+            //window_ut= new Window_UnitType(DataBase.getUnitType(null),60, ny + 20, 150, 150);
         }
 
         private void addTex()
@@ -53,7 +53,6 @@ namespace CommonPart {
 
         public override void SceneDraw(Drawing d) {
             foreach (Window w in windows) { w.draw(d); }
-
 
         }//SceneDraw
 
@@ -81,8 +80,8 @@ namespace CommonPart {
                 case Command.nothing:
                     break;
                 case Command.UTDutButtonPressed:
-                    window_ut.setup_unitType_window(
-                        DataBase.getUnitType(windows[chosenIndex].getNowColoumContent_string())  );
+                    //window_ut.setup_unitType_window(
+                      //  DataBase.getUnitType(windows[chosenIndex].getNowColoumContent_string())  );
                     break;
                 default:
                     Console.WriteLine("UTD:window" + chosenIndex + " " + "strangeCommand");

@@ -23,7 +23,7 @@ namespace CommonPart {
         /// <summary>
         /// MapEditorScene中、ゲーム画面のこのｘ軸ｙ軸から mapの描画が始まります。
         /// </summary>
-        static public int leftsideX = 240, topsideY = 0,rightsideX=1040,bottonsideY=720; // これはゲーム画面基準なので、左上が0となります。
+        static public int leftsideX = 240, topsideY = 0,rightsideX=1040,bottonsideY=Game1._WindowSizeY; // これはゲーム画面基準なので、左上が0となります。
         /// <summary>
         /// 現ゲーム画面のマップ描画区画の左上の位置 が 表すマップの座標y。
         /// </summary>
@@ -47,7 +47,7 @@ namespace CommonPart {
             int nx = 0;int ny = 0;
             int dx = 0; int dy = 25;
             //windows[0] starts
-            windows.Add(new Window_WithColoum(20, 20, 240, 180));
+            windows.Add(new Window_WithColoum(0, 0, 240, 180));
             
             ((Window_WithColoum) windows[0] ).AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
             ny += dy;
@@ -79,8 +79,10 @@ namespace CommonPart {
         private void addTex()
         {
             Console.WriteLine("Type in the path from Content correctly.");
+            Console.WriteLine("Type in End1024 to back to Editor.");
             string str=Console.ReadLine();
-            if (DataBase.TexturesDataDictionary.ContainsKey(str))
+            if (str == "End1024") { }
+            else if (DataBase.TexturesDataDictionary.ContainsKey(str))
             {
                 Console.Write(" already inside the DataBase\n");
             }else
@@ -139,7 +141,7 @@ namespace CommonPart {
                             d.DrawLine(xb,xt, lineWidth, Color.White, DepthID.Map);
                         }else { xb.X += (lbx % dx)*mapDataS.Xrate; }
 
-                        for (int i = 0; i < (rightsideX - leftsideX) / mapDataS.Xrate/dx; i++)
+                        for (int i = 0; dx*i < (mapDataS.max_x - lbx) && dx*i < (rightsideX - leftsideX) / mapDataS.Xrate; i++)
                         {
                             xb.X += dx*mapDataS.Xrate; xt.X = xb.X;
                             d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
@@ -152,9 +154,9 @@ namespace CommonPart {
                         }
                         else { xb.Y += (xb.Y % dy)*mapDataS.Yrate; }
 
-                        for (int j = 0; j < (topsideY - bottonsideY) / mapDataS.Yrate / dy; j++)
+                        for (int j = 0; dy*j < (mapDataS.max_y-lby) && dy*j < (bottonsideY - topsideY) / mapDataS.Yrate; j++)
                         {
-                            xb.Y += dy*mapDataS.Yrate; xt.Y = xb.Y;
+                            xb.Y -= dy*mapDataS.Yrate; xt.Y = xb.Y;
                             d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
                         }
                         break;
@@ -182,10 +184,13 @@ namespace CommonPart {
                     switch (windows[i].commandForTop)
                     {
                         case Command.CreateNewMapFile:
-
+                            initializeMap();
                             break;
                         case Command.openUTD:
-
+                            openUTD();
+                            break;
+                        case Command.openAniD:
+                            //openAniD();
                             break;
                         case Command.addTex:
                             addTex();
@@ -195,8 +200,8 @@ namespace CommonPart {
                         default:
                             Console.WriteLine("window" + i + " " + windows[i].commandForTop);
                             break;
-
                     }
+                    windows[i].commandForTop = Command.nothing;
                 }else
                 {
                     windows[i].update();

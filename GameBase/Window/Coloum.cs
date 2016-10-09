@@ -42,7 +42,7 @@ namespace CommonPart
         /// Coloumでは無意味。書き換えの内容に当たる。
         /// </summary>
         public string content;
-        protected const int maximumOfCharsEachLine = 12;
+        protected const int maximumOfCharsEachLine = 18;
         protected const FontID default_fontId = FontID.Medium;
         #endregion
         /// <summary>
@@ -140,6 +140,7 @@ namespace CommonPart
         /// set str, content to null
         /// </summary>
         public void clear() {
+            pstr = null;
             str = null;
             content = null;
         } 

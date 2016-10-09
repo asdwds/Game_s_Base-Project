@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 namespace CommonPart {
 
     public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
-        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115,
+        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll=116,
         openUTD=200, UTDutButtonPressed=201, closeUTD=204,
         openAniD =202, addTex=203,  closeAniD=205,// open animation DataBase, add Texture
         CreateNewMapFile=1001,LoadMapFile=1002,
@@ -80,17 +80,16 @@ namespace CommonPart {
         private static void tda(string name)
         {
 
-            Directory.SetCurrentDirectory(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
+            /*Directory.SetCurrentDirectory(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
             Console.WriteLine(Directory.GetCurrentDirectory());
             Directory.SetCurrentDirectory(Content.RootDirectory);
             Console.WriteLine(Directory.GetCurrentDirectory());
-            Console.WriteLine(File.Exists(name));
-
-            if (!TexturesDataDictionary.ContainsKey(name))
-            {
-                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
+            Console.WriteLine(File.Exists(name));*/
+            try {
+                Texture2D t=Content.Load<Texture2D>(name);
+                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
             }
-            else { Console.WriteLine("tda:" + name + " already exists"); }
+            catch { Console.WriteLine("tda: load error" + name); return; }
 
         }
         /// <summary>
@@ -98,7 +97,14 @@ namespace CommonPart {
         /// </summary>
         public static void tdaA(string name)
         {
-            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
+            try
+            {
+                Texture2D t = Content.Load<Texture2D>(name);
+                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+            }
+            catch { Console.WriteLine("tdaA: load error" + name); return; }
+            /*
+             * Directory.SetCurrentDirectory(DirectoryWhenGameStart);
             if (Directory.Exists("Content"))
             {
                 Directory.SetCurrentDirectory("Content");
@@ -115,6 +121,7 @@ namespace CommonPart {
                 Console.WriteLine("tdaA: CurrentDirectory -" + Directory.GetCurrentDirectory());
                 TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
             }//Contentを見つけていない場合
+            */
         }
 
         #endregion
@@ -203,10 +210,10 @@ namespace CommonPart {
         #endregion
 
         #region GameScreen
-        public static readonly int WindowDefaultSizeX = 1280;
-        public static readonly int WindowSlimSizeX = 960;
-        public static readonly int WindowDefaultSizeY = 960;
-        public static readonly int WindowSlimSizeY = 720;
+        public const int WindowDefaultSizeX = 1280;
+        public const int WindowSlimSizeX = 720;
+        public const int WindowDefaultSizeY = 720;
+        public const int WindowSlimSizeY = 480;
 
         #endregion
 

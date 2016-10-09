@@ -175,7 +175,17 @@ namespace CommonPart
         public override void draw(Drawing d)
         {
             base.draw(d);
-            foreach (Coloum c in coloums) { c.draw(d,x,y); }
+            for(int i=0;i<coloums.Count;i++) {
+                if (now_coloums_index == i && !coloums[now_coloums_index].selected) {
+                    coloums[now_coloums_index].selected = true;
+                    coloums[i].draw(d, x, y);
+                    coloums[i].selected= false;
+                }
+                else
+                {
+                    coloums[i].draw(d, x, y);
+                }
+            }
         }
         #region update
         public override void update(KeyManager k, MouseManager m)
@@ -183,7 +193,9 @@ namespace CommonPart
             base.update(k, m);
             if (!keyResponseToWindow && !mouseResponseToWindow)
             {
-                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) { deal_with_command(coloums[now_coloums_index].update(k, m)); }
+                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) {
+                    deal_with_command(coloums[now_coloums_index].update(k, m));
+                }
                 else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
             }
         }
@@ -217,20 +229,20 @@ namespace CommonPart
         {
             if (coloums.Count > 0)
             {
-                if (m.IsButtomDownOnce(MouseButton.Left))
+                for (int ii = 0; ii < coloums.Count; ii++)
                 {
-                    for (int ii = 0; ii < coloums.Count; ii++)
+                    if (coloums[ii].PosInside(m.MousePosition(), x, y))
+                    // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
-                        if (coloums[ii].PosInside(m.MousePosition(), x, y))
-                        // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
+                        now_coloums_index = ii;
+                        if (m.IsButtomDownOnce(MouseButton.Left))
                         {
-                            now_coloums_index = ii;
                             selected();
                             return;
                         }
                     }
-                }// if has any coloum or not
-            }
+                }
+            }//if has any coloum or not
             base.update_with_mouse_manager(m);
         }//update_with_mouse_manager end
         #endregion
@@ -307,6 +319,59 @@ namespace CommonPart
 
     }
 
+    /// <summary>
+    /// coloumsを持ち,かつドラッグバーがついている
+    /// </summary>
+    class Window_ColoumList : Window_WithColoum
+    {
+        //ここのcoloumsのx,yは実際無意味になる
+
+        protected List<Rectangle> scrolls;
+        public List<int> maxNumberInWindow;
+        const int default_ColoumsStartX=10, default_ColoumsStartY = 10;
+        protected List<int> ColoumsStartX, ColoumsStartY;
+        protected List<int> topIndexs;
+        public Window_ColoumList(int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
+        {   }
+        public void addScrollList( int _maxColoumsInWindow = 10,
+            int _ColoumsStartX = default_ColoumsStartX, int _ColoumsStartY = default_ColoumsStartY)
+        {
+            maxNumberInWindow.Add(_maxColoumsInWindow);
+            ColoumsStartX.Add(_ColoumsStartX);
+            ColoumsStartY.Add(_ColoumsStartY);
+        }
+        public override void update(KeyManager k, MouseManager m)
+        {
+            if (m != null)
+            {
+                for(int i = 0; i < scrolls.Count; i++)
+                {
+                    //if()
+                }
+            }
+            base.update(k, m);
+        }
+        public override void update_with_mouse_manager(MouseManager m)
+        {
+            if (coloums.Count > 0)
+            {
+                for (int ii = 0; ii < coloums.Count; ii++)
+                {
+                    if (coloums[ii].PosInside(m.MousePosition(), x, y))
+                    // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
+                    {
+                        now_coloums_index = ii;
+                        if (m.IsButtomDownOnce(MouseButton.Left))
+                        {
+                            selected();
+                            return;
+                        }
+                    }
+                }
+            }//if has any coloum or not
+            base.update_with_mouse_manager(m);
+        }//update_with_mouse_manager end
+    }
     /// <summary>
     /// DataBaes.utDataBase is required; a poorly made
     /// </summary>
