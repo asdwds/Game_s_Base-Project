@@ -7,10 +7,8 @@ namespace CommonPart {
     /// <summary>
     /// マップ作成のシーンのクラス
     /// </summary>
-    class MapEditorScene : Scene {
+    class MapEditorScene : BasicEditorScene {
         static private List<List<Tile>> tiles = new List<List<Tile>>();
-        static private List<Window> windows = new List<Window>();
-        static public bool ready { get; private set; } = false;
         static public MapDataSave mapDataS { get; private set; } = null;
         /// <summary>
         /// draw X,Y line. 1-draw X,Y, 0-draw nothing,
@@ -40,10 +38,8 @@ namespace CommonPart {
         {
             setup_windows();
         }
-        /// <summary>
-        /// once changed this, make sure of data -those saved in file and used to edit
-        /// </summary>
-        public void setup_windows() {
+
+        public override void setup_windows() {
             int nx = 0;int ny = 0;
             int dx = 0; int dy = 25;
             //windows[0] starts
@@ -75,21 +71,6 @@ namespace CommonPart {
             windows.Add(new Window_utsList(20, ny, 200, 300));
         }
 
-
-        private void addTex()
-        {
-            Console.WriteLine("Type in the path from Content correctly.");
-            Console.WriteLine("Type in End1024 to back to Editor.");
-            string str=Console.ReadLine();
-            if (str == "End1024") { }
-            else if (DataBase.TexturesDataDictionary.ContainsKey(str))
-            {
-                Console.Write(" already inside the DataBase\n");
-            }else
-            {
-                DataBase.tdaA(str);
-            }
-        }
         private void openUTD()
         {
             new UTDEditorScene(scenem);
@@ -124,9 +105,7 @@ namespace CommonPart {
 
 
         public override void SceneDraw(Drawing d) {
-            foreach (Window w in windows) { w.draw(d); }
-            Vector MousePosition = mouse.MousePosition();
-            new RichText("x:" + MousePosition.X + " y:" + MousePosition.Y, FontID.Medium).Draw(d,new Vector(10,Game1._WindowSizeY-40),DepthID.Message);
+            base.SceneDraw(d);
             if (mapDataS != null)
             {
                 #region map line draw
@@ -175,40 +154,31 @@ namespace CommonPart {
 
         }//SceneDraw
 
-        public override void SceneUpdate() {
-            base.SceneUpdate();
-            for(int i = 0; i < windows.Count; i++)
+        protected override void switch_windowsIcommand(int i)
+        {
+            switch (windows[i].commandForTop)
             {
-                if (windows[i].PosInside(mouse.MousePosition()) ) {
-                    windows[i].update((KeyManager)Input, mouse);
-                    switch (windows[i].commandForTop)
-                    {
-                        case Command.CreateNewMapFile:
-                            initializeMap();
-                            break;
-                        case Command.openUTD:
-                            openUTD();
-                            break;
-                        case Command.openAniD:
-                            //openAniD();
-                            break;
-                        case Command.addTex:
-                            addTex();
-                            break;
-                        case Command.nothing:
-                            break;
-                        default:
-                            Console.WriteLine("window" + i + " " + windows[i].commandForTop);
-                            break;
-                    }
-                    windows[i].commandForTop = Command.nothing;
-                }else
-                {
-                    windows[i].update();
-                }
+                case Command.CreateNewMapFile:
+                    initializeMap();
+                    break;
+                case Command.openUTD:
+                    openUTD();
+                    break;
+                case Command.openAniD:
+                    //openAniD();
+                    break;
+                case Command.addTex:
+                    addTex();
+                    break;
+                case Command.nothing:
+                    break;
+                default:
+                    Console.WriteLine("window" + i + " " + windows[i].commandForTop);
+                    break;
             }
-        }//SceneUpdate() end
-    }//class MapEditorScene end
+        }
 
+
+    }//class MapEditorScene end
 
 }//namespace CommonPart End

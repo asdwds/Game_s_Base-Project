@@ -53,6 +53,10 @@ namespace CommonPart {
         /// used between int and string , etc.--int ...ij,string kl...
         /// </summary>
         public static char interval_of_each_datatype = ',';
+        /// <summary>
+        /// used before every array , etc.--int ...ij&int k-z&intA-F;string GH&string I-P...
+        /// </summary>
+        public static char interval_of_array = '&';
         #endregion
 
         #region UTD
@@ -348,14 +352,16 @@ namespace CommonPart {
             int y = id / max_forX * h;
             if (id >= max_forX * max_forY) { x = y = 0; }
             return new Rectangle(x, y, w, h);
-        }*///上のメソッドの別バージョン、多分使わない。
+        }*/
+        //上のメソッドの別バージョン、多分使わない。
         public static UnitType getUnitType(string typename)
         {
-            if (typename == null) {
+            if (typename == null)
+            {
                 if (utDataBase.UnitTypeList.Count > 0) return utDataBase.UnitTypeList[0];
                 else return utDataBase.CreateBlankUt();
             }
-            return utDataBase.getUnitTypeWithName(typename);
+            else { return utDataBase.getUnitTypeWithName(typename); }
         }
         public static int getUTDcount() { return utDataBase.UnitTypeList.Count; }
         #endregion

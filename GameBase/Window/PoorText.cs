@@ -85,7 +85,7 @@ namespace CommonPart
             fontId = _fontid;
             font = TextureManager.GetFont(_fontid);
             modified = _modified;
-            if (str == "") { return; }
+            if (str == "" || str==null) { return; }
             if (modified)
             {
                 for (int i = 0; i < colors_list.Count; i++)

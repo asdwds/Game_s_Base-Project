@@ -8,8 +8,8 @@
     <ProjectGuid>{234BDEFF-8089-4FE0-9288-8834A7A60BB5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cellgame</RootNamespace>
-    <AssemblyName>cellgame</AssemblyName>
+    <RootNamespace>CommonPart</RootNamespace>
+    <AssemblyName>gameBase</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <MonoGameContentBuilderExe>
@@ -60,6 +60,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
+    <Compile Include="Scenes\abstract BasicEditorScene.cs" />
     <Compile Include="Scenes\AnimationDataBaseEditor.cs" />
     <Compile Include="Scenes\UnitTypeDataEditor.cs" />
     <Compile Include="Scenes\MapEditorScene.cs" />
