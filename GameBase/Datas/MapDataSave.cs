@@ -10,7 +10,8 @@ namespace CommonPart
     {
         #region variables concerns FileStream
         private FileStream MapFileStream;
-        public string fileName,mapName;
+        protected string fileName;
+        public string mapName;
         /// <summary>
         /// starts from 0 !, maximum (x,y) on the map
         /// </summary>
@@ -24,18 +25,17 @@ namespace CommonPart
         /// マップの1マスの長さはスクリーンのXrate、マップの1マスの高さはスクリーンのYrateだけに相当する。
         /// ect.マップの(0,0)座標はスクリーンの(Xrate長,Yrate高)の長方形にあたる。
         /// </summary>
-        public int Xrate = 4, Yrate = 4;
+        static public int Xrate = 4, Yrate = 4;
 
-   /*     /// <summary> 
+        /// <summary> 
         /// Sceneから更新されるべきのスクリーン上に見えるmapの左上と右下の map上の座標
         /// </summary>
-        public int ltx=0, lty=0, rbx=0, rby=0;
-    //使わないことにした*/
+        static public int ltx=0, lty=0, rbx=0, rby=0;
 
         /// <summary>
         /// unitのListである。
         /// </summary>
-        public List<Unit> utList = new List<Unit>();
+        static public List<Unit> utList = new List<Unit>();
         #endregion
 
         #region constructor
@@ -118,6 +118,11 @@ namespace CommonPart
 
         }
 
+        static public void update_map_xy(Vector lt,Vector rb)
+        {
+            ltx = (int)(lt.X); 
+
+        }
         public void changeTo(string _fileName,string _mapName,int mx,int my) {
             mapName = _mapName;
             fileName = _fileName;

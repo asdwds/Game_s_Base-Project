@@ -322,7 +322,7 @@ namespace CommonPart
     /// <summary>
     /// coloumsを持ち,かつドラッグバーがついている
     /// </summary>
-    class Window_ColoumList : Window_WithColoum
+   /* class Window_ColoumList : Window_WithColoum
     {
         //ここのcoloumsのx,yは実際無意味になる
 
@@ -372,6 +372,8 @@ namespace CommonPart
             base.update_with_mouse_manager(m);
         }//update_with_mouse_manager end
     }
+    */
+
     /// <summary>
     /// DataBaes.utDataBase is required; a poorly made
     /// </summary>
@@ -435,7 +437,7 @@ namespace CommonPart
         public Window_UnitType(UnitType _ut, int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
         {
             ut = _ut;
-            setup_unitType_window();
+            setup_unitType_window(ut);
         }
 
         /// <summary>
@@ -443,10 +445,10 @@ namespace CommonPart
         /// </summary>
         public void setup_unitType_window(UnitType _ut=null)
         {
-            int dy = 12;
+            int dy = 20;
             int ny = y;
+            if (_ut != null) { ut = _ut; } else { Console.WriteLine("Window: null UnitType"); }
             clear_old_data_and_put_in_now_data();
-            if (_ut != null) { ut = _ut; }
             /*texture_max_id, //0th
                 texture_min_id, 
                 maxhp,          
@@ -470,11 +472,11 @@ namespace CommonPart
                label,
             */
             n = 0;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_name", utStringList[n]));
+            coloums.Add(create_blank(Command.apply_string, x, ny, "texture_name", utStringList[n]));
             n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "typename", utStringList[n]));
+            coloums.Add(create_blank(Command.apply_string, x, ny, "typename", utStringList[n]));
             n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "label", utStringList[n]));
+            coloums.Add(create_blank(Command.apply_string, x, ny, "label", utStringList[n]));
             n++; ny += dy;
         }
 

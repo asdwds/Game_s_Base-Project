@@ -35,14 +35,15 @@ namespace CommonPart
                     List<string> stringdatas = new List<string>();
                     while (br.BaseStream.Position < br.BaseStream.Length) // load in every int and string data for one unit type 
                     {
-                        if (!next_is_str && br.PeekChar() == DataBase.interval_of_each_datatype)
+                        if (!next_is_str && br.PeekChar() == DataBase.interval_of_each_datatype)//次はstringのデータ
                         //intのデータの一部を読み込み,それがちょうどintervalと一致するすることもあり得る
                         //これはまだ解決されていません。
                         {
                             next_is_str = true;
                             br.ReadChar();
                         }
-                        else if (next_is_str && br.PeekChar() == DataBase.interval_of_each_type) //stringdataがなくてもintervalは必ずあります。
+                        else if (next_is_str && br.PeekChar() == DataBase.interval_of_each_type)//次のUTに移る
+                            //stringdataがなくてもintervalは必ずあります。
                         {
 
                             next_is_str = false;
@@ -53,8 +54,9 @@ namespace CommonPart
                         }
                         else
                         {
-                            if (next_is_str)
+                            if (next_is_str)//stringを読み込む
                             {
+                               
                                 stringdatas.Add(br.ReadString());
                             }
                             else
@@ -131,6 +133,16 @@ namespace CommonPart
     class UnitType
     {
         #region public
+        /// <summary>
+        /// このUTのジャンルとなる。0-アニメーションしない、1-アニメションする、2-skillを持つ、次は4,8,16..と2の乗数
+        /// </summary>
+        public int genre=0; 
+        //異なるジャンルのコンストラクターを通過する度に、そのジャンルに応じた値を加算するといいでしょう。
+        /// <summary>
+        /// AnimationUnitTypeかどうか
+        /// </summary>
+        public bool animated { get { return genre % 2 == 1; } }
+
         public int index_in_List { get; protected set; }
         public int maxhp { get; protected set; }
         public int maxatk { get; protected set; }
@@ -144,10 +156,6 @@ namespace CommonPart
         public string label { get; protected set; } //ラベルは複数のUnitTypeが共通点を表すためにつかいます。stringとしてその部分文字列も使われるので、注意してほしい.
         public int texture_max_id { get; protected set; }
         public int texture_min_id { get; protected set; }
-        /// <summary>
-        /// false = animation UnitTypeでないことの印
-        /// </summary>
-        public readonly bool animated;
         /// <summary>
         /// animationにアクセスするためのkeyの一部
         /// </summary>
@@ -163,7 +171,6 @@ namespace CommonPart
         /// これはAnimation UnitType専用のコンストラクタ です.　animatedがtrueになります,animation_nameが代入されます
         /// </summary>
         protected UnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk) {
-            animated = true;
             animation_name = _texture_name;
             texture_name = DataBase.getAniD(animation_name).texture_name;
             typename = _typename; label = _label;
@@ -171,7 +178,6 @@ namespace CommonPart
         }
         public UnitType(string typename, string _texture_name,string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
         {
-            animated = false;
             this.typename = typename;
             this.label = label;
             this.maxhp = maxhp;
@@ -181,12 +187,14 @@ namespace CommonPart
         }
         public UnitType(List<int> intdatas, List<string> stringdatas,int id) // id is the index of the UnitTypeList
         {
-            animated = false;
-
             index_in_List = id;
 
             int n = 0;
-            texture_max_id = intdatas[n]; //0th
+            genre = intdatas[n];
+            if (animated) { Console.WriteLine("id:"+id+" animated as a UnitType!"); }
+            n++;
+            texture_max_id = intdatas[n];
+            n++;
             texture_min_id = intdatas[n];
             n++;
             maxhp = intdatas[n];
@@ -207,10 +215,13 @@ namespace CommonPart
         #endregion
 
         #region get property in int[] + string[]
+        //今のint[],string[]は、必要なデータかつ個数が決まっているのでこの様に書いている。
+        //後に、例えば不特定多数のskillを覚えられるとするとskill_ids[]を返すものを作るといいでしょう。
         public virtual int[] getIntData()
         {
             return new int[] {
-                texture_max_id, //0th
+                genre,
+                texture_max_id, 
                 texture_min_id, 
                 maxhp,          
                 maxatk,         
@@ -257,7 +268,7 @@ namespace CommonPart
         public AnimatedUnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk)
             :base(_typename,_texture_name,_label,_maxhp,_maxatk)
         {
-            
+            if (genre % 2 == 0) { genre += 1; }
         }
 
         public override void drawIcon(Drawing d, Vector pos)
