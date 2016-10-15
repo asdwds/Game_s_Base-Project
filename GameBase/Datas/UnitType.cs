@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CommonPart
 {
+    enum Unit_Genre { textured=0,animated=1,skilled=2,aniskil=3, }
     class UnitTypeDataBase
     {
         static int versionOfEditor;
@@ -23,11 +24,29 @@ namespace CommonPart
         public void setup_from_BinaryReader(BinaryReader br)
         {
             if (br == null) { return; }
+            if (br.BaseStream.Length > 1)
+            {
+                versionOfEditor = br.ReadInt32();
+                switch (versionOfEditor)
+                {
+                    case (int)(DataBase.VersionNumber.SixTeenTenTen):
+                        load_br_161010(br);
+                        break;
+                    default:
+                        Console.WriteLine("version Error! " + versionOfEditor);
+                        break;
+                }
+                foreach (UnitType ut in UnitTypeList)
+                {
+                    UnitTypeDictionary.Add(ut.typename, ut);
+                }//Dictionaryをつくる
+            }else { Console.WriteLine("uts is empty"); return; }
+        }// end of setup
+        public void load_br_161010(BinaryReader br)
+        {
             int n = 0;
-            versionOfEditor = br.Read();
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
-                
                 try
                 {
                     bool next_is_str = false;
@@ -43,11 +62,19 @@ namespace CommonPart
                             br.ReadChar();
                         }
                         else if (next_is_str && br.PeekChar() == DataBase.interval_of_each_type)//次のUTに移る
-                            //stringdataがなくてもintervalは必ずあります。
+                                                                                                //stringdataがなくてもintervalは必ずあります。
                         {
 
                             next_is_str = false;
-                            UnitTypeList.Add(new UnitType(intdatas, stringdatas, n));
+                            switch (intdatas[0])
+                            {
+                                case (int)(Unit_Genre.animated):
+                                    UnitTypeList.Add(new AnimatedUnitType(intdatas, stringdatas, n));
+                                    break;
+                                default:
+                                    UnitTypeList.Add(new UnitType(intdatas, stringdatas, n));
+                                    break;
+                            }
                             n++;
                             br.ReadChar();
                             break;
@@ -56,7 +83,7 @@ namespace CommonPart
                         {
                             if (next_is_str)//stringを読み込む
                             {
-                               
+
                                 stringdatas.Add(br.ReadString());
                             }
                             else
@@ -71,12 +98,7 @@ namespace CommonPart
                     break;
                 }
             }// Finished reading file. List should be alright.
-            foreach (UnitType ut in UnitTypeList)
-            {
-                UnitTypeDictionary.Add(ut.typename, ut);
-            }//Dictionaryをつくる
-        }// end of setup
-
+        }
         public void save_into_BinaryWriter(BinaryWriter bw)
         {
             bw.Write(DataBase.ThisSystemVersionNumber);
@@ -98,7 +120,7 @@ namespace CommonPart
         #region method
         public UnitType CreateBlankUt()
         {
-            return new UnitType("test " + UnitTypeList.Count.ToString(), DataBase.defaultBlankTextureName, "test", 1, 1, 0,0);
+            return new UnitType("test " + UnitTypeList.Count.ToString(), DataBase.defaultBlankTextureName, "test",, 0,0);
         }
         public void Add(UnitType ut)
         {
@@ -134,9 +156,10 @@ namespace CommonPart
     {
         #region public
         /// <summary>
-        /// このUTのジャンルとなる。0-アニメーションしない、1-アニメションする、2-skillを持つ、次は4,8,16..と2の乗数
+        /// このUTのジャンルとなる。0-アニメーションしない、1-アニメションする、2-skillを持つアニメ－ションしない
+        /// 次は4,8,16..と2の乗数
         /// </summary>
-        public int genre=0; 
+        public int genre=(int)(Unit_Genre.textured); 
         //異なるジャンルのコンストラクターを通過する度に、そのジャンルに応じた値を加算するといいでしょう。
         /// <summary>
         /// AnimationUnitTypeかどうか
@@ -144,8 +167,6 @@ namespace CommonPart
         public bool animated { get { return genre % 2 == 1; } }
 
         public int index_in_List { get; protected set; }
-        public int maxhp { get; protected set; }
-        public int maxatk { get; protected set; }
         //public int //something// { get; protected set; }
         public string typename { get; protected set; }
         /// <summary>
@@ -170,18 +191,16 @@ namespace CommonPart
         /// <summary>
         /// これはAnimation UnitType専用のコンストラクタ です.　animatedがtrueになります,animation_nameが代入されます
         /// </summary>
-        protected UnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk) {
+        protected UnitType(string _typename, string _texture_name, string _label) {
             animation_name = _texture_name;
             texture_name = DataBase.getAniD(animation_name).texture_name;
             typename = _typename; label = _label;
-            maxhp = _maxhp;maxatk = _maxatk;
         }
-        public UnitType(string typename, string _texture_name,string label, int maxhp, int maxatk, int texture_max_id, int texture_min_id)
+        public UnitType(string _typename, string _texture_name,string label, int texture_max_id, int texture_min_id)
         {
-            this.typename = typename;
+            typename = _typename;
+            texture_name = _texture_name;
             this.label = label;
-            this.maxhp = maxhp;
-            this.maxatk = maxatk;
             this.texture_max_id = texture_max_id;
             this.texture_min_id = texture_min_id;
         }
@@ -196,10 +215,6 @@ namespace CommonPart
             texture_max_id = intdatas[n];
             n++;
             texture_min_id = intdatas[n];
-            n++;
-            maxhp = intdatas[n];
-            n++;
-            maxatk = intdatas[n];
             n++;
             passableType = intdatas[n];
             n++;
@@ -222,9 +237,7 @@ namespace CommonPart
             return new int[] {
                 genre,
                 texture_max_id, 
-                texture_min_id, 
-                maxhp,          
-                maxatk,         
+                texture_min_id,      
                 passableType,   
 
                 //any other int variables should be added here
@@ -252,7 +265,9 @@ namespace CommonPart
         }
         #endregion
     }
-
+    /// <summary>
+    /// genre,passable;texture_name,typename,label,
+    /// </summary>
     class AnimatedUnitType:UnitType
     {
         //texture_nameはanimationへのアクセスkeyです
@@ -265,12 +280,43 @@ namespace CommonPart
         /// ほぼUnitTypeにあるAnimationUnitType専用のコンストラクタによって構成される
         /// </summary>
         /// <param name="_texture_name">animationにアクセスするための一部のkeyです</param>
-        public AnimatedUnitType(string _typename, string _texture_name, string _label, int _maxhp, int _maxatk)
-            :base(_typename,_texture_name,_label,_maxhp,_maxatk)
+        public AnimatedUnitType(string _typename, string _texture_name, string _label)
+            :base(_typename,_texture_name,_label)
         {
-            if (genre % 2 == 0) { genre += 1; }
+            genre = (int)(Unit_Genre.animated);
+        }
+        public AnimatedUnitType(List<int> intdatas, List<string> stringdatas, int id)
+            :this(stringdatas[1], stringdatas[0], stringdatas[2])
+            // id is the index of the UnitTypeList
+        {
+            index_in_List = id;
         }
 
+        #region get property in int[] + string[]
+        //今のint[],string[]は、必要なデータかつ個数が決まっているのでこの様に書いている。
+        //後に、例えば不特定多数のskillを覚えられるとするとskill_ids[]を返すものを作るといいでしょう。
+        public override int[] getIntData()
+        {
+            return new int[] {
+                genre,
+                passableType,   
+
+                //any other int variables should be added here
+            };
+        }
+        public override string[] getStringData()
+        {
+            return new string[] {
+                texture_name,
+                typename,
+                label,
+
+                //any other int variables should be added here
+            };
+        }
+        #endregion
+
+        #region activity
         public override void drawIcon(Drawing d, Vector pos)
         {
             if (animation != null)
@@ -280,6 +326,14 @@ namespace CommonPart
         }
         public void playAnimation(string addOn) {
             animation =　new AnimationAdvanced(DataBase.getAniD(animation_name,addOn));
+        }
+        #endregion
+    }
+    class SkilledUnitType : UnitType
+    {
+        public SkilledUnitType(string _typename,string _texture_name)
+        {
+
         }
     }
 }
