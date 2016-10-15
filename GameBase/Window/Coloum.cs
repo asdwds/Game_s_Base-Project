@@ -172,9 +172,9 @@ namespace CommonPart
                 w += dx;
                 if (pco.CountChar() <= 0)
                 {
-                    w = pco.str.Length * pco.getCharSizeX();
+                    w += pco.str.Length * pco.getCharSizeX();
                 }
-                else { w = maximumOfCharsEachLine * pco.getCharSizeX(); }
+                else { w += maximumOfCharsEachLine * pco.getCharSizeX(); }
             }
             if (h == -2)
             {

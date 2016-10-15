@@ -28,11 +28,17 @@ namespace CommonPart {
         static public int lty{
             get
             {
-                if (mapDataS != null) return lby + (bottonsideY - topsideY) / mapDataS.Yrate;
+                if (mapDataS != null) return lby + (int)((bottonsideY - topsideY) / MapDataSave.Yrate);
                 else return lby + (bottonsideY - topsideY);
             }
         }
         static public int ltx { get { return lbx; } }
+        static public int rbx { get {
+                if (mapDataS != null) return lbx + (int)((rightsideX - leftsideX) / MapDataSave.Xrate);
+                else return lbx + (rightsideX - leftsideX);
+            }
+        }
+        static public int rby { get { return lby; } }
 
         public MapEditorScene(SceneManager s) : base(s)
         {
@@ -50,7 +56,10 @@ namespace CommonPart {
             ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "MapFileName: ", DataBase.BlankDefaultContent, Command.apply_string));
             nx = 5; ny += dy; dx = 90;
             ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "x: ",DataBase.BlankDefaultContent, Command.apply_int));
-            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx+dx*2, ny, "y: ", DataBase.BlankDefaultContent, Command.apply_int));
+            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx+dx*7/5, ny, "y: ", DataBase.BlankDefaultContent, Command.apply_int));
+            ny += dy;
+            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "Xrate: ", "1", Command.apply_int));
+            ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx + dx *7/5, ny, "Yrate: ", "1", Command.apply_int));
             ny += dy;
             ((Window_WithColoum)windows[0]).AddColoum(new Blank(nx, ny, "MapName: ", DataBase.BlankDefaultContent, Command.apply_string));
             ny += dy;
@@ -71,7 +80,7 @@ namespace CommonPart {
             windows.Add(new Window_utsList(20, ny, 200, 300));
         }
 
-        private void openUTD()
+        protected void openUTD()
         {
             new UTDEditorScene(scenem);
         }
@@ -87,16 +96,20 @@ namespace CommonPart {
             i++;
             int _map_maxY = windows[0].getColoumiContent_int(i);
             i++;
+            int _xrate = windows[0].getColoumiContent_int(i);
+            i++;
+            int _yrate = windows[0].getColoumiContent_int(i);
+            i++;
             string _mapName = windows[0].getColoumiContent_string(i);
             if (mapDataS == null)
             {
-                mapDataS = new MapDataSave(_mapFileName,_mapName,_map_maxX,_map_maxY);
-            }else if(mapDataS.fileName==_mapFileName){ mapDataS.changeTo(_mapFileName, _mapName, _map_maxX, _map_maxY); }
+                mapDataS = new MapDataSave(_mapFileName,_mapName,_map_maxX,_map_maxY,_xrate,_yrate);
+            }else if(mapDataS.fileName==_mapFileName){ mapDataS.changeTo(_mapFileName, _mapName, _map_maxX, _map_maxY,_xrate,_yrate); }
             else if (mapDataS.fileName!=_mapFileName) {
                 Console.WriteLine("create New Map with Name: " + _mapFileName);
                 Console.Write("Yes / No : ");
                 string res = Console.ReadLine();
-                if (res == "Yes") { mapDataS.changeTo(_mapFileName, _mapName, _map_maxX, _map_maxY); }
+                if (res == "Yes") { mapDataS.changeTo(_mapFileName, _mapName, _map_maxX, _map_maxY,_xrate,_yrate); }
                 else if(res=="No"){// res is "No"
                     // do nothing,
                 }else { Console.Write("Invaild response as "+res+" .\nPlease Only Use \"Yes\" or \"No\" .(No Need space and \")"); }
@@ -114,29 +127,29 @@ namespace CommonPart {
                     case 1:
                         float lineWidth = 1;
                         int dx = 5,dy = 5;
-                        Vector xb = new Vector(leftsideX, bottonsideY);
-                        Vector xt = new Vector(leftsideX, topsideY);
+                        Vector xb = new Vector(leftsideX, Math.Min(bottonsideY+lby*MapDataSave.Yrate,bottonsideY));
+                        Vector xt = new Vector(leftsideX, Math.Max(xb.Y-mapDataS.max_y*MapDataSave.Yrate,topsideY));
                         if(lbx%dx == 0) {
-                            d.DrawLine(xb,xt, lineWidth, Color.White, DepthID.Map);
-                        }else { xb.X += (lbx % dx)*mapDataS.Xrate; }
+                            //d.DrawLine(xb,xt, lineWidth, Color.White, DepthID.Map);
+                        }else { xb.X += (lbx % dx)*MapDataSave.Xrate; }
 
-                        for (int i = 0; dx*i < (mapDataS.max_x - lbx) && dx*i < (rightsideX - leftsideX) / mapDataS.Xrate; i++)
+                        for (int i = 0; dx*i <= (mapDataS.max_x - lbx) && dx*i <= (rightsideX - leftsideX) / MapDataSave.Xrate; i++)
                         {
-                            xb.X += dx*mapDataS.Xrate; xt.X = xb.X;
-                            d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
+                            if (dx*i >= -lbx) { d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map); }
+                            xb.X += dx * MapDataSave.Xrate; xt.X = xb.X;
                         }
-                        xb.X = leftsideX; xt.X = rightsideX;
+                        xb.X = Math.Max(leftsideX-lbx*MapDataSave.Xrate,leftsideX); xt.X = Math.Min(leftsideX+(mapDataS.max_x-lbx)*MapDataSave.Xrate,xb.X+mapDataS.max_x*MapDataSave.Xrate);
                         xb.Y = bottonsideY;xt.Y = xb.Y;
-                        if (lby % dx == 0)
+                        if (lby % dy == 0)
                         {
-                            d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
+                            //d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
                         }
-                        else { xb.Y += (xb.Y % dy)*mapDataS.Yrate; }
+                        else { xb.Y += (xb.Y % dy)*MapDataSave.Yrate; }
 
-                        for (int j = 0; dy*j < (mapDataS.max_y-lby) && dy*j < (bottonsideY - topsideY) / mapDataS.Yrate; j++)
+                        for (int j = 0; dy*j <= (mapDataS.max_y-lby) && dy*j <= (bottonsideY - topsideY) / MapDataSave.Yrate; j++)
                         {
-                            xb.Y -= dy*mapDataS.Yrate; xt.Y = xb.Y;
-                            d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
+                            if (dy*j >= -lby) { d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map); }
+                            xb.Y -= dy * MapDataSave.Yrate; xt.Y = xb.Y;
                         }
                         break;
                     default:
@@ -144,7 +157,7 @@ namespace CommonPart {
                 }//switch what kind of draw end
                 #endregion
                 #region draw Unit
-                foreach(Unit u in mapDataS.utList)
+                foreach(Unit u in MapDataSave.utList)
                 {
                     u.draw(d);
                 }
@@ -154,6 +167,24 @@ namespace CommonPart {
 
         }//SceneDraw
 
+        public override void SceneUpdate()
+        {
+            base.SceneUpdate();
+            update_mapDataS();
+        }
+        protected virtual void update_mapDataS()
+        {
+            if (mouse.IsButtomDown(MouseButton.Left) ) {
+                Vector mPos = mouse.MousePosition();
+                if (mPos.X < rightsideX && mPos.X > leftsideX && mPos.Y < bottonsideY && mPos.Y > topsideY)
+                {
+                    Vector o_mPos = mouse.OldMousePosition();
+                    lbx +=(int)( o_mPos.X - mPos.X);
+                    lby +=(int)( mPos.Y - o_mPos.Y); // マップのyは画面の逆になっている。
+                }
+            }
+            MapDataSave.update_map_xy(ltx, lty, rbx, rby);
+        }
         protected override void switch_windowsIcommand(int i)
         {
             switch (windows[i].commandForTop)

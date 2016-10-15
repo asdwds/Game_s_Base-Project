@@ -44,7 +44,8 @@ namespace CommonPart {
         /// このDataBaseなどに使われている読み込み、Editorでのファイルの読み方法が何時の物かの判断に使われる。確実に大きく変化したら更新していくように。
         /// 日付になっている。年月日で, 9月は 09
         /// </summary>
-        public static readonly int ThisSystemVersionNumber = 160910;
+        public static readonly int ThisSystemVersionNumber = 161010;
+        public enum VersionNumber { SixTeenTenTen=161010,};
         /// <summary>
         /// used between UnitType, etc.-- ut1;ut2
         /// </summary>

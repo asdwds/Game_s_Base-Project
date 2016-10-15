@@ -37,6 +37,9 @@ namespace CommonPart
             new RichText("x:" + MousePosition.X + " y:" + MousePosition.Y, FontID.Medium).Draw(d, new Vector(10, Game1._WindowSizeY - 40), DepthID.Message);
         }//SceneDraw
         abstract protected void switch_windowsIcommand(int i);
+        /// <summary>
+        /// baseのupdate()とwindowsのupdate
+        /// </summary>
         public override void SceneUpdate()
         {
             base.SceneUpdate();
