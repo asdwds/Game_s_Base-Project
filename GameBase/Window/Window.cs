@@ -443,26 +443,68 @@ namespace CommonPart
         /// <summary>
         /// これはUnitTypeの設定に応じて書き換えが必要あるでしょう。
         /// </summary>
-        public void setup_unitType_window(UnitType _ut=null)
+        public void setup_unitType_window(UnitType _ut)
+        {
+            if (_ut != null) { ut = _ut; } else { Console.WriteLine("Window: null UnitType"); }
+            switch (ut.genre)
+            {
+                case (int)Unit_Genre.textured:
+                    setup_textured_unitType(ut);
+                    break;
+                case (int)Unit_Genre.animated:
+                    setup_animated_unitType((AnimatedUnitType)ut);
+                    break;
+                default:
+                    Console.WriteLine("Unknown Genre of UnitType! " + ut.genre);
+                    break;
+            }
+            
+        }
+        
+        public void setup_animated_unitType(AnimatedUnitType ut)
         {
             int dy = 20;
             int ny = y;
-            if (_ut != null) { ut = _ut; } else { Console.WriteLine("Window: null UnitType"); }
+            if (ut == null) { Console.WriteLine("Window: null UnitType"); }
             clear_old_data_and_put_in_now_data();
-            /*texture_max_id, //0th
-                texture_min_id, 
-                maxhp,          
-                maxatk,         
-                passableType,   
-                */
             int n = 0;
+            /*genre, //0th         
+            passableType,   
+            */
+            coloums.Add(create_blank(Command.apply_int, x, ny, "genre", utIntList[n].ToString()));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_int, x, ny, "passableType", utIntList[n].ToString()));
+            n++; ny += dy;
+
+            /* texture_name,
+               typename,
+               label,
+            */
+            n = 0;
+            coloums.Add(create_blank(Command.apply_string, x, ny, "texture_name", utStringList[n]));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_string, x, ny, "typename", utStringList[n]));
+            n++; ny += dy;
+            coloums.Add(create_blank(Command.apply_string, x, ny, "label", utStringList[n]));
+            n++; ny += dy;
+        }
+        public void setup_textured_unitType(UnitType ut)
+        {
+            int dy = 20;
+            int ny = y;
+            if (ut == null) { Console.WriteLine("Window: null UnitType"); }
+            clear_old_data_and_put_in_now_data();
+            int n = 0;
+            /* genre // 0th
+            texture_max_id,
+            texture_min_id,         
+            passableType,   
+            */
+            coloums.Add(create_blank(Command.apply_int, x, ny, "genre", utIntList[n].ToString()));
+            n++; ny += dy;
             coloums.Add(create_blank(Command.apply_int, x, ny, "texture_max_id", utIntList[n].ToString()));
             n++; ny += dy;
             coloums.Add(create_blank(Command.apply_int, x, ny, "texture_min_id", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "maxhp", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "maxatk", utIntList[n].ToString()));
             n++; ny += dy;
             coloums.Add(create_blank(Command.apply_int, x, ny, "passableType", utIntList[n].ToString()));
             n++; ny += dy;

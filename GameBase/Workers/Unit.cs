@@ -110,9 +110,9 @@ namespace CommonPart
         public virtual void draw(Drawing d)
         {
             ///MapEditorSceneはこれらをstaticで所持しているので、こう書けてしまう
-            d.Draw(getPosInScreen(MapEditorScene.mapDataS.Xrate, MapEditorScene.mapDataS.Yrate,
-                MapEditorScene.ltx, MapEditorScene.lty, MapEditorScene.leftsideX, MapEditorScene.topsideY),//ここまでが座標
-                DataBase.getTex(unit_type.texture_name), DataBase.getRectFromTextureNameAndIndex(unit_type.texture_name, frame_now), DepthID.Enemy, (float)zoom_rate / 100);
+            d.Draw(getPosInScreen(MapDataSave.Xrate, MapDataSave.Yrate,
+                MapDataSave.ltx, MapDataSave.lty, MapDataSave.leftsideX, MapDataSave.topsideY),//ここまでが座標
+                DataBase.getTex(unit_type.texture_name), DataBase.getRectFromTextureNameAndIndex(unit_type.texture_name, frame_now), DepthID.Enemy, (float)(zoom_rate)/100);
 
         }
     }// Unit end

@@ -6,44 +6,26 @@ using System.Threading.Tasks;
 
 namespace CommonPart
 {
-    class SkillType {
-        public string typename { get; private set; }
-        public string label { get; private set; }
-
-        public SkillType(string _typename, string _label) {
+    class SkillData {
+        public string typename { get; protected set; }
+        public int coolDown { get; protected set; }
+        public SkillData(string _typename, ) {
             typename = _typename;
-            label = _label;
-        }
-    }
-    class EffectType
-    {
-        public string typename { get; private set; }
-        public string label { get; private set; }
-
-        public EffectType(string _typename, string _label)
-        {
-            typename = _typename;
-            label = _label;
         }
     }
     class Skill
     {
-        public SkillType skilltype;
-        public string name;
-        public Skill(string _name, SkillType _skilltype) {
-            name = _name;
-            skilltype = _skilltype;
+        public SkillData skilldata;
+        public string name { get; set; }
+        public int coolDown;
+        public Skill(SkillData _skilldata) {
+            skilldata = _skilldata;
+            name = skilldata.typename;
         }
-    }
-    class Effect
-    {
-        public EffectType effecttype;
-        public string name;
-        public int duration;
-        public Effect(string _name, EffectType _effecttype, int _duration) {
-            name = _name;
-            effecttype = _effecttype;
-            duration = _duration;
+        
+        public void refresh() { coolDown =0; }
+        public void use() {
+            coolDown = skilldata.coolDown;
         }
     }
 }
