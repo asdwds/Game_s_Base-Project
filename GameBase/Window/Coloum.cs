@@ -5,11 +5,14 @@ using Microsoft.Xna.Framework;
 
 namespace CommonPart
 {
+    /// <summary>
+    /// Coloumのx,y座標は絶対であるが、drawに訂正x,yを渡せる
+    /// </summary>
     class Coloum
     {
         #region Variables
         ///<summary>
-        ///absolute Position in the window.
+        ///absolute Position (may be in the window/game screen).
         ///</summary>
         public Vector pos;
         protected PoorString pstr;
@@ -42,7 +45,7 @@ namespace CommonPart
         /// Coloumでは無意味。書き換えの内容に当たる。
         /// </summary>
         public string content;
-        protected const int maximumOfCharsEachLine = 12;
+        protected const int maximumOfCharsEachLine = 18;
         protected const FontID default_fontId = FontID.Medium;
         #endregion
         /// <summary>
@@ -128,6 +131,11 @@ namespace CommonPart
                 new RichText(str, default_fontId, selected ? Color.Yellow : Color.White).Draw(d, pos, DepthID.Message);
             }
         }
+        /// <summary>
+        /// 絶対指定しているColoumの座標をx,yで訂正できる。
+        /// </summary>
+        /// <param name="x">ColoumのXにこのxの値だけ増加させる</param>
+        /// <param name="y">このyの値だけ増加させる</param>
         public virtual void draw(Drawing d,int x, int y)
         {
             if (str != null && str != "")
@@ -140,13 +148,14 @@ namespace CommonPart
         /// set str, content to null
         /// </summary>
         public void clear() {
+            pstr = null;
             str = null;
             content = null;
         } 
         /// <summary>
         /// _w=_h= -1 の時strの文字列の大きさに従う;  = -2 の時,str+contentの文字の大きさに従う
         /// </summary>
-        public void setup_W_H(int _w,int _h,string _c) {
+        public virtual void setup_W_H(int _w,int _h,string _c) {
             w = _w; h = _h;
             PoorString pco = new PoorString(_c, maximumOfCharsEachLine, default_fontId, false);
             if (w == -1)
@@ -171,9 +180,9 @@ namespace CommonPart
                 w += dx;
                 if (pco.CountChar() <= 0)
                 {
-                    w = pco.str.Length * pco.getCharSizeX();
+                    w += pco.str.Length * pco.getCharSizeX();
                 }
-                else { w = maximumOfCharsEachLine * pco.getCharSizeX(); }
+                else { w += maximumOfCharsEachLine * pco.getCharSizeX(); }
             }
             if (h == -2)
             {
@@ -292,7 +301,10 @@ namespace CommonPart
             Vector posNew = new Vector(pos.X + x, pos.Y + y);
             if (!useTexture)
             {
-                base.draw(d);
+                if (str != null && str != "")
+                {
+                    new RichText(str, default_fontId, selected ? Color.Yellow : Color.White).Draw(d, posNew, DepthID.Message);
+                }
                 if (content != null && content != "")
                 {
                     new RichText(content, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);

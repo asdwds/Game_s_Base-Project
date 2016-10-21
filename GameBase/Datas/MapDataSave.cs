@@ -10,7 +10,8 @@ namespace CommonPart
     {
         #region variables concerns FileStream
         private FileStream MapFileStream;
-        public string fileName,mapName;
+        public string fileName;
+        public string mapName;
         /// <summary>
         /// starts from 0 !, maximum (x,y) on the map
         /// </summary>
@@ -24,18 +25,20 @@ namespace CommonPart
         /// マップの1マスの長さはスクリーンのXrate、マップの1マスの高さはスクリーンのYrateだけに相当する。
         /// ect.マップの(0,0)座標はスクリーンの(Xrate長,Yrate高)の長方形にあたる。
         /// </summary>
-        public int Xrate = 4, Yrate = 4;
-
-   /*     /// <summary> 
+        static public float Xrate = 4, Yrate = 4;
+        /// <summary>
+        /// Sceneにおいて、マップの描画が始まる左上の画面座標
+        /// </summary>
+        static public double leftsideX=0,topsideY=0;
+        /// <summary> 
         /// Sceneから更新されるべきのスクリーン上に見えるmapの左上と右下の map上の座標
         /// </summary>
-        public int ltx=0, lty=0, rbx=0, rby=0;
-    //使わないことにした*/
+        static public int ltx=0, lty=0, rbx=0, rby=0;
 
         /// <summary>
         /// unitのListである。
         /// </summary>
-        public List<Unit> utList = new List<Unit>();
+        static public List<Unit> utList = new List<Unit>();
         #endregion
 
         #region constructor
@@ -46,12 +49,13 @@ namespace CommonPart
         /// <param name="_mapName">マップの名前</param>
         /// <param name="mx">マップの最大x座標</param>
         /// <param name="my">マップの最大y座標</param>
-        public MapDataSave(string _fileName,string _mapName,int mx,int my)
+        public MapDataSave(string _fileName,string _mapName,int mx,int my,int _xrate,int _yrate)
         {
             fileName = _fileName;
             mapName = _mapName;
             max_x = mx; max_y = my;
-            initialize();
+            Xrate = _xrate;
+            Yrate = _yrate;
         }
         /// <summary>
         /// !! only you already have the File whose name is _fileName.
@@ -62,16 +66,18 @@ namespace CommonPart
             getToDirectoryDatas();
             if (File.Exists(_fileName))
             {
-                MapFileStream = File.Open(_fileName, FileMode.OpenOrCreate);
+                MapFileStream = File.Open(_fileName, FileMode.OpenOrCreate,FileAccess.Read);
                 MapFileStream.Position = 0;
                 br = new BinaryReader(MapFileStream);
                 int version = br.ReadInt32();
                 switch (version)
                 {
-                    case 160910:
+                    case (int)(DataBase.VersionNumber.SixTeenTenTen):
                         mapName = br.ReadString();
                         max_x = br.ReadInt32();
                         max_y = br.ReadInt32();
+                        Xrate = br.ReadInt32();
+                        Yrate = br.ReadInt32();
                         while (br.BaseStream.Position < br.BaseStream.Length)
                         {
                             bool it_is_int_now = true;
@@ -105,9 +111,12 @@ namespace CommonPart
                         Console.Write("Unknown Datas here");
                         break;
                 }
+            }else
+            {
+                Console.WriteLine(fileName + " is UnFound. Loading Map failed");
             }
 
-        }
+        }// Load MapSaveData 
         #endregion
 
         /// <summary>
@@ -118,12 +127,19 @@ namespace CommonPart
 
         }
 
-        public void changeTo(string _fileName,string _mapName,int mx,int my) {
+        static public void update_map_xy(int _ltx,int _lty,int _rbx,int _rby)
+        {
+            ltx = _ltx;
+            lty = _lty;
+            rbx = _rbx;
+            rby = _rby;
+        }
+        public void changeTo(string _fileName,string _mapName,int mx,int my,int _xrate,int _yrate) {
             mapName = _mapName;
             fileName = _fileName;
             max_x = mx;
             max_y = my;
-
+            Xrate = _xrate; Yrate = _yrate;
         }
         public bool PosInsideMap(Vector pos)
         {
@@ -153,10 +169,10 @@ namespace CommonPart
         /// <summary>
         /// Mapの情報を書き込むファイルを作る
         /// </summary>
-        public void createFile()
+        public void createFiletoWrite()
         {
             getToDirectoryDatas();
-            MapFileStream = File.Open(fileName, FileMode.OpenOrCreate);
+            MapFileStream = File.Open(fileName, FileMode.OpenOrCreate,FileAccess.Write);
         }
 
         public void WriteAll() {
@@ -165,7 +181,7 @@ namespace CommonPart
             bw.Write(DataBase.ThisSystemVersionNumber);
             bw.Write(mapName);
             bw.Write(max_x);bw.Write(max_y);
-
+            bw.Write(Xrate);bw.Write(Yrate);
             #region Write Units
             if (utList.Count > 0) {
                 for(int i = 0; i < utList.Count; i++)

@@ -175,7 +175,17 @@ namespace CommonPart
         public override void draw(Drawing d)
         {
             base.draw(d);
-            foreach (Coloum c in coloums) { c.draw(d,x,y); }
+            for(int i=0;i<coloums.Count;i++) {
+                if (now_coloums_index == i && !coloums[now_coloums_index].selected) {
+                    coloums[now_coloums_index].selected = true;
+                    coloums[i].draw(d, x, y);
+                    coloums[i].selected= false;
+                }
+                else
+                {
+                    coloums[i].draw(d, x, y);
+                }
+            }
         }
         #region update
         public override void update(KeyManager k, MouseManager m)
@@ -183,7 +193,9 @@ namespace CommonPart
             base.update(k, m);
             if (!keyResponseToWindow && !mouseResponseToWindow)
             {
-                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) { deal_with_command(coloums[now_coloums_index].update(k, m)); }
+                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) {
+                    deal_with_command(coloums[now_coloums_index].update(k, m));
+                }
                 else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
             }
         }
@@ -217,20 +229,20 @@ namespace CommonPart
         {
             if (coloums.Count > 0)
             {
-                if (m.IsButtomDownOnce(MouseButton.Left))
+                for (int ii = 0; ii < coloums.Count; ii++)
                 {
-                    for (int ii = 0; ii < coloums.Count; ii++)
+                    if (coloums[ii].PosInside(m.MousePosition(), x, y))
+                    // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
-                        if (coloums[ii].PosInside(m.MousePosition(), x, y))
-                        // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
+                        now_coloums_index = ii;
+                        if (m.IsButtomDownOnce(MouseButton.Left))
                         {
-                            now_coloums_index = ii;
                             selected();
                             return;
                         }
                     }
-                }// if has any coloum or not
-            }
+                }
+            }//if has any coloum or not
             base.update_with_mouse_manager(m);
         }//update_with_mouse_manager end
         #endregion
@@ -360,67 +372,5 @@ namespace CommonPart
             return new UTDutButton(x,y,str,content,c);
         }
     }// class Window_utsList end
-
-    class Window_UnitType : Window_WithColoum
-    {
-        public UnitType ut;
-        public List<int> utIntList = new List<int>();
-        public List<string> utStringList = new List<string>();
-        
-        public Window_UnitType(UnitType _ut, int _x, int _y, int _w, int _h) : base(_x, _y, _w, _h)
-        {
-            ut = _ut;
-            setup_unitType_window();
-        }
-
-        /// <summary>
-        /// これはUnitTypeの設定に応じて書き換えが必要あるでしょう。
-        /// </summary>
-        public void setup_unitType_window(UnitType _ut=null)
-        {
-            int dy = 12;
-            int ny = y;
-            clear_old_data_and_put_in_now_data();
-            if (_ut != null) { ut = _ut; }
-            /*texture_max_id, //0th
-                texture_min_id, 
-                maxhp,          
-                maxatk,         
-                passableType,   
-                */
-            int n = 0;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_max_id", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_min_id", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "maxhp", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "maxatk", utIntList[n].ToString()));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "passableType", utIntList[n].ToString()));
-            n++; ny += dy;
-
-            /* texture_name,
-               typename,
-               label,
-            */
-            n = 0;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "texture_name", utStringList[n]));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "typename", utStringList[n]));
-            n++; ny += dy;
-            coloums.Add(create_blank(Command.apply_int, x, ny, "label", utStringList[n]));
-            n++; ny += dy;
-        }
-
-        public void clear_old_data_and_put_in_now_data() {
-            utIntList.Clear();
-            utStringList.Clear();
-            utIntList.AddRange(ut.getIntData());
-            utStringList.AddRange(ut.getStringData());
-        }
-
-
-    }//class Window_UnitType end
-
+    
 }// namespace CommonPart End

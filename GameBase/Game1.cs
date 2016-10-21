@@ -25,16 +25,16 @@ namespace CommonPart
         SpriteBatch spriteBatch;
         SceneManager scenem;
 
-        public const int WindowSizeX = 960;
-        public const int WindowSizeY = 720;
         internal static readonly Vector WindowSize = new Vector(WindowSizeX, WindowSizeY);
 
         public static bool AvailbleSpeedup = true;
 
-        //倍率込みのサイズ　ふつうは扱わなくてよい　staticなのは苦しまぎれ
+        //ウィンドウのサイズ　ふつうは扱わなくてよい　staticなのは苦しまぎれ
+        public static int WindowSizeX;
+        public static int WindowSizeY;
+        //倍率込みである
         public static int _WindowSizeX;
         public static int _WindowSizeY;
-
 
         [DllImport("kernel32")]
         static extern bool AllocConsole();
@@ -48,8 +48,13 @@ namespace CommonPart
             this.IsMouseVisible = true;
 
             graphics = new GraphicsDeviceManager(this);
-
-            ChangeWindowSize(Settings.WindowStyle);
+            WindowSizeX= DataBase.WindowSlimSizeX;
+            WindowSizeY = DataBase.WindowSlimSizeY;
+            _WindowSizeX = WindowSizeX;
+            _WindowSizeY = WindowSizeY;
+            graphics.PreferredBackBufferWidth = _WindowSizeX;
+            graphics.PreferredBackBufferHeight = _WindowSizeY;
+            graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
     }

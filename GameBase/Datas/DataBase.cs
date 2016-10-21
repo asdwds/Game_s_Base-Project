@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 namespace CommonPart {
 
     public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
-        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115,
+        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll=116,
         openUTD=200, UTDutButtonPressed=201, closeUTD=204,
         openAniD =202, addTex=203,  closeAniD=205,// open animation DataBase, add Texture
         CreateNewMapFile=1001,LoadMapFile=1002,
@@ -44,7 +44,8 @@ namespace CommonPart {
         /// このDataBaseなどに使われている読み込み、Editorでのファイルの読み方法が何時の物かの判断に使われる。確実に大きく変化したら更新していくように。
         /// 日付になっている。年月日で, 9月は 09
         /// </summary>
-        public static readonly int ThisSystemVersionNumber = 160910;
+        public static readonly int ThisSystemVersionNumber = 161010;
+        public enum VersionNumber { SixTeenTenTen=161010,};
         /// <summary>
         /// used between UnitType, etc.-- ut1;ut2
         /// </summary>
@@ -53,6 +54,10 @@ namespace CommonPart {
         /// used between int and string , etc.--int ...ij,string kl...
         /// </summary>
         public static char interval_of_each_datatype = ',';
+        /// <summary>
+        /// used before every array , etc.--int ...ij&int k-z&intA-F;string GH&string I-P...
+        /// </summary>
+        public static char interval_of_array = '&';
         #endregion
 
         #region UTD
@@ -80,17 +85,16 @@ namespace CommonPart {
         private static void tda(string name)
         {
 
-            Directory.SetCurrentDirectory(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
+            /*Directory.SetCurrentDirectory(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
             Console.WriteLine(Directory.GetCurrentDirectory());
             Directory.SetCurrentDirectory(Content.RootDirectory);
             Console.WriteLine(Directory.GetCurrentDirectory());
-            Console.WriteLine(File.Exists(name));
-
-            if (!TexturesDataDictionary.ContainsKey(name))
-            {
-                TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
+            Console.WriteLine(File.Exists(name));*/
+            try {
+                Texture2D t=Content.Load<Texture2D>(name);
+                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
             }
-            else { Console.WriteLine("tda:" + name + " already exists"); }
+            catch { Console.WriteLine("tda: load error" + name); return; }
 
         }
         /// <summary>
@@ -98,7 +102,14 @@ namespace CommonPart {
         /// </summary>
         public static void tdaA(string name)
         {
-            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
+            try
+            {
+                Texture2D t = Content.Load<Texture2D>(name);
+                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+            }
+            catch { Console.WriteLine("tdaA: load error" + name); return; }
+            /*
+             * Directory.SetCurrentDirectory(DirectoryWhenGameStart);
             if (Directory.Exists("Content"))
             {
                 Directory.SetCurrentDirectory("Content");
@@ -115,14 +126,15 @@ namespace CommonPart {
                 Console.WriteLine("tdaA: CurrentDirectory -" + Directory.GetCurrentDirectory());
                 TexturesDataDictionary.Add(name, new Texture2Ddata(Content.Load<Texture2D>(name), name));
             }//Contentを見つけていない場合
+            */
         }
 
         #endregion
         #region Animation
         public static AnimationDataAdvanced defaultBlankAnimationData;
         public const string defaultAnimationNameAddOn = "-stand";
-        public static string aniDFileName = "animationNames.dat";
-        public static Dictionary<string, AnimationDataAdvanced> AnimationAdDictionary = new Dictionary<string, AnimationDataAdvanced>();
+        static string aniDFileName = "animationNames.dat";
+        public static Dictionary<string, AnimationDataAdvanced> AnimationAdDataDictionary = new Dictionary<string, AnimationDataAdvanced>();
 
         /// <summary>
         /// TexturesDataDictionaryが構成できてからこれをcall/使用してください。
@@ -147,7 +159,7 @@ namespace CommonPart {
                     string textureName = aniD_br.ReadString();
                     string preName = aniD_br.ReadString();
                     string nexN = aniD_br.ReadString();
-                    AnimationAdDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
+                    AnimationAdDataDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
                 }
                 catch (EndOfStreamException e) { break; }
             }
@@ -160,7 +172,7 @@ namespace CommonPart {
             aniD_file.Position = 0;
 
             BinaryWriter aniD_bw = new BinaryWriter(aniD_file);
-            foreach (AnimationDataAdvanced ad in AnimationAdDictionary.Values)
+            foreach (AnimationDataAdvanced ad in AnimationAdDataDictionary.Values)
             {
                 aniD_bw.Write(ad.repeat);
                 foreach (int d in ad.getIntsData()) { aniD_bw.Write(d); }
@@ -168,28 +180,6 @@ namespace CommonPart {
             }
             aniD_bw.Close(); aniD_file.Close();
         }
-
-        public static AnimationDataAdvanced getAniD(string name, string addOn = null) {
-            if (addOn == null && AnimationAdDictionary.ContainsKey(name))
-            {
-                return AnimationAdDictionary[name];
-
-            }
-            else if (AnimationAdDictionary.ContainsKey(name + addOn))
-            {
-                return AnimationAdDictionary[name + addOn];
-            }
-
-            if (AnimationAdDictionary.ContainsKey(name + defaultAnimationNameAddOn))
-            {
-                return AnimationAdDictionary[name + defaultAnimationNameAddOn];
-            }
-            else
-            {
-                return defaultBlankAnimationData;
-            }
-        }
-
         #endregion
 
         private static ContentManager Content;
@@ -203,10 +193,10 @@ namespace CommonPart {
         #endregion
 
         #region GameScreen
-        public static readonly int WindowDefaultSizeX = 1280;
-        public static readonly int WindowSlimSizeX = 960;
-        public static readonly int WindowDefaultSizeY = 960;
-        public static readonly int WindowSlimSizeY = 720;
+        public const int WindowDefaultSizeX = 1280;
+        public const int WindowSlimSizeX = 720;
+        public const int WindowDefaultSizeY = 720;
+        public const int WindowSlimSizeY = 480;
 
         #endregion
 
@@ -233,12 +223,13 @@ namespace CommonPart {
             #region anime
             save_Animation();
             #endregion
-            AnimationAdDictionary.Clear();
+            AnimationAdDataDictionary.Clear();
             TexturesDataDictionary.Clear();
 
             Content = null;
         }
         #endregion
+
         #region singleton and setup
         public static DataBase database_singleton = new DataBase();
         //public DataBase get() { return database_singleton; }
@@ -290,6 +281,32 @@ namespace CommonPart {
         }
 
         #region Method
+        public static bool existsAniD(string name, string addOn)
+        {
+            if (addOn == null) return AnimationAdDataDictionary.ContainsKey(name);
+            else return AnimationAdDataDictionary.ContainsKey(name + addOn);
+        }
+        public static AnimationDataAdvanced getAniD(string name, string addOn = null)
+        {
+            if (addOn == null && AnimationAdDataDictionary.ContainsKey(name))
+            {
+                return AnimationAdDataDictionary[name];
+
+            }
+            else if (AnimationAdDataDictionary.ContainsKey(name + addOn))
+            {
+                return AnimationAdDataDictionary[name + addOn];
+            }
+
+            if (AnimationAdDataDictionary.ContainsKey(name + defaultAnimationNameAddOn))
+            {
+                return AnimationAdDataDictionary[name + defaultAnimationNameAddOn];
+            }
+            else
+            {
+                return defaultBlankAnimationData;
+            }
+        }
         public static Texture2D getTex(string name)
         {
             if (TexturesDataDictionary.ContainsKey(name))
@@ -310,7 +327,7 @@ namespace CommonPart {
             int w = TexturesDataDictionary[name].w_single;
             int h = TexturesDataDictionary[name].h_single;
             int x = id % TexturesDataDictionary[name].x_max  *w;
-            int y = id * TexturesDataDictionary[name].x_max * h;
+            int y = id / TexturesDataDictionary[name].x_max * h;
             if (id >= TexturesDataDictionary[name].x_max * TexturesDataDictionary[name].y_max) { x = y = 0; }
             return new Rectangle(x, y, w, h);
         }
@@ -341,14 +358,16 @@ namespace CommonPart {
             int y = id / max_forX * h;
             if (id >= max_forX * max_forY) { x = y = 0; }
             return new Rectangle(x, y, w, h);
-        }*///上のメソッドの別バージョン、多分使わない。
+        }*/
+        //上のメソッドの別バージョン、多分使わない。
         public static UnitType getUnitType(string typename)
         {
-            if (typename == null) {
+            if (typename == null)
+            {
                 if (utDataBase.UnitTypeList.Count > 0) return utDataBase.UnitTypeList[0];
                 else return utDataBase.CreateBlankUt();
             }
-            return utDataBase.getUnitTypeWithName(typename);
+            else { return utDataBase.getUnitTypeWithName(typename); }
         }
         public static int getUTDcount() { return utDataBase.UnitTypeList.Count; }
         #endregion

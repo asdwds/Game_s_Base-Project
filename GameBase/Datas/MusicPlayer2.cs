@@ -279,7 +279,7 @@ namespace CommonPart {
 
             public PlayerSet(string fileName, long begin, long end) {
                 Enable = true;
-                Player = new WasapiOut(AudioClientShareMode.Shared, 1);
+                Player = new WasapiOut(AudioClientShareMode.Shared, 1); 
                 Channel = new WaveChannel32(new Mp3FileReader(fileName));
                 Stream = new WaveStreamWithLoopPoint(Channel, begin, end);
                 Player.Init(Stream);

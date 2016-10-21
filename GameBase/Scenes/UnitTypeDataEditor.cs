@@ -7,9 +7,7 @@ namespace CommonPart {
     /// <summary>
     /// マップ作成のシーンのクラス
     /// </summary>
-    class UTDEditorScene : Scene {
-        static private List<Window> windows = new List<Window>();
-        static public bool ready { get; private set; } = false;
+    class UTDEditorScene : BasicEditorScene {
         static public Window_UnitType window_ut;
 
         public UTDEditorScene(SceneManager s) : base(s)
@@ -19,7 +17,7 @@ namespace CommonPart {
         /// <summary>
         /// once changed this, make sure of data -those saved in file and used to edit
         /// </summary>
-        public void setup_windows() {
+        public override void setup_windows() {
             int nx = 0;int ny = 0;
             int dx = 0; 
             //windows[0] starts
@@ -38,41 +36,13 @@ namespace CommonPart {
             window_ut= new Window_UnitType(DataBase.getUnitType(null),60, ny + 20, 150, 150);
         }
 
-        private void addTex()
-        {
-            Console.WriteLine("Type in the path from Content correctly.");
-            string str=Console.ReadLine();
-            if (DataBase.TexturesDataDictionary.ContainsKey(str))
-            {
-                Console.Write(" already inside the DataBase\n");
-            }else
-            {
-                DataBase.tdaA(str);
-            }
-        }
-
         public override void SceneDraw(Drawing d) {
-
-           
+            base.SceneDraw(d);
         }//SceneDraw
 
-        public override void SceneUpdate() {
-            base.SceneUpdate();
-
-            #region update windows
-            int chosenIndex = 0;
-            for(int i = 0; i < windows.Count; i++)
-            {
-                if (windows[i].PosInside(mouse.MousePosition()) ) {
-                    chosenIndex = i;
-                }else
-                {
-                    windows[i].update();
-                }
-
-            }
-            windows[chosenIndex].update((KeyManager)Input, mouse);
-            switch (windows[chosenIndex].commandForTop)
+        protected override void switch_windowsIcommand(int i)
+        {
+            switch (windows[i].commandForTop)
             {
                 case Command.addTex:
                     addTex();
@@ -81,15 +51,14 @@ namespace CommonPart {
                     break;
                 case Command.UTDutButtonPressed:
                     window_ut.setup_unitType_window(
-                        DataBase.getUnitType(windows[chosenIndex].getNowColoumContent_string())  );
+                        DataBase.getUnitType(windows[i].getNowColoumContent_string())  );
                     break;
                 default:
-                    Console.WriteLine("UTD:window" + chosenIndex + " " + "strangeCommand");
+                    Console.WriteLine("UTD:window" + i + " " + "strangeCommand");
                     break;
 
             }
-            #endregion
-        }//SceneUpdate() end
+        }//switch (windowsI command)
 
     }//class UTDEditorScene end
 
