@@ -21,7 +21,7 @@ namespace CommonPart
             setup_from_BinaryReader(br);
         }
 
-        public void setup_from_BinaryReader(BinaryReader br)
+        private void setup_from_BinaryReader(BinaryReader br)
         {
             if (br == null) { return; }
             if (br.BaseStream.Length > 1)
@@ -42,7 +42,7 @@ namespace CommonPart
                 }//Dictionaryをつくる
             }else { Console.WriteLine("uts is empty"); return; }
         }// end of setup
-        public void load_br_161010(BinaryReader br)
+        private void load_br_161010(BinaryReader br)
         {
             int n = 0;
             while (br.BaseStream.Position < br.BaseStream.Length)
@@ -120,7 +120,7 @@ namespace CommonPart
         #region method
         public UnitType CreateBlankUt()
         {
-            return new UnitType("test " + UnitTypeList.Count.ToString(), DataBase.defaultBlankTextureName, "test",, 0,0);
+            return new UnitType("test " + UnitTypeList.Count.ToString(), DataBase.defaultBlankTextureName, "test", 0,0);
         }
         public void Add(UnitType ut)
         {
@@ -329,11 +329,5 @@ namespace CommonPart
         }
         #endregion
     }
-    class SkilledUnitType : UnitType
-    {
-        public SkilledUnitType(string _typename,string _texture_name)
-        {
 
-        }
-    }
 }
