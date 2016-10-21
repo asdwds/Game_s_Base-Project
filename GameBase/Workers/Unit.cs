@@ -19,7 +19,6 @@ namespace CommonPart
         /// usually it is 100, which is 100 % rate
         /// </summary>
         public int zoom_rate;
-        public int hp;
         public UnitType unit_type { get; protected set; }
 
         public string name;
@@ -32,14 +31,11 @@ namespace CommonPart
         #endregion
 
         #region constructor
-        public Unit(int _x_index, int _y_index, UnitType _unit_type, string _name):this(_x_index, _y_index, _unit_type, _name,_unit_type.maxhp)
-        { }
-        public Unit(int _x_index, int _y_index, UnitType _unit_type, string _name,int _hp)
+        public Unit(int _x_index, int _y_index, UnitType _unit_type, string _name)
         {
             x_index = _x_index;
             y_index = _y_index;
             unit_type = _unit_type;
-            hp = _hp;
             name = _name;
         }
         public Unit(int _x_index, int _y_index, UnitType _unit_type) :this(_x_index, _y_index,_unit_type, _unit_type.typename)

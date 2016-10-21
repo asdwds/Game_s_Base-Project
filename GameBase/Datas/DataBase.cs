@@ -133,8 +133,8 @@ namespace CommonPart {
         #region Animation
         public static AnimationDataAdvanced defaultBlankAnimationData;
         public const string defaultAnimationNameAddOn = "-stand";
-        public static string aniDFileName = "animationNames.dat";
-        public static Dictionary<string, AnimationDataAdvanced> AnimationAdDictionary = new Dictionary<string, AnimationDataAdvanced>();
+        static string aniDFileName = "animationNames.dat";
+        public static Dictionary<string, AnimationDataAdvanced> AnimationAdDataDictionary = new Dictionary<string, AnimationDataAdvanced>();
 
         /// <summary>
         /// TexturesDataDictionaryが構成できてからこれをcall/使用してください。
@@ -159,7 +159,7 @@ namespace CommonPart {
                     string textureName = aniD_br.ReadString();
                     string preName = aniD_br.ReadString();
                     string nexN = aniD_br.ReadString();
-                    AnimationAdDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
+                    AnimationAdDataDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
                 }
                 catch (EndOfStreamException e) { break; }
             }
@@ -172,7 +172,7 @@ namespace CommonPart {
             aniD_file.Position = 0;
 
             BinaryWriter aniD_bw = new BinaryWriter(aniD_file);
-            foreach (AnimationDataAdvanced ad in AnimationAdDictionary.Values)
+            foreach (AnimationDataAdvanced ad in AnimationAdDataDictionary.Values)
             {
                 aniD_bw.Write(ad.repeat);
                 foreach (int d in ad.getIntsData()) { aniD_bw.Write(d); }
@@ -180,28 +180,6 @@ namespace CommonPart {
             }
             aniD_bw.Close(); aniD_file.Close();
         }
-
-        public static AnimationDataAdvanced getAniD(string name, string addOn = null) {
-            if (addOn == null && AnimationAdDictionary.ContainsKey(name))
-            {
-                return AnimationAdDictionary[name];
-
-            }
-            else if (AnimationAdDictionary.ContainsKey(name + addOn))
-            {
-                return AnimationAdDictionary[name + addOn];
-            }
-
-            if (AnimationAdDictionary.ContainsKey(name + defaultAnimationNameAddOn))
-            {
-                return AnimationAdDictionary[name + defaultAnimationNameAddOn];
-            }
-            else
-            {
-                return defaultBlankAnimationData;
-            }
-        }
-
         #endregion
 
         private static ContentManager Content;
@@ -245,12 +223,13 @@ namespace CommonPart {
             #region anime
             save_Animation();
             #endregion
-            AnimationAdDictionary.Clear();
+            AnimationAdDataDictionary.Clear();
             TexturesDataDictionary.Clear();
 
             Content = null;
         }
         #endregion
+
         #region singleton and setup
         public static DataBase database_singleton = new DataBase();
         //public DataBase get() { return database_singleton; }
@@ -302,6 +281,32 @@ namespace CommonPart {
         }
 
         #region Method
+        public static bool existsAniD(string name, string addOn)
+        {
+            if (addOn == null) return AnimationAdDataDictionary.ContainsKey(name);
+            else return AnimationAdDataDictionary.ContainsKey(name + addOn);
+        }
+        public static AnimationDataAdvanced getAniD(string name, string addOn = null)
+        {
+            if (addOn == null && AnimationAdDataDictionary.ContainsKey(name))
+            {
+                return AnimationAdDataDictionary[name];
+
+            }
+            else if (AnimationAdDataDictionary.ContainsKey(name + addOn))
+            {
+                return AnimationAdDataDictionary[name + addOn];
+            }
+
+            if (AnimationAdDataDictionary.ContainsKey(name + defaultAnimationNameAddOn))
+            {
+                return AnimationAdDataDictionary[name + defaultAnimationNameAddOn];
+            }
+            else
+            {
+                return defaultBlankAnimationData;
+            }
+        }
         public static Texture2D getTex(string name)
         {
             if (TexturesDataDictionary.ContainsKey(name))
@@ -322,7 +327,7 @@ namespace CommonPart {
             int w = TexturesDataDictionary[name].w_single;
             int h = TexturesDataDictionary[name].h_single;
             int x = id % TexturesDataDictionary[name].x_max  *w;
-            int y = id * TexturesDataDictionary[name].x_max * h;
+            int y = id / TexturesDataDictionary[name].x_max * h;
             if (id >= TexturesDataDictionary[name].x_max * TexturesDataDictionary[name].y_max) { x = y = 0; }
             return new Rectangle(x, y, w, h);
         }

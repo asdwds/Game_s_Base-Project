@@ -43,7 +43,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Datas\SkillAndEffect.cs" />
+    <Compile Include="Datas\SkillData.cs" />
     <Compile Include="Datas\DataBase.cs" />
     <Compile Include="Datas\HitShape.cs" />
     <Compile Include="Datas\MusicPlayer.cs" />
@@ -76,10 +76,13 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\AnimationColoum.cs" />
     <Compile Include="Window\Coloum.cs" />
     <Compile Include="Window\PoorText.cs" />
     <Compile Include="Window\Scroll.cs" />
     <Compile Include="Window\Window.cs" />
+    <Compile Include="Window\Window_Animation.cs" />
+    <Compile Include="Window\Window_UnitType.cs" />
     <Compile Include="Workers\Tile.cs" />
     <Compile Include="Workers\Unit.cs" />
     <Compile Include="Workers\Worker.cs" />
