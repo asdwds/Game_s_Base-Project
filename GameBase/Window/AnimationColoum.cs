@@ -27,7 +27,15 @@ namespace CommonPart
         }
         #endregion
 
-        #region method 
+        #region method
+        /// <summary>
+        /// animationのループ源か自分の最初に戻る
+        /// </summary>
+        public void replay()
+        {
+            animationAdvanced.backToTop();
+        }
+
         /// <summary>
         /// _cの指定に従い、AnimationColoumのwidthとheightを作り上げる。もしくはw,hをそのまま指定する.
         /// </summary>

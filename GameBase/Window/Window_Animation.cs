@@ -12,6 +12,7 @@ namespace CommonPart
     class Window_Animation : Window_WithColoum
     {
         string aAdData_name;
+        AnimationDataAdvanced ad { get { return DataBase.getAniD(aAdData_name); } }
         /// <summary>
         /// アニメーションデータの名前から作れたAnimatioAdvanced,を含むcoloumsのwindow
         /// </summary>
@@ -25,18 +26,53 @@ namespace CommonPart
             aAdData_name = ad_name;
             setup_window();
         }
+        /// <summary>
+        /// このclassのcommand処理はこのwindow内部の処理を行い、後はSceneに任せたいためbase.を呼ぶ
+        /// </summary>
+        /// <param name="c"></param>
+        protected override void deal_with_command(Command c)
+        {
+            switch (c)
+            {
+                case Command.tru_fals:
 
+                    break;
+                case Command.playAnimation:
+                    ((AnimationColoum)coloums[0]).play();
+                    break;
+            }
+            base.deal_with_command(c);
+        }
         public void setup_window()
         {
-            AddColoum(new AnimationColoum(10,10,aAdData_name,aAdData_name,Command.nothing) );
+            //repeat,min,max,length,frames,name,texname,pre,next
+            int nx = 10, ny = 200; int dy = 24;
+            AddColoum(new AnimationColoum(nx, ny, aAdData_name, aAdData_name, Command.replayAnimation));
+
+            nx = 10; ny = 10;
+            AddColoum(new Button(nx, ny, "repeat:", ad.repeat.ToString(), Command.tru_fals, false));
+            ny += dy;
+            AddColoum(new Blank(nx, ny, "min_tex:", ad.min_texture_index.ToString(), Command.apply_int));
+            ny += dy;
+            AddColoum(new Blank(nx, ny, "max_tex:", ad.max_texture_index.ToString(), Command.apply_int));
+            ny += dy;
+            AddColoum(new Coloum(nx, ny, "frames:",  Command.nothing));
+            ny += dy;
+            for(int i = 0; i < ad.frames.Length;i++) {
+                AddColoum(new Blank(nx, ny, i.ToString()+":", ad.frames[i].ToString(), Command.apply_int));
+                ny += dy;
+            }
+            nx = 100; ny = 10;
+            AddColoum(new Blank(nx, ny, "name:",ad.animationDataName, Command.apply_string));
+            ny += dy;
+            AddColoum(new Blank(nx, ny, "texname:", ad.texture_name, Command.apply_string));
+            ny += dy;
+            AddColoum(new Blank(nx, ny, "pre_ani_name:", ad.pre_animation_name, Command.apply_string));
+            ny += dy;
+            AddColoum(new Blank(nx, ny, "next_ani_name:", ad.next_animation_name, Command.apply_string));
+            ny += dy;
+
         }
-        public override void update(KeyManager k, MouseManager m)
-        {
-            base.update(k, m);
-        }
-        public override void draw(Drawing d)
-        {
-            ((AnimationColoum)coloums[0]).draw(d, x, y);
-        }
+
     }
 }

@@ -163,6 +163,10 @@ namespace CommonPart
         {
             return new Button(x, ny, str, content, c, useTexture );
         }
+        /// <summary>
+        /// このclassのコマンド処理はwindow内での処理が済んだ前提で、Sceneなどにコマンドを伝達するためにある。
+        /// </summary>
+        /// <param name="c">処理してほしいコマンド</param>
         protected virtual void deal_with_command(Command c)
         {
             if (c != Command.nothing)
@@ -256,6 +260,9 @@ namespace CommonPart
         private void left_coloum() { keyResponseToWindow = mouseResponseToWindow = true; }
     }//class Window_WithColoum end
 
+    /// <summary>
+    /// 未使用
+    /// </summary>
     abstract class WindowAsPages
     {
         public int x, y;
