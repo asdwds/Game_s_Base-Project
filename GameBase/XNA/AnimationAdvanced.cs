@@ -255,6 +255,30 @@ namespace CommonPart
         protected bool repeat=false;
         public AnimationAdvanced(AnimationDataAdvanced d):base(d)// data= dとしているだけ。
         { data = d; repeat = data.repeat; }
+
+        /// <summary>
+        /// アニメーションのループをたどり、最初のアニメーションを見つけるか、このアニメーションにまたループして戻っている場合は自分を見つける。
+        /// </summary>
+        public void backToTop() {
+            if (data.pre_animation_name == null) {
+                frame = 0;
+                return;
+            }
+            string data2_name=data.pre_animation_name; // このループの最初のアニメーションを見つけて記録するための変数
+            string data1_name = data.animationDataName;//この変数は上の変数の次のアニメーションの名前を記録している。
+            while (data2_name != null && DataBase.getAniD(data2_name) != null &&
+                    DataBase.getAniD(data2_name).next_animation_name == data1_name )
+            {
+                data1_name = data2_name;
+                data2_name = DataBase.getAniD(data2_name).pre_animation_name;
+                if (data2_name == data.animationDataName) { break; }
+            }
+            if (data2_name != data.animationDataName)
+            {
+                data = DataBase.getAniD(data2_name);
+            }
+            frame = 0;
+        }
         /// <summary>
         /// Animationではvirtual修辞していないので、newのupdateになるが、これはAnimationの配列では正しく動かないので、
         /// できればAnimationAdvancedの配列にしてください。

@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework;
 namespace CommonPart {
 
     public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
-        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll=116,
+        button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll=116,tru_fals=117,
         openUTD=200, UTDutButtonPressed=201, closeUTD=204,
-        openAniD =202, addTex=203,  closeAniD=205,// open animation DataBase, add Texture
+        openAniD =202, addTex=203,  closeAniD=205, playAnimation=206,// open animation DataBase, add Texture,play animation,
         CreateNewMapFile=1001,LoadMapFile=1002,
     };
 

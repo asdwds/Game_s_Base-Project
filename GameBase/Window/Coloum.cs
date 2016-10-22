@@ -124,6 +124,8 @@ namespace CommonPart
             return reply;
         }
         #endregion
+
+        #region draw
         public virtual void draw(Drawing d)
         {
             if (str != null && str != "")
@@ -144,6 +146,8 @@ namespace CommonPart
                 new RichText(str, default_fontId, selected ? Color.Yellow : Color.White).Draw(d, posNew, DepthID.Message);
             }
         }
+        #endregion
+
         /// <summary>
         /// set str, content to null
         /// </summary>

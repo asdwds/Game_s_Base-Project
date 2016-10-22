@@ -283,7 +283,7 @@ namespace CommonPart
         public AnimatedUnitType(string _typename, string _texture_name, string _label)
             :base(_typename,_texture_name,_label)
         {
-            genre = (int)(Unit_Genre.animated);
+            genre += (int)(Unit_Genre.animated);
         }
         public AnimatedUnitType(List<int> intdatas, List<string> stringdatas, int id)
             :this(stringdatas[1], stringdatas[0], stringdatas[2])
