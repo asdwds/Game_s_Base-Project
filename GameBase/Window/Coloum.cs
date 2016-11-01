@@ -15,7 +15,7 @@ namespace CommonPart
         ///absolute Position (may be in the window/game screen).
         ///</summary>
         public Vector pos;
-        protected PoorString pstr;
+        protected PoorString pstr=null;
         /// <summary>
         /// Coloum' text explanation
         /// </summary>
@@ -35,7 +35,7 @@ namespace CommonPart
         /// <summary>
         /// default distance that between str and content. is used in Blank
         /// </summary>
-        protected const int default_distance = 5;
+        protected const int default_distance = 10;
         /// <summary>
         /// Coloum size
         /// </summary>
@@ -44,7 +44,7 @@ namespace CommonPart
         /// <summary>
         /// Coloumでは無意味。書き換えの内容に当たる。
         /// </summary>
-        public string content;
+        public string content =null;
         protected const int maximumOfCharsEachLine = 18;
         protected const FontID default_fontId = FontID.Medium;
         #endregion
@@ -71,8 +71,8 @@ namespace CommonPart
         public virtual Command update(KeyManager k, MouseManager m)
         {
             Command c = Command.nothing;
+            if (k != null && selected) { c = update_with_key_manager(k); }
             if (m != null) { c= update_with_mouse_manager(m); }
-            if (k != null && selected) { c= update_with_key_manager(k); }
             return c;
         }
         public virtual Command update_with_key_manager(KeyManager k) {
@@ -151,7 +151,7 @@ namespace CommonPart
         /// <summary>
         /// set str, content to null
         /// </summary>
-        public void clear() {
+        public virtual void clear() {
             pstr = null;
             str = null;
             content = null;
@@ -161,40 +161,41 @@ namespace CommonPart
         /// </summary>
         public virtual void setup_W_H(int _w,int _h,string _c) {
             w = _w; h = _h;
-            PoorString pco = new PoorString(_c, maximumOfCharsEachLine, default_fontId, false);
+            #region type 1- only str
             if (w == -1)
             {
-                if (pstr.CountChar() <= 0)
-                {
-                    w = pstr.str.Length * pstr.getCharSizeX();
-                }
-                else { w = maximumOfCharsEachLine * pstr.getCharSizeX(); }
+                w = pstr.Width;
             }
             if (h == -1)
             {
                 h = (pstr.CountChar() + 1) * pstr.getCharSizeY();
             }
-            if (w == -2)
+            #endregion
+            #region type 2- str and content
+            if (_c != null)
             {
-                if (pstr.CountChar() <= 0)
+                PoorString pco = new PoorString(_c, maximumOfCharsEachLine, default_fontId, false);
+                if (w==-2)
                 {
-                    w = pstr.str.Length * pstr.getCharSizeX();
+                    w = pstr.Width;
+                    w += pco.Width;
                 }
-                else { w = maximumOfCharsEachLine * pstr.getCharSizeX(); }
+                if (h == -2)
+                {
+                    h = (pstr.CountChar() + 1) * pstr.getCharSizeY();
+                    h = Math.Max(h,pco.Height);
+                    h += dy;
+                }
+            }else if (w == -2) // content is null
+            {
+                w = pstr.Width;
                 w += dx;
-                if (pco.CountChar() <= 0)
-                {
-                    w += pco.str.Length * pco.getCharSizeX();
-                }
-                else { w += maximumOfCharsEachLine * pco.getCharSizeX(); }
             }
-            if (h == -2)
-            {
-                h = ( Math.Min(pstr.CountChar(),pco.CountChar()) + 1) * pco.getCharSizeY();
-                h += dy;
-            }
-        }
-    }
+            #endregion
+            if(w>0 && w < 70) { w = 70; }
+            //Console.WriteLine(str + ":" + w + " " + h);
+        }//setup_W_H end
+    }// class Coloum end
 
     class Blank : Coloum
     {
@@ -208,7 +209,8 @@ namespace CommonPart
         /// <param name="_reply"></param>
         /// <param name="_w">-1でstrによって、-2でstrとcontentのサイズによって 自身のw,hを求める</param>
         /// <param name="_dx">名前と内容の距離差</param>
-        public Blank(int _x, int _y, string _str, string _content, Command _reply, int _w=-2,int _h=-2,int _dx = default_distance, int _dy = 0) : base(_x, _y, _str, _reply,_w,_h,_content)
+        public Blank(int _x, int _y, string _str, string _content, Command _reply, 
+            int _w=-2,int _h=-2,int _dx = default_distance, int _dy = 0) : base(_x, _y, _str, _reply,_w,_h,_content)
         {
             content = _content;
             dx = _dx;
@@ -239,12 +241,17 @@ namespace CommonPart
         }
         public override Command is_applied()
         {
+            if (reply == Command.nothing) { return reply; }
             while (true) {
                 Console.WriteLine(str);
                 Console.Write("changes to : ");
                 content = Console.ReadLine();
                 int ap;
-                if (content == DataBase.BlankDefaultContent || (reply==Command.apply_int && int.TryParse(content, out ap) ) || content!=""    ){
+                if (content == DataBase.BlankDefaultContent || 
+                    ( (reply==Command.apply_int || reply==Command.specialIntChange1||reply==Command.specialIntChange2) 
+                    && int.TryParse(content, out ap) ) 
+                    || content!="" )
+                {
                     break;
                 }
 
@@ -265,7 +272,8 @@ namespace CommonPart
         /// Texture画像内の区画の番号。
         /// </summary>
         protected int TexIndex ;
-        public Button(int _x, int _y, string _str, string _content, Command _reply, bool _useTexture, int _dx = default_distance, int _dy = 0,int index=0) : base(_x, _y, _str, _reply)
+        public Button(int _x, int _y, string _str, string _content, Command _reply, bool _useTexture, int _dx = default_distance, int _dy = 0,int index=0) 
+            : base(_x, _y, _str, _reply)
         {
             useTexture = _useTexture;
             content = _content;
@@ -278,6 +286,25 @@ namespace CommonPart
             else { setup_W_H(-2, -2, content); }
         }
 
+        public override Command is_applied()
+        {
+            switch (reply)
+            {
+                case Command.tru_fals:
+                    if (content == true.ToString()) { content = false.ToString(); }
+                    else { content = true.ToString(); }
+                    break;
+                case Command.button_off:
+                    reply = Command.button_on;
+                    break;
+                case Command.button_on:
+                    reply = Command.button_off;
+                    break;
+                default:
+                    break;
+            }
+            return base.is_applied();
+        }
         public override void draw(Drawing d)
         {
             if (!useTexture)
@@ -311,7 +338,7 @@ namespace CommonPart
                 }
                 if (content != null && content != "")
                 {
-                    new RichText(content, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
+                    new RichText(content, FontID.Medium, selected ? Color.Yellow : Color.White).Draw(d, new Vector(posNew.X +pstr.Width+dx, posNew.Y + dy), DepthID.Message);
                 }
             }
             else
@@ -322,7 +349,7 @@ namespace CommonPart
                 }
                 if (content != null && content != "")
                 {
-                    new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X + dx, posNew.Y + dy), DepthID.Message);
+                    new RichText(content, FontID.Medium, Color.White).Draw(d, new Vector(posNew.X + pstr.Width + dx, posNew.Y + dy), DepthID.Message);
                 }
             }
         }

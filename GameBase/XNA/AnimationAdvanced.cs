@@ -135,6 +135,10 @@ namespace CommonPart
         /// </summary>
         /// <param name="_min_index">アニメーションの最初のコマが使う画像ファイル上のコマ番号,0から始まる</param>
         private AnimationDataAdvanced(string _name,int _min_index, string _texture_name,bool _repeat) {
+            animationDataName = _name;
+            texture_name = _texture_name;
+            min_texture_index = _min_index;
+            repeat = _repeat;
             #region from texture2Ddata 
             Texture2Ddata td = DataBase.getTexD(texture_name);
             if (td == null) { xNum = yNum = width = height = -1; Console.Write("Invaild TextureName: " + texture_name); }
@@ -156,10 +160,10 @@ namespace CommonPart
         /// </summary>
         /// <param name="f">今のアニメーションを必要とする物体のframe</param>
         /// <param name="d"></param>
-        /// <param name="pos"></param>
+        /// <param name="pos">画像の左上の位置。回転はこれを中心としている。</param>
         /// <param name="depth"></param>
         /// <param name="size"></param>
-        /// <param name="angle"></param>
+        /// <param name="angle">与えられたposを中心に回転する</param>
         public override void Draw(int f, Drawing d, Vector2 pos, DepthID depth, float size = 1, float angle = 0)
         {
             int x = getIndexNow(f);
@@ -171,6 +175,21 @@ namespace CommonPart
             d.Draw(pos, DataBase.getTex(texture_name), new Rectangle(x % xNum * width, x / xNum * height, width, height), depth, size, angle);
         }
         #endregion
+
+        /// <summary>
+        /// DataBaseのAnimationADdataDictionaryの存在が前提になっている. そこから同名アニメーションデータのコピーを作る
+        /// </summary>
+        /// <returns></returns>
+        static public AnimationDataAdvanced getAcopyFromDataBaseByName(string _ani_name) {
+            if (DataBase.existsAniD(_ani_name, null)) {
+                AnimationDataAdvanced aDad = DataBase.getAniD(_ani_name);
+                return new AnimationDataAdvanced(_ani_name + "_copy", aDad.frames, aDad.min_texture_index, aDad.texture_name, aDad.repeat);
+            }
+            else {
+                Console.WriteLine("copy failed. Not Found In Dictionary.");
+                return new AnimationDataAdvanced(_ani_name + "_copy",1000,1,DataBase.defaultBlankTextureName); 
+            }
+        }
 
         /// <summary>
         /// このアニメーションデータの続き/前の　アニメーションデータを登録させる。
@@ -286,11 +305,15 @@ namespace CommonPart
         public new void Update()
         {
             if (animateWithUpdate) frame++;
-            if (data.getIndexNow(frame)>data.max_texture_index)
+            if (frame>data.totalFrame)
             {
-                if (repeat) { frame = 0; }
+                //Console.WriteLine(data.animationDataName+"come to the last frame!");
+                if (repeat && data.next_animation_name==AnimationDataAdvanced.notAnimationName) {
+
+                    frame = 0;
+                }
                 else {
-                    if (data.next_animation_name != null)
+                    if (data.next_animation_name != null && data.next_animation_name != AnimationDataAdvanced.notAnimationName)
                     {
                         data = DataBase.getAniD(data.next_animation_name);
                         frame = 0;

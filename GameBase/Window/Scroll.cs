@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace CommonPart
 {
     /// <summary>
     /// Scrollをwindowのcoloumsにいれて、update()していけば上手く作動するようにしたい。
-    /// またこれはwindowみたいにcoloumを持ち、scroll barもある
+    /// またこれはwindowみたいにcoloumを持ち、scroll barもある.contentは今選択している内容
     /// </summary>
     class Scroll : Coloum
     {
@@ -21,29 +19,36 @@ namespace CommonPart
         public double percent = 0;
 
         /// <summary>
-        /// 今のスクロールbarの位置.xを取得できる/スクロールbarの位置.xを設定できる
+        /// 今のスクロールbarの位置のxを取得できるandスクロールbarの位置のxを設定できる
         /// </summary>
-        public double nx { get { if (vertical) return pos.X + dx; else return pos.X + dx + w * percent; }
+        public double nx { get { if (vertical) return pos.X + dx; else return pos.X + dx + (w-barlength) * percent; }
             protected set
             {
                 if (vertical) { //pos.X = value+dx;
                 } else
                 {
-                    if (value >= pos.X + dx + barlength) { percent = barlength / w; }
-                    else { percent = (value - dx - pos.X) / w; }
+                    if (value >= w + pos.X + dx -barlength) { percent = 1; }
+                    else { percent = (value - dx - pos.X) / (w-barlength);
+                        if(percent > 1) { percent = 1; }
+                        if(percent < 0) { percent = 0; }
+                    }
                 }
             }
         }
         /// <summary>
-        /// 今のスクロールbarの位置.yを取得できる/スクロールbarの位置.yを設定できる
+        /// 今のスクロールbarの位置.yを取得できandスクロールbarの位置.yを設定できる
         /// </summary>
-        public double ny { get { if (vertical) return pos.Y + dy; else return pos.Y + dy + (h - barlength) * percent; }
+        public double ny { get { if (!vertical) return pos.Y + dy; else return pos.Y + dy + (h - barlength) * percent; }
             protected set {
                 if (!vertical) {   //pos.Y = value;
                 } else
                 {
-                    if (value >= pos.Y + dy + barlength) { percent = barlength / h; }
-                    else { percent = (value - dy - pos.Y) / h; }
+                    if (value >= pos.Y + dy +h- barlength) { percent = 1; }
+                    else { percent = (value - dy - pos.Y) / (h-barlength);
+                        if (percent > 1) { percent = 1; }
+                        if (percent < 0) { percent = 0; }
+                    }
+
                 }
             }
         }
@@ -54,11 +59,11 @@ namespace CommonPart
             get {
                 if (vertical) {
                     if (coloums.Count > visiable_n) return visiable_n * h / (coloums.Count + 1);
-                    else { return 0; }
+                    else { return h; }
                 } else
                 {
                     if (coloums.Count > visiable_n) return visiable_n * w / (coloums.Count + 1);
-                    else { return 0; }
+                    else { return w; }
                 }
             }
         }
@@ -71,14 +76,30 @@ namespace CommonPart
         /// </summary>
         public int now_coloum_index = -1;//-1の時はスクロールbarを操っている。
         const int scrollbar_index = -1;
+        protected int now_firstVisiableIndex { get {
+                if ( (int)((coloums.Count - visiable_n) * percent)<0)
+                {
+                    return 0;
+                }else
+                {
+                    return (int)((coloums.Count - visiable_n) * percent);
+                }
+            }//get end
+        }
+        protected int now_lastVisiableIndex { get { return -1+Math.Min(coloums.Count, (int)((coloums.Count - visiable_n) * percent) + visiable_n); } }
+
         /// <summary>
         /// 画面上に見えるこのスクロールの要項の数
         /// </summary>
         public int visiable_n;
         /// <summary>
-        /// このスクロールにある全要項
+        /// このスクロールにある全要項.ここのcoloumはscroll内部での座標を持たねばならない
         /// </summary>
-        public List<Coloum> coloums;
+        public List<Coloum> coloums = new List<Coloum>();
+        /// <summary>
+        /// 要項の総数
+        /// </summary>
+        public int Count { get { return coloums.Count; } }
         /// <summary>
         /// 黙認の最小スクロールbarの大きさ。
         /// </summary>
@@ -87,7 +108,7 @@ namespace CommonPart
         /// <summary>
         /// タイトルとscrollの距離である. strはタイトルになる
         /// </summary>
-        const int default_title_dx = 5, default_title_dy = 10;
+        const int default_title_dx = 5, default_title_dy = 25;
         protected bool vertical
         {
             get
@@ -128,17 +149,32 @@ namespace CommonPart
                 else { w = default_size * coloums.Count; }
             }
         }
-
+        public void clear_all_coloums()
+        {
+            coloums.Clear();
+        }
+        /// <summary>
+        /// make this scroll completely useless
+        /// </summary>
+        public override void clear()
+        {
+            clear_all_coloums();
+            coloums = null;
+            visiable_n = 0;
+            percent = 0; w = h = 0;
+            base.clear();
+        }
         public override bool PosInside(Vector v, int ax, int ay) {
+            if (coloums == null) { return false; }
             if (v.X < nx + ax + w && v.X >= nx + ax - 1 && v.Y < ny + ay + h && v.Y >= ny + ay - 1)
             {
                 now_coloum_index = scrollbar_index;
                 return true;
             }
             else {
-                for (int i = (int)(percent * coloums.Count); i < (int)(percent * coloums.Count) + visiable_n; i++)
+                for (int i = now_firstVisiableIndex; i <=now_lastVisiableIndex; i++)
                 {
-                    if (coloums[i].PosInside(v, (int)(ax + nx), (int)(ay + ny)))
+                    if (coloums[i].PosInside(v, (int)(ax - nx + 2 * (dx + pos.X)), (int)(ay - ny + 2 * (dy + pos.Y)) ) )
                     {
                         select_index(i);
                         return true;
@@ -170,17 +206,18 @@ namespace CommonPart
             {
                 if (now_coloum_index == scrollbar_index && m.IsButtomDown(MouseButton.Left) ) {
                     // scroll bar の移動
-                    if (vertical) { ny += m.MousePosition().Y - m.OldMousePosition().Y; }
+                    if (vertical) { ny += m.MousePosition().Y - m.OldMousePosition().Y;
+                    }
                     else { nx += m.MousePosition().X - m.OldMousePosition().X; }
-                    reply = Command.Scroll;
-
+                    reply = Command.Scroll; // Scrollを返しても、leftcoloum()にならないように書いているかな？
                 }
                 else if(m.IsButtomDownOnce(MouseButton.Left)) // Mouseがscroll全体の中に入っているかは、windowで判断している。
                 {
                     // とある要項を選択した。
                     content = coloums[now_coloum_index].content;
-                    reply = coloums[now_coloum_index].reply;
-                } 
+                    reply = coloums[now_coloum_index].is_applied();
+                    //Console.WriteLine("scroll-coloums" + now_coloum_index + " " + content);
+                }
             }
             return reply;
         }
@@ -188,10 +225,16 @@ namespace CommonPart
         public override void draw(Drawing d,int ax,int ay)
         {
             base.draw(d, ax, ay);
-            for(int i = (int)(coloums.Count*percent); i < (int)(coloums.Count * percent)+visiable_n; i++)
+            if (coloums != null)
             {
-                coloums[i].draw(d,(int)(ax-nx),(int)(ay-ny));
+                d.DrawBox(new Vector2((float)nx + ax, (float)ny + ay), vertical ? new Vector2(w, barlength) : new Vector2(barlength, h)
+                    , Color.CadetBlue, DepthID.Message);
+                for (int i = now_firstVisiableIndex; i < Math.Min(coloums.Count, (int)((coloums.Count - visiable_n) * percent) + visiable_n); i++)
+                {
+                    coloums[i].draw(d, (int)(ax - nx + 2 * (dx + pos.X)), (int)(ay - ny + 2 * (dy + pos.Y)));
+                }
             }
+            //Console.WriteLine("draw "+(ax-nx)+" "+(ay-ny) );
         }
         public override void draw(Drawing d) { draw(d, 0, 0); }
     }

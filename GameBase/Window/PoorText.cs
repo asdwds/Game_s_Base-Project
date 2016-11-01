@@ -53,7 +53,7 @@ namespace CommonPart
         public readonly int max_number_of_chars;
         
         public int Width { get { return Math.Min(max_number_of_chars, str.Length) * getCharSizeX(); } }
-
+        public int Height { get { return (CountChar() + 1) * getCharSizeY(); } }
         /// <summary>
         /// 描画用フォント
         /// </summary>
