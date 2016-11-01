@@ -45,11 +45,11 @@ namespace CommonPart {
             setup_windows();
         }
 
-        public override void setup_windows() {
+        protected override void setup_windows() {
             int nx = 0;int ny = 0;
             int dx = 0; int dy = 25;
             //windows[0] starts
-            windows.Add(new Window_WithColoum(0, 0, 240, 180));
+            windows.Add(new Window_WithColoum(0, 0, 240, 210));
             
             ((Window_WithColoum) windows[0] ).AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
             ny += dy;
@@ -79,10 +79,21 @@ namespace CommonPart {
             // windows[1] starts
             windows.Add(new Window_utsList(20, ny, 200, 300));
         }
-
+        /// <summary>
+        /// mapEditorSceneはDeleteしていない
+        /// </summary>
         protected void openUTD()
         {
+            close();
             new UTDEditorScene(scenem);
+        }
+        /// <summary>
+        /// mapEditorSceneはDeleteしていない
+        /// </summary>
+        protected void openAniD()
+        {
+            close();
+            new AniDEditorScene(scenem);
         }
         /// <summary>
         /// make up a mapDataS or apply changes to the mapDataS
@@ -103,7 +114,7 @@ namespace CommonPart {
             string _mapName = windows[0].getColoumiContent_string(i);
             if (mapDataS == null)
             {
-                mapDataS = new MapDataSave(_mapFileName,_mapName,_map_maxX,_map_maxY,_xrate,_yrate);
+                mapDataS = new MapDataSave(_mapFileName,_mapName,_map_maxX,_map_maxY,_xrate,_yrate,leftsideX,topsideY);
             }else if(mapDataS.fileName==_mapFileName){ mapDataS.changeTo(_mapFileName, _mapName, _map_maxX, _map_maxY,_xrate,_yrate); }
             else if (mapDataS.fileName!=_mapFileName) {
                 Console.WriteLine("create New Map with Name: " + _mapFileName);
@@ -121,34 +132,38 @@ namespace CommonPart {
             base.SceneDraw(d);
             if (mapDataS != null)
             {
+                #region mouse Pos On map
+                Vector mousePositionAsMapPosition = mapDataS.ScreenPosToMapPos(mouse.MousePosition());
+                new RichText("mapX:" + mousePositionAsMapPosition.X + " mapY:" + mousePositionAsMapPosition.Y, FontID.Medium).Draw(d, new Vector(10, Game1._WindowSizeY - 20), DepthID.Message);
+                #endregion
+
                 #region map line draw
                 switch (drawLine)
                 {
                     case 1:
                         float lineWidth = 1;
-                        int dx = 5,dy = 5;
-                        Vector xb = new Vector(leftsideX, Math.Min(bottonsideY+lby*MapDataSave.Yrate,bottonsideY));
-                        Vector xt = new Vector(leftsideX, Math.Max(xb.Y-mapDataS.max_y*MapDataSave.Yrate,topsideY));
-                        if(lbx%dx == 0) {
-                            //d.DrawLine(xb,xt, lineWidth, Color.White, DepthID.Map);
-                        }else { xb.X += (lbx % dx)*MapDataSave.Xrate; }
-
-                        for (int i = 0; dx*i <= (mapDataS.max_x - lbx) && dx*i <= (rightsideX - leftsideX) / MapDataSave.Xrate; i++)
+                        int dx = 20,dy = 20;
+                        float mapBottonAsScreenY= bottonsideY + lby * MapDataSave.Yrate;//lbyの画面上の座標y
+                        float mapBottonAsScreenX = leftsideX - lbx * MapDataSave.Yrate;//lbxの画面上の座標x
+                        //draw 縦
+                        Vector xb = new Vector(mapBottonAsScreenX, Math.Min(mapBottonAsScreenY,bottonsideY));
+                        Vector xt = new Vector(mapBottonAsScreenX, Math.Max(mapBottonAsScreenY - mapDataS.max_y*MapDataSave.Yrate,topsideY));                   
+                        xt.X = xb.X;
+                        for (int i = 0; dx*i <= mapDataS.max_x && dx*i <= (rightsideX - mapBottonAsScreenX) / MapDataSave.Xrate; i++)
                         {
-                            if (dx*i >= -lbx) { d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map); }
+                            if (xb.X>=leftsideX) { d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map); }
                             xb.X += dx * MapDataSave.Xrate; xt.X = xb.X;
                         }
+                        //draw 横
+                        
                         xb.X = Math.Max(leftsideX-lbx*MapDataSave.Xrate,leftsideX); xt.X = Math.Min(leftsideX+(mapDataS.max_x-lbx)*MapDataSave.Xrate,xb.X+mapDataS.max_x*MapDataSave.Xrate);
-                        xb.Y = bottonsideY;xt.Y = xb.Y;
-                        if (lby % dy == 0)
+                        xb.Y = mapBottonAsScreenY; xt.Y = xb.Y;
+                        xt.Y = xb.Y;
+                        for (int j = 0; dy*j <= mapDataS.max_y && dy*j <= (mapBottonAsScreenY - topsideY) / MapDataSave.Yrate; j++)
                         {
-                            //d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
-                        }
-                        else { xb.Y += (xb.Y % dy)*MapDataSave.Yrate; }
-
-                        for (int j = 0; dy*j <= (mapDataS.max_y-lby) && dy*j <= (bottonsideY - topsideY) / MapDataSave.Yrate; j++)
-                        {
-                            if (dy*j >= -lby) { d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map); }
+                            if (xb.Y<=bottonsideY) {
+                                d.DrawLine(xb, xt, lineWidth, Color.White, DepthID.Map);
+                            }
                             xb.Y -= dy * MapDataSave.Yrate; xt.Y = xb.Y;
                         }
                         break;
@@ -183,7 +198,7 @@ namespace CommonPart {
                     lby +=(int)( mPos.Y - o_mPos.Y); // マップのyは画面の逆になっている。
                 }
             }
-            MapDataSave.update_map_xy(ltx, lty, rbx, rby);
+            MapDataSave.update_map_xy(ltx, lty, rbx, rby,leftsideX,topsideY);
         }
         protected override void switch_windowsIcommand(int i)
         {
@@ -192,11 +207,15 @@ namespace CommonPart {
                 case Command.CreateNewMapFile:
                     initializeMap();
                     break;
+                case Command.LoadMapFile:
+                    string _fileName= windows[0].getColoumiContent_string(1);
+                    mapDataS = new MapDataSave(_fileName); 
+                    break;
                 case Command.openUTD:
                     openUTD();
                     break;
                 case Command.openAniD:
-                    //openAniD();
+                    openAniD();
                     break;
                 case Command.addTex:
                     addTex();

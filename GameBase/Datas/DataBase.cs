@@ -12,9 +12,11 @@ namespace CommonPart {
 
     public enum Command { left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
         button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll=116,tru_fals=117,
-        openUTD=200, UTDutButtonPressed=201, closeUTD=204,
-        openAniD =202, addTex=203,  closeAniD=205, playAnimation=206,// open animation DataBase, add Texture,play animation,
-        CreateNewMapFile=1001,LoadMapFile=1002,
+        selectInScroll=118,closeThis=119,reloadScroll=120,
+        openUTD=200, UTDutButtonPressed=201, /*204 missed*/
+        openAniD =202, addTex=203, /* 205 missed,*/ playAnimation=206, newAniD = 207, applyAniD=208,// open animation DataBase, add Texture,play animation,
+        specialIntChange1=301,specialIntChange2=302,
+        CreateNewMapFile =1001,LoadMapFile=1002,
     };
 
     /// <summary>
@@ -92,9 +94,15 @@ namespace CommonPart {
             Console.WriteLine(File.Exists(name));*/
             try {
                 Texture2D t=Content.Load<Texture2D>(name);
-                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+                if (!TexturesDataDictionary.ContainsKey(name))
+                {
+                    TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+                }else
+                {
+                    Console.WriteLine("tda:Exist in Dictionary: " + name);
+                }
             }
-            catch { Console.WriteLine("tda: load error" + name); return; }
+            catch{ Console.WriteLine("tda: load error" + name); return; }
 
         }
         /// <summary>
@@ -105,7 +113,15 @@ namespace CommonPart {
             try
             {
                 Texture2D t = Content.Load<Texture2D>(name);
-                TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+                if (!TexturesDataDictionary.ContainsKey(name))
+                {
+                    TexturesDataDictionary.Add(name, new Texture2Ddata(t, name));
+                    Console.WriteLine(name + " added.");
+                }
+                else
+                {
+                    Console.WriteLine("tdaA:Exist in Dictionary: " + name);
+                }
             }
             catch { Console.WriteLine("tdaA: load error" + name); return; }
             /*
@@ -140,7 +156,7 @@ namespace CommonPart {
         /// TexturesDataDictionaryが構成できてからこれをcall/使用してください。
         /// </summary>
         private static void setup_Animation() {
-            defaultBlankAnimationData = new AnimationDataAdvanced("defaultblank", 5, 1, defaultBlankTextureName);
+            defaultBlankAnimationData = new AnimationDataAdvanced("defaultblank", 1000, 1, defaultBlankTextureName);
             FileStream aniD_file = File.Open(aniDFileName, FileMode.OpenOrCreate);
             aniD_file.Position = 0;
             BinaryReader aniD_br = new BinaryReader(aniD_file);
@@ -184,7 +200,15 @@ namespace CommonPart {
 
         private static ContentManager Content;
         public static string DirectoryWhenGameStart;
-
+        /// <summary>
+        /// ゲーム初期化後にゲームが見ているDirectoryからDatasのフォルダを開くか作って開く
+        /// </summary>
+        public static void goToFolderDatas()
+        {
+            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
+            if (!Directory.Exists("Datas")) { Directory.CreateDirectory("Datas"); }
+            Directory.SetCurrentDirectory("Datas");
+        }
         #region about Coloum
         public const string BlankDefaultContent = "ClickAndType";
         public const string ButtonDefaultContent = "Click";
@@ -281,6 +305,23 @@ namespace CommonPart {
         }
 
         #region Method
+        public static void addAniD(AnimationDataAdvanced ad) {
+            if (AnimationAdDataDictionary.ContainsKey(ad.animationDataName))
+            {
+                Console.WriteLine("addAniD: " + ad.animationDataName + " exists.");
+            }
+            else {
+                AnimationAdDataDictionary.Add(ad.animationDataName,ad);
+            }
+        }
+        public static void RemoveAniD(string name,string addOn) {
+            if (addOn == null)
+            {
+                AnimationAdDataDictionary.Remove(name);
+            }else {
+                AnimationAdDataDictionary.Remove(name + addOn);
+            }
+        }
         public static bool existsAniD(string name, string addOn)
         {
             if (addOn == null) return AnimationAdDataDictionary.ContainsKey(name);

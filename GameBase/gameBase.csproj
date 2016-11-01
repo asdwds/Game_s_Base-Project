@@ -81,6 +81,7 @@
     <Compile Include="Window\PoorText.cs" />
     <Compile Include="Window\Scroll.cs" />
     <Compile Include="Window\Window.cs" />
+    <Compile Include="Window\Window_AniDList.cs" />
     <Compile Include="Window\Window_Animation.cs" />
     <Compile Include="Window\Window_UnitType.cs" />
     <Compile Include="Workers\Tile.cs" />

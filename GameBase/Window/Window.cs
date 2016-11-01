@@ -56,6 +56,10 @@ namespace CommonPart
         }
         public virtual void update_with_key_manager(KeyManager k)
         { }
+        /// <summary>
+        /// only deal with "mouse dragable"
+        /// </summary>
+        /// <param name="m"></param>
         public virtual void update_with_mouse_manager(MouseManager m)
         {
             if (mouse_dragable == true && PosInside(m.MousePosition()) && m.IsButtomDown(MouseButton.Left))
@@ -115,8 +119,19 @@ namespace CommonPart
         public virtual void AddColoum(Coloum c) { }
         public virtual int getColoumiContent_int(int i) { return DataBase.InvaildColoumContentReply_int; }
         public virtual string getColoumiContent_string(int i) { return DataBase.InvaildColoumContentReply_string; }
+        /// <summary>
+        /// 常にfalse
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public virtual bool getColoumiContent_bool(int i){ return false; }
         public virtual string getNowColoumContent_string() { return DataBase.InvaildColoumContentReply_string; }
         public virtual int getNowColoumContent_int() { return DataBase.InvaildColoumContentReply_int; }
+        /// <summary>
+        /// 常にfalse
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool getNowColoumContent_bool() { return false; }
         #endregion
     } // class Window end
 
@@ -152,9 +167,17 @@ namespace CommonPart
             }
             return DataBase.InvaildColoumContentReply_string;
         }
+        public override bool getColoumiContent_bool(int i)
+        {
+            if (coloums[i].content == true.ToString()) { return true; }
+            else { return false; }
+        }
         public override string getNowColoumContent_string() { return getColoumiContent_string(now_coloums_index);}
         public override int getNowColoumContent_int() { return getColoumiContent_int(now_coloums_index); }
-
+        public override bool getNowColoumContent_bool()
+        {
+            return getColoumiContent_bool(now_coloums_index);
+        }
         protected Blank create_blank(Command c, int x, int ny, string str, string content)
         {
             return new Blank(x, ny, str, content, c);
@@ -169,7 +192,7 @@ namespace CommonPart
         /// <param name="c">処理してほしいコマンド</param>
         protected virtual void deal_with_command(Command c)
         {
-            if (c != Command.nothing)
+            if (c != Command.nothing && c!= Command.Scroll) // Scroll--scroll barを移動しているだけだと、leftcoloumしない
             {
                 left_coloum();
                 commandForTop = c;
@@ -238,21 +261,24 @@ namespace CommonPart
                     if (coloums[ii].PosInside(m.MousePosition(), x, y))
                     // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
+                        coloums[now_coloums_index].is_left();
                         now_coloums_index = ii;
                         if (m.IsButtomDownOnce(MouseButton.Left))
                         {
                             selected();
-                            return;
                         }
+                        return; // coloumsの上だと、mouse dragableの処理を飛ばす
                     }
                 }
             }//if has any coloum or not
-            base.update_with_mouse_manager(m);
+            base.update_with_mouse_manager(m); // mouse dragableの処理だけと思われる
         }//update_with_mouse_manager end
         #endregion
+        /// <summary>
+        /// coloums[now_coloums_index]に対して、is_selected()を呼ぶ。
+        /// </summary>
         protected virtual void selected()
         {
-            coloums[now_coloums_index].is_left();
             keyResponseToWindow = false;
             mouseResponseToWindow = false;
             coloums[now_coloums_index].is_selected();

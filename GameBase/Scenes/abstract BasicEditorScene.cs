@@ -12,14 +12,18 @@ namespace CommonPart
 
         public BasicEditorScene(SceneManager scene) : base(scene) { }
 
-        abstract public void setup_windows();
-
+        abstract protected void setup_windows();
+        protected virtual void close()
+        {
+            Delete = true;
+            windows.Clear();
+        }
         protected virtual void addTex()
         {
             Console.WriteLine("Type in the path from Content correctly.");
             Console.WriteLine("Type in End1024 to back to Editor.");
             string str = Console.ReadLine();
-            if (str == "End1024") { }
+            if (str == "End1024") { return; }
             else if (DataBase.TexturesDataDictionary.ContainsKey(str))
             {
                 Console.Write(" already inside the DataBase\n");
@@ -27,9 +31,13 @@ namespace CommonPart
             else
             {
                 DataBase.tdaA(str);
+                addTex();
             }
         }
-
+        /// <summary>
+        /// windowsのすべてのdrawとmousePositionを表示
+        /// </summary>
+        /// <param name="d"></param>
         public override void SceneDraw(Drawing d)
         {
             foreach (Window w in windows) { w.draw(d); }
@@ -38,7 +46,7 @@ namespace CommonPart
         }//SceneDraw
         abstract protected void switch_windowsIcommand(int i);
         /// <summary>
-        /// baseのupdate()とwindowsのupdate
+        /// sceneのbaseのupdate()とwindowsのupdate
         /// </summary>
         public override void SceneUpdate()
         {
@@ -49,7 +57,7 @@ namespace CommonPart
                 {
                     windows[i].update((KeyManager)Input, mouse);
                     switch_windowsIcommand(i);
-                    windows[i].commandForTop = Command.nothing;
+                    if (windows.Count > i) { windows[i].commandForTop = Command.nothing; }
                 }
                 else
                 {

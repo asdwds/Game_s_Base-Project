@@ -9,7 +9,7 @@ namespace CommonPart
     class AnimationColoum : Coloum
     {
         AnimationAdvanced animationAdvanced;
-
+        bool updated=true;
         #region constructor
         /// <summary>
         /// strがタイトルに当たる ,contentが描画するanimationを指定している。
@@ -17,17 +17,30 @@ namespace CommonPart
         /// <param name="_str">このcoloumの文字</param>
         /// <param name="_content">このcoloumのanimationを示す</param>
         /// <param name="_reply">このcoloumを選択された時の返り値</param>
-        public AnimationColoum(int _x, int _y, string _str, string _content, Command _reply, int _dx = 0, int _dy = default_distance)
+        public AnimationColoum(int _x, int _y, string _str, AnimationDataAdvanced _content, Command _reply, int _dx = 0, int _dy = default_distance)
             : base(_x, _y, _str, _reply)
         {
-            content = _content;
-            animationAdvanced = new AnimationAdvanced(DataBase.getAniD(content));
+            //Console.WriteLine(_str+"-"+str);
+            content = _content.animationDataName;
+            animationAdvanced = new AnimationAdvanced(_content);
             dx = _dx; dy = _dy;
             setup_W_H(0, 0, null);
         }
         #endregion
 
         #region method
+        /// <summary>
+        /// animationを更新するboolをfalseにする。
+        /// </summary>
+        public void stop() { updated = false; }
+        public void play(bool _shifted=false) {
+            if (updated) { stop(); }
+            else
+            {
+                if (_shifted) { replay(); }
+                else { updated = true; }
+            }
+        }
         /// <summary>
         /// animationのループ源か自分の最初に戻る
         /// </summary>
@@ -44,26 +57,27 @@ namespace CommonPart
         /// <param name="_c">animationのwidthとheightの固定に照準となるアニメーションを指定できる.nullで自分のanimationで設定</param>
         public override void setup_W_H(int _w, int _h, string _c)
         {
-            if (w <= 0 || h <= 0)
+            dy = (pstr.CountChar() + 1) * pstr.getCharSizeY();
+            if (_w <= 0 || _h <= 0)
             {
                 w = 0; h = 0;
                 h += (pstr.CountChar() + 1) * pstr.getCharSizeY();
                 w += dx; h += dy;
                 if (_c != null)
                 {
-                    if (DataBase.existsAniD(_c, null))
+                    if (DataBase.existsAniD(_c,null))
                     {
-                        w = DataBase.getAniD(_c).X;
+                        w += DataBase.getAniD(_c).X;
                         h += DataBase.getAniD(_c).Y;
                     }
-                    else { w = pstr.Width; }
+                    else { w += pstr.Width; }
                 } else {
-                    if (DataBase.existsAniD(content, null))
+                    if (animationAdvanced != null)
                     {
-                        w = DataBase.getAniD(content).X;
-                        h += DataBase.getAniD(content).Y;
+                        w += (int)animationAdvanced.X;
+                        h += (int)animationAdvanced.Y;
                     }
-                    else { w = pstr.Width; }
+                    else { w += pstr.Width; }
                 }
             }
             else
@@ -99,8 +113,8 @@ namespace CommonPart
         #region update
         public override Command update(KeyManager k, MouseManager m)
         {
+            if (updated) { animationAdvanced.Update(); }
             if (m != null) { return update_with_mouse_manager(m); }
-            animationAdvanced.Update();
             return Command.nothing;
         }
         public override Command update_with_mouse_manager(MouseManager m)
