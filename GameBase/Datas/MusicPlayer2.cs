@@ -11,10 +11,15 @@ using CommonPart;
 // 上記の程度の内容をクレジットやマニュアルに記載したほうがよいでしょう。 
 
 namespace CommonPart {
+    enum BGMID
+    {
+        None = -1, testStage4Boss,
+    }
     /// <summary>
     /// BGMを再生するためのクラス（with WASAPI in NAudio）
     /// </summary>
     //mp3のみを想定していますがちょっと変えればwaveも行けます
+    //2016/11/03 wavにしています
     class MusicPlayer2 {
         //このプロパティはゲージ用のプログラムを手抜きするためで、普通はいらないと思います
         public PlayerSet GetPlayingSet { get { return playingSet; } }
@@ -52,7 +57,7 @@ namespace CommonPart {
             if(playingSet != null) playingSet.Close();
         }
         void Load() {
-            //SetBGM(BGMID.GrandGrass, "Content/Sounds/grand_glass2.mp3", 100, 1209600, 5594400);
+            SetBGM(BGMID.testStage4Boss, "Content/stage４ボス.wav", 100, 47340, 207970);
         }
         /// <summary>
         /// 音楽の情報をセットする
@@ -238,8 +243,8 @@ namespace CommonPart {
             public int BytesPer1chSample { get { return WaveFormat.BitsPerSample / 8 * WaveFormat.Channels; } }
             public WaveStreamWithLoopPoint(WaveStream baseStream, long begin, long end) {
                 this.baseStream = baseStream;
-                LoopBegin = begin * BytesPer1chSample;
-                LoopEnd = end * BytesPer1chSample;
+                LoopBegin = begin*WaveFormat.SampleRate/1000 * BytesPer1chSample;
+                LoopEnd = end * WaveFormat.SampleRate/1000 * BytesPer1chSample;
             }
             public override long Length { get { return baseStream.Length; } }
             public override long Position {
@@ -280,7 +285,8 @@ namespace CommonPart {
             public PlayerSet(string fileName, long begin, long end) {
                 Enable = true;
                 Player = new WasapiOut(AudioClientShareMode.Shared, 1); 
-                Channel = new WaveChannel32(new Mp3FileReader(fileName));
+                Channel = new WaveChannel32(new WaveFileReader(fileName));
+                Console.WriteLine(Channel);
                 Stream = new WaveStreamWithLoopPoint(Channel, begin, end);
                 Player.Init(Stream);
             }
@@ -297,8 +303,5 @@ namespace CommonPart {
     }
     static class WaveStreamExtension {
         public static int BytesPer1chSample(this WaveStream w) { return w.WaveFormat.BitsPerSample / 8 * w.WaveFormat.Channels; }
-    }
-    enum BGMID {
-        None = -1,
     }
 }

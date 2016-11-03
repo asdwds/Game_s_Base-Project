@@ -54,6 +54,7 @@
     <Compile Include="Datas\TextureManager.cs" />
     <Compile Include="Datas\TileType.cs" />
     <Compile Include="Datas\UnitType.cs" />
+    <Compile Include="ForBarrage-Partial Source Code.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="MessageManager.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Scenes\TitleScene.cs" />
     <Compile Include="Scenes\UpdateScene.cs" />
     <Compile Include="Updater.cs" />
+    <Compile Include="Window\AnimationButton.cs" />
     <Compile Include="Window\AnimationColoum.cs" />
     <Compile Include="Window\Coloum.cs" />
     <Compile Include="Window\PoorText.cs" />
@@ -134,6 +136,9 @@
     </Content>
     <Content Include="Content\scroll.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\stage４ボス.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\white.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
