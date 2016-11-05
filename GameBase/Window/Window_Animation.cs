@@ -49,6 +49,11 @@ namespace CommonPart
         
         protected void apply_animation()
         {
+            if (ad.animationDataName == DataBase.defaultBlankAnimationData.animationDataName)
+            {
+                Console.WriteLine("you cannot edit a default blank animationData");
+                return;
+            }
             if(DataBase.existsAniD(ad.animationDataName,null))  DataBase.RemoveAniD(ad.animationDataName, null);
             int n = 1;
             bool repeat = getColoumiContent_bool(n);
@@ -85,6 +90,12 @@ namespace CommonPart
                 }
             }
             string ani_name = getColoumiContent_string(n);
+            if (ani_name == DataBase.defaultBlankAnimationData.animationDataName)
+            {
+                Console.WriteLine("you cannot apply it to a default blank animationData");
+                DataBase.addAniD(ad);
+                return;
+            }
             n++;
             string texture_name = getColoumiContent_string(n);
             n++;

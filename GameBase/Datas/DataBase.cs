@@ -337,7 +337,7 @@ namespace CommonPart
         public static void Load_Contents(ContentManager c)
         {
             Content = c;
-
+            goToFolderDatas();
             #region textures
             FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate, FileAccess.Read);
             texD_file.Position = 0;
@@ -360,6 +360,7 @@ namespace CommonPart
             #region animation
             setup_Animation();
             #endregion
+            goToStartDirectory();
         }
 
         #region Method

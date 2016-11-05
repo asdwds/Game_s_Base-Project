@@ -99,7 +99,10 @@ namespace CommonPart {
             while (true)
             {
                 _aniName = Console.ReadLine();
-                if (!DataBase.existsAniD(_aniName, null)) { break; }
+                if (_aniName == DataBase.defaultBlankAnimationData.animationDataName) {
+                    Console.WriteLine("It is a default Blank animationData name. Cannot Be Used!");
+                }
+                else if (!DataBase.existsAniD(_aniName, null)) { break; }
                 else { Console.Write(" is already Exists In Dictionary. Make A Copy? yes/no ");
                     string _copy=null;
                     while (true)
