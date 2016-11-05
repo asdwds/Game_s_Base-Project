@@ -38,7 +38,6 @@ namespace CommonPart
 
         [DllImport("kernel32")]
         static extern bool AllocConsole();
-
         public Game1()
         {
             AllocConsole();//from now on, you can use Console. anywhere

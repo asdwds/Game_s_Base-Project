@@ -31,7 +31,7 @@ namespace CommonPart
         /// スクリーン上ではなく、windowの左上の(x,y)座標を(0,0)とした座標である。
         /// </summary>
         private List<Vector> texturesPos = new List<Vector>();
-        private int NumberOfCharasEachLine = 20;
+        private int NumberOfCharasEachLine = 22;
         #endregion
 
         #region protected variable
@@ -123,6 +123,8 @@ namespace CommonPart
         }
         
         public virtual void AddColoum(Coloum c) { }
+        public virtual string getColoumiStr_string(int i){   return DataBase.InvaildColoumContentReply_string;}
+        public virtual int getColoumiStr_int(int i) { return DataBase.InvaildColoumContentReply_int; }
         public virtual int getColoumiContent_int(int i) { return DataBase.InvaildColoumContentReply_int; }
         public virtual string getColoumiContent_string(int i) { return DataBase.InvaildColoumContentReply_string; }
         /// <summary>
@@ -131,6 +133,8 @@ namespace CommonPart
         /// <param name="i"></param>
         /// <returns></returns>
         public virtual bool getColoumiContent_bool(int i){ return false; }
+        public virtual string getNowColoumStr_string() { return DataBase.InvaildColoumContentReply_string; }
+        public virtual int getNowColoumStr_int() { return DataBase.InvaildColoumContentReply_int; }
         public virtual string getNowColoumContent_string() { return DataBase.InvaildColoumContentReply_string; }
         public virtual int getNowColoumContent_int() { return DataBase.InvaildColoumContentReply_int; }
         /// <summary>
@@ -154,6 +158,27 @@ namespace CommonPart
         { }
 
         public override void AddColoum(Coloum c) { coloums.Add(c); }
+
+        public override string getColoumiStr_string(int i)
+        {
+            if (coloums.Count > i)
+            {
+                return coloums[i].str;
+            }
+            return DataBase.InvaildColoumContentReply_string;
+        }
+        public override int getColoumiStr_int(int i)
+        {
+            if (coloums.Count > i)
+            {
+                int ans;
+                if (int.TryParse(coloums[i].str, out ans))
+                {
+                    return ans;
+                }
+            }
+            return DataBase.InvaildColoumContentReply_int;
+        }
         public override int getColoumiContent_int(int i)
         {
             if (coloums.Count > i){
@@ -178,6 +203,9 @@ namespace CommonPart
             if (coloums[i].content == true.ToString()) { return true; }
             else { return false; }
         }
+
+        public override string getNowColoumStr_string(){return getColoumiStr_string(now_coloums_index);}
+        public override int getNowColoumStr_int() {return getColoumiStr_int(now_coloums_index);}
         public override string getNowColoumContent_string() { return getColoumiContent_string(now_coloums_index);}
         public override int getNowColoumContent_int() { return getColoumiContent_int(now_coloums_index); }
         public override bool getNowColoumContent_bool()
