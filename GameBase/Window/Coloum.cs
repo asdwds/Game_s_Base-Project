@@ -87,7 +87,7 @@ namespace CommonPart
             return Command.nothing;
         }
         public virtual Command update_with_mouse_manager(MouseManager m) {
-            if (m.IsButtomDown(MouseButton.Left))
+            if (m.IsButtomDownOnce(MouseButton.Left))
             {
                 if (selected == false)
                 {

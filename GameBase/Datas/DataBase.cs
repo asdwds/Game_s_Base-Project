@@ -175,7 +175,9 @@ namespace CommonPart {
                     string textureName = aniD_br.ReadString();
                     string preName = aniD_br.ReadString();
                     string nexN = aniD_br.ReadString();
-                    AnimationAdDataDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, textureName, repeat));
+                    AnimationAdDataDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, min_index,textureName, repeat));
+                    getAniD(animeName).assignAnimationName(preName, false);
+                    getAniD(animeName).assignAnimationName(nexN, true);
                 }
                 catch (EndOfStreamException e) { break; }
             }
@@ -269,6 +271,7 @@ namespace CommonPart {
             BinaryReader ut_br = new BinaryReader(ut_file);
             utDataBase = new UnitTypeDataBase(ut_br);
             ut_br.Close();
+            Directory.SetCurrentDirectory(DirectoryWhenGameStart);
         }
         private DataBase() { }
         #endregion
@@ -414,6 +417,9 @@ namespace CommonPart {
         #endregion
     }// DataBase end
 
+    /// <summary>
+    /// 1コマのサイズが4より小さい場合は画像ファイル自身のサイズになる。
+    /// </summary>
     class Texture2Ddata
     {
         #region variables
@@ -448,8 +454,8 @@ namespace CommonPart {
                 if (char.IsNumber(name[r])) { h_single = h_single * 10 + (int)name[r] - (int)'0'; r++; }
                 else { break; }
             }//heightを読む
-            if (w_single == 0) { w_single = texture.Width; }
-            if (h_single == 0) { h_single = texture.Height; }
+            if (w_single <= 4) { w_single = texture.Width; }
+            if (h_single <= 4) { h_single = texture.Height; }
             x_max = texture.Width / w_single;
             y_max = texture.Height / h_single;
         }

@@ -34,6 +34,12 @@ namespace CommonPart
         private int NumberOfCharasEachLine = 20;
         #endregion
 
+        #region protected variable
+        bool useImageAsBackGround = false;
+        string BackGroundImageName=null;
+        #endregion
+
+
         #region constructor
         public Window(int _x, int _y, int _w, int _h) {
             x = _x;
@@ -218,12 +224,24 @@ namespace CommonPart
         public override void update(KeyManager k, MouseManager m)
         {
             base.update(k, m);
-            if (!keyResponseToWindow && !mouseResponseToWindow)
+            for (int i = 0; i < coloums.Count; i++)
             {
-                if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y)) {
-                    deal_with_command(coloums[now_coloums_index].update(k, m));
+                if (i == now_coloums_index)
+                {
+                    if (!keyResponseToWindow && !mouseResponseToWindow)
+                    {
+                        if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y))
+                        {
+                            deal_with_command(coloums[now_coloums_index].update(k, m));
+                        }
+                        else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
+                    }else if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y))
+                    {
+                        //deal_with_command(coloums[now_coloums_index].update(null, m));//クリックしなくても適用するものがある。
+                        coloums[now_coloums_index].update(null, m);
+                    }
                 }
-                else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
+                else { coloums[i].update(null, null); }
             }
         }
         public override void update_with_key_manager(KeyManager k) {
@@ -261,7 +279,7 @@ namespace CommonPart
                     if (coloums[ii].PosInside(m.MousePosition(), x, y))
                     // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
-                        coloums[now_coloums_index].is_left();
+                        if (now_coloums_index != ii) { coloums[now_coloums_index].is_left(); }
                         now_coloums_index = ii;
                         if (m.IsButtomDownOnce(MouseButton.Left))
                         {

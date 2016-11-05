@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework;
 namespace CommonPart
 {
     /// <summary>
-    /// AnimationをWindow内に配置するためのColoum;widthはanimationのwidth
+    /// AnimationをWindow内に配置するためのColoum;widthはanimationのwidth. クリックするとanimation放送
     /// </summary>
     class AnimationColoum : Coloum
     {
         AnimationAdvanced animationAdvanced;
-        bool updated=true;
+        protected bool updated=true;
         #region constructor
         /// <summary>
         /// strがタイトルに当たる ,contentが描画するanimationを指定している。
@@ -33,12 +33,13 @@ namespace CommonPart
         /// animationを更新するboolをfalseにする。
         /// </summary>
         public void stop() { updated = false; }
-        public void play(bool _shifted=false) {
+        public void play() { updated = true; }
+        public void playOrStop(bool _shifted=false) {
             if (updated) { stop(); }
             else
             {
                 if (_shifted) { replay(); }
-                else { updated = true; }
+                else { play(); }
             }
         }
         /// <summary>
@@ -110,16 +111,22 @@ namespace CommonPart
         }
         #endregion
 
+        public override Command is_applied()
+        {
+            if (reply==Command.playAnimation) {
+                playOrStop();
+            }
+            return base.is_applied();
+        }
         #region update
         public override Command update(KeyManager k, MouseManager m)
         {
             if (updated) { animationAdvanced.Update(); }
-            if (m != null) { return update_with_mouse_manager(m); }
-            return Command.nothing;
+            return base.update(k, m);
         }
         public override Command update_with_mouse_manager(MouseManager m)
         {
-            if (PosInside(m.MousePosition()) && m.IsButtomDown(MouseButton.Left))
+            if (m.IsButtomDown(MouseButton.Left))
             {
                 return is_applied();
             }

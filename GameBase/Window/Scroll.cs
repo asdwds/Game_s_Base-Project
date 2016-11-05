@@ -202,6 +202,7 @@ namespace CommonPart
             return Command.nothing;
         }
         public override Command update_with_mouse_manager(MouseManager m) {
+            Command c = Command.nothing;
             if (m != null)
             {
                 if (now_coloum_index == scrollbar_index && m.IsButtomDown(MouseButton.Left) ) {
@@ -209,17 +210,17 @@ namespace CommonPart
                     if (vertical) { ny += m.MousePosition().Y - m.OldMousePosition().Y;
                     }
                     else { nx += m.MousePosition().X - m.OldMousePosition().X; }
-                    reply = Command.Scroll; // Scrollを返しても、leftcoloum()にならないように書いているかな？
+                    c = Command.Scroll; // Scrollを返しても、leftcoloum()にならないように書いているかな？
                 }
                 else if(m.IsButtomDownOnce(MouseButton.Left)) // Mouseがscroll全体の中に入っているかは、windowで判断している。
                 {
                     // とある要項を選択した。
                     content = coloums[now_coloum_index].content;
-                    reply = coloums[now_coloum_index].is_applied();
+                    c = coloums[now_coloum_index].is_applied();
                     //Console.WriteLine("scroll-coloums" + now_coloum_index + " " + content);
                 }
             }
-            return reply;
+            return c;
         }
 
         public override void draw(Drawing d,int ax,int ay)
@@ -231,7 +232,11 @@ namespace CommonPart
                     , Color.CadetBlue, DepthID.Message);
                 for (int i = now_firstVisiableIndex; i < Math.Min(coloums.Count, (int)((coloums.Count - visiable_n) * percent) + visiable_n); i++)
                 {
-                    coloums[i].draw(d, (int)(ax - nx + 2 * (dx + pos.X)), (int)(ay - ny + 2 * (dy + pos.Y)));
+                    if (coloums[i].pos.X + (int)(ax - nx + 2 * (dx + pos.X)) >= ax + pos.X+dx-5 &&
+                        coloums[i].pos.Y + (int)(ay - ny + 2 * (dy + pos.Y)) >= ay + pos.Y+dy-5)
+                    {
+                        coloums[i].draw(d, (int)(ax - nx + 2 * (dx + pos.X)), (int)(ay - ny + 2 * (dy + pos.Y)));
+                    }
                 }
             }
             //Console.WriteLine("draw "+(ax-nx)+" "+(ay-ny) );

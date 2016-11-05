@@ -43,6 +43,8 @@ namespace CommonPart {
         public MapEditorScene(SceneManager s) : base(s)
         {
             setup_windows();
+            Console.WriteLine("play BGM "); 
+            SoundManager.Music.PlayBGM(BGMID.testStage4Boss,true);
         }
 
         protected override void setup_windows() {
