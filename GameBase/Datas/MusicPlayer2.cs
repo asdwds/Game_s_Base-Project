@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using Microsoft.Xna.Framework;
 using NAudio;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
-using CommonPart;
 
 // NAudio（Ms-PL ライセンス）http://naudio.codeplex.com　を利用しています。
 // 上記の程度の内容をクレジットやマニュアルに記載したほうがよいでしょう。 
@@ -13,14 +13,24 @@ using CommonPart;
 namespace CommonPart {
     enum BGMID
     {
-        None = -1, testStage4Boss,
+        None = -1, title,Stage1onWay,Stage1Boss,Stage2onWay,Stage2Boss,Stage3onWay,Stage3Boss,Stage4onWay,Stage4Boss,
     }
     /// <summary>
     /// BGMを再生するためのクラス（with WASAPI in NAudio）
     /// </summary>
     //mp3のみを想定していますがちょっと変えればwaveも行けます
     //2016/11/03 wavにしています
+    //2016/11/04 ここにはbgmDatasを用意する.  これの元でBGMを登録する
+    // 実際MusicPlayer2のload()はDataBaseのstaticやstaticなコンストラクターより先に実行される
     class MusicPlayer2 {
+        //BGMIDを同じにしないでください。曲名を省略するとファイルパスからファイル名を取得し、それをそのまま曲名とする。
+        public BGMdata[] bgmDatas = new BGMdata[] {
+            new BGMdata("Content/stage４ボス.wav",BGMID.Stage4Boss,100,"花弁",47340,207970),
+            new BGMdata("Content/barragetitle.wav",BGMID.title,100), // ループしない曲はループ情報を省略するだけ
+            new BGMdata("Content/Stage2_Boss.wav",BGMID.Stage2Boss,100,6479,232083), //ファイル名が曲名になる
+        };
+
+
         //このプロパティはゲージ用のプログラムを手抜きするためで、普通はいらないと思います
         public PlayerSet GetPlayingSet { get { return playingSet; } }
         public BGMID GetPlayingID { get { return playing; } }
@@ -57,7 +67,12 @@ namespace CommonPart {
             if(playingSet != null) playingSet.Close();
         }
         void Load() {
-            SetBGM(BGMID.testStage4Boss, "Content/stage４ボス.wav", 100, 47340, 207970);
+            foreach( BGMdata bd in bgmDatas)
+            {
+                SetBGM(bd.bgmId, bd.filePath, bd.volume, bd.millisecond_loopStart, bd.millisecond_loopEnd);
+            }
+            //SetBGM(BGMID.Stage4Boss, "Content/stage４ボス.wav", 100);
+            //SetBGM(BGMID, "Content/....." filePath, volume, millisecond_loopStart, millisecond_loopEnd);
         }
         /// <summary>
         /// 音楽の情報をセットする
@@ -284,9 +299,16 @@ namespace CommonPart {
 
             public PlayerSet(string fileName, long begin, long end) {
                 Enable = true;
-                Player = new WasapiOut(AudioClientShareMode.Shared, 1); 
-                Channel = new WaveChannel32(new WaveFileReader(fileName));
-                Console.WriteLine(Channel);
+                Player = new WasapiOut(AudioClientShareMode.Shared, 1);
+                try
+                {
+                    Channel = new WaveChannel32(new WaveFileReader(fileName));
+                }
+                catch
+                {
+                    Console.WriteLine("Player Set load error: "+fileName+" is not found.");
+                    Console.WriteLine("Now inside: "+Directory.GetCurrentDirectory());
+                }
                 Stream = new WaveStreamWithLoopPoint(Channel, begin, end);
                 Player.Init(Stream);
             }

@@ -43,15 +43,13 @@ namespace CommonPart {
         public MapEditorScene(SceneManager s) : base(s)
         {
             setup_windows();
-            Console.WriteLine("play BGM "); 
-            SoundManager.Music.PlayBGM(BGMID.testStage4Boss,true);
         }
 
         protected override void setup_windows() {
             int nx = 0;int ny = 0;
             int dx = 0; int dy = 25;
             //windows[0] starts
-            windows.Add(new Window_WithColoum(0, 0, 240, 210));
+            windows.Add(new Window_WithColoum(0, 0, 240, 240));
             
             ((Window_WithColoum) windows[0] ).AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
             ny += dy;
@@ -74,6 +72,8 @@ namespace CommonPart {
             nx += dx+10;
             windows[0].AddColoum(new Button(nx, ny, "", "open AniD", Command.openAniD, false));
             nx = 5; ny += dy;
+            windows[0].AddColoum(new Button(nx, ny, "", "open MusicGallery", Command.openMusicGallery, false));
+            nx = 5; ny += dy;
             windows[0].AddColoum(new Button(nx, ny, "", "add Texture", Command.addTex, false));
 
             // windows[0] is finished.
@@ -82,7 +82,7 @@ namespace CommonPart {
             windows.Add(new Window_utsList(20, ny, 200, 300));
         }
         /// <summary>
-        /// mapEditorSceneはDeleteしていない
+        /// mapEditorSceneはすぐにDeleteされない.Deleteはこのシーンが一番前面にでている時に限って、消される
         /// </summary>
         protected void openUTD()
         {
@@ -90,13 +90,22 @@ namespace CommonPart {
             new UTDEditorScene(scenem);
         }
         /// <summary>
-        /// mapEditorSceneはDeleteしていない
+        /// mapEditorSceneはすぐにDeleteされない.Deleteはこのシーンが一番前面にでている時に限って、消される
         /// </summary>
         protected void openAniD()
         {
             close();
             new AniDEditorScene(scenem);
         }
+        /// <summary>
+        /// mapEditorSceneはすぐにDeleteされない.Deleteはこのシーンが一番前面にでている時に限って、消される
+        /// </summary>
+        
+        protected void openMusicGallery()
+        {
+            new MusicGalleryScene(scenem);
+        }
+
         /// <summary>
         /// make up a mapDataS or apply changes to the mapDataS
         /// </summary>
@@ -218,6 +227,9 @@ namespace CommonPart {
                     break;
                 case Command.openAniD:
                     openAniD();
+                    break;
+                case Command.openMusicGallery:
+                    openMusicGallery();
                     break;
                 case Command.addTex:
                     addTex();

@@ -84,7 +84,7 @@ namespace CommonPart
 
         /// <summary>
         /// animationを使用するなら、texture_nameは animationNameと同じにする。
-        /// </summary>
+        /// </summary>x
         public void draw(Drawing d) // ###############################   new    ############
         {
             animationAd.Draw(d, new Vector(x - animationAd.X / 2, y - animationAd.Y / 2), DepthID.Player);

@@ -23,7 +23,7 @@ namespace CommonPart {
             int nx = 0;int ny = 0;
             int dx = 0;int dy = 30; 
             //windows[0] starts
-            windows.Add(new Window_WithColoum(5, 5, 200, 160));
+            windows.Add(new Window_WithColoum(5, 5, 220, 160));
             windows[0].AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
             nx = 5; ny += dy;dx = 110;
             windows[0].AddColoum(new Button(nx, ny, "", "close AniD", Command.closeThis, false));
@@ -99,7 +99,10 @@ namespace CommonPart {
             while (true)
             {
                 _aniName = Console.ReadLine();
-                if (!DataBase.existsAniD(_aniName, null)) { break; }
+                if (_aniName == DataBase.defaultBlankAnimationData.animationDataName) {
+                    Console.WriteLine("It is a default Blank animationData name. Cannot Be Used!");
+                }
+                else if (!DataBase.existsAniD(_aniName, null)) { break; }
                 else { Console.Write(" is already Exists In Dictionary. Make A Copy? yes/no ");
                     string _copy=null;
                     while (true)
