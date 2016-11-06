@@ -52,6 +52,13 @@ namespace CommonPart
             h = _h;
         }
         #endregion
+        public virtual void assignBackgroundImage(string bgi_name)
+        {
+            BackGroundImageName = bgi_name;
+            useImageAsBackGround = true;
+            w = DataBase.getTexD(BackGroundImageName).w_single;
+            h = DataBase.getTexD(BackGroundImageName).h_single;
+        }
         #region update
         public virtual void update(KeyManager k = null, MouseManager m = null)
         {
@@ -84,7 +91,14 @@ namespace CommonPart
         #endregion update
         public virtual void draw(Drawing d)
         {
-            d.DrawBox(new Vector(x, y), new Vector(w, h), Color.Black, DepthID.Message);
+            if (useImageAsBackGround)
+            {
+                d.Draw(new Vector(x, y), DataBase.getTex(BackGroundImageName), DepthID.BackGroundFloor);
+            }
+            else
+            {
+                d.DrawBox(new Vector(x, y), new Vector(w, h), Color.Black, DepthID.Message);
+            }
             if (richTexts.Count() > 0)
             {
                 richTexts[0].Draw(d, new Vector(x + richTextsRelativePos[0].X, y + richTextsRelativePos[0].Y), DepthID.Message);
@@ -188,7 +202,7 @@ namespace CommonPart
         }
         public override int getColoumiContent_int(int i)
         {
-            if (coloums.Count > i){
+            if (coloums.Count > i) {
                 int ans;
                 if (int.TryParse(coloums[i].content, out ans))
                 {
@@ -211,9 +225,9 @@ namespace CommonPart
             else { return false; }
         }
 
-        public override string getNowColoumStr_string(){return getColoumiStr_string(now_coloums_index);}
-        public override int getNowColoumStr_int() {return getColoumiStr_int(now_coloums_index);}
-        public override string getNowColoumContent_string() { return getColoumiContent_string(now_coloums_index);}
+        public override string getNowColoumStr_string() { return getColoumiStr_string(now_coloums_index); }
+        public override int getNowColoumStr_int() { return getColoumiStr_int(now_coloums_index); }
+        public override string getNowColoumContent_string() { return getColoumiContent_string(now_coloums_index); }
         public override int getNowColoumContent_int() { return getColoumiContent_int(now_coloums_index); }
         public override bool getNowColoumContent_bool()
         {
@@ -223,9 +237,9 @@ namespace CommonPart
         {
             return new Blank(x, ny, str, content, c);
         }
-        protected Button create_button(Command c, int x, int ny, string str, string content,bool useTexture)
+        protected Button create_button(Command c, int x, int ny, string str, string content, bool useTexture)
         {
-            return new Button(x, ny, str, content, c, useTexture );
+            return new Button(x, ny, str, content, c, useTexture);
         }
         /// <summary>
         /// このclassのコマンド処理はwindow内での処理が済んだ前提で、Sceneなどにコマンドを伝達するためにある。
@@ -233,17 +247,17 @@ namespace CommonPart
         /// <param name="c">処理してほしいコマンド</param>
         protected virtual void deal_with_command(Command c)
         {
-            if (c != Command.nothing && c!= Command.Scroll) // Scroll--scroll barを移動しているだけだと、leftcoloumしない
+            if (c != Command.nothing && c != Command.Scroll) // Scroll--scroll barを移動しているだけだと、leftcoloumしない
             {
                 left_coloum();
                 commandForTop = c;
-            }else { c = Command.nothing; }
-            
+            } else { c = Command.nothing; }
+
         }
         public override void draw(Drawing d)
         {
             base.draw(d);
-            for(int i=0;i<coloums.Count;i++) {
+            for (int i = 0; i < coloums.Count; i++) {
                 if (!selected)  //this Window is not selected. Its Coloums will not be Highlighted
                 {
                     if (now_coloums_index == i && coloums[now_coloums_index].selected)
@@ -261,7 +275,7 @@ namespace CommonPart
                 else if (now_coloums_index == i && !coloums[now_coloums_index].selected) {
                     coloums[now_coloums_index].selected = true;
                     coloums[i].draw(d, x, y);
-                    coloums[i].selected= false;
+                    coloums[i].selected = false;
                 }
                 else
                 {
@@ -284,10 +298,13 @@ namespace CommonPart
                             deal_with_command(coloums[now_coloums_index].update(k, m));
                         }
                         else { deal_with_command(coloums[now_coloums_index].update(k, null)); }
-                    }else if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y))
+                    } else if (m != null && coloums[now_coloums_index].PosInside(m.MousePosition(), x, y))
                     {
                         //deal_with_command(coloums[now_coloums_index].update(null, m));//クリックしなくても適用するものがある。
                         coloums[now_coloums_index].update(null, m);
+                    } else
+                    {
+                        coloums[now_coloums_index].update(null, null);
                     }
                 }
                 else { coloums[i].update(null, null); }
@@ -323,12 +340,14 @@ namespace CommonPart
         {
             if (coloums.Count > 0)
             {
+                bool mouseInsideColoums = false;
                 for (int ii = 0; ii < coloums.Count; ii++)
                 {
                     if (coloums[ii].PosInside(m.MousePosition(), x, y))
                     // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
-                        if (now_coloums_index < coloums.Count&&now_coloums_index>=0&& now_coloums_index != ii) { coloums[now_coloums_index].is_left(); }
+                        mouseInsideColoums = true;
+                        if (now_coloums_index < coloums.Count && now_coloums_index >= 0 && now_coloums_index != ii) { coloums[now_coloums_index].is_left(); }
                         now_coloums_index = ii;
                         if (m.IsButtomDownOnce(MouseButton.Left))
                         {
@@ -336,6 +355,10 @@ namespace CommonPart
                         }
                         return; // coloumsの上だと、mouse dragableの処理を飛ばす
                     }
+                }
+                if (!mouseInsideColoums)
+                {
+                    left_coloum();
                 }
             }//if has any coloum or not
             base.update_with_mouse_manager(m); // mouse dragableの処理だけと思われる
@@ -350,7 +373,9 @@ namespace CommonPart
             mouseResponseToWindow = false;
             coloums[now_coloums_index].is_selected();
         }
-        private void left_coloum() { keyResponseToWindow = mouseResponseToWindow = true; }
+        private void left_coloum() { keyResponseToWindow = mouseResponseToWindow = true;
+            if (now_coloums_index < coloums.Count && now_coloums_index >= 0) {coloums[now_coloums_index].is_left(); }
+        }
     }//class Window_WithColoum end
 
     /// <summary>

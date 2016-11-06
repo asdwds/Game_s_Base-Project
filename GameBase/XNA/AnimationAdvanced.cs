@@ -279,13 +279,13 @@ namespace CommonPart
         /// アニメーションのループをたどり、最初のアニメーションを見つけるか、このアニメーションにまたループして戻っている場合は自分を見つける。
         /// </summary>
         public void backToTop() {
-            if (data.pre_animation_name == null) {
+            if (data.pre_animation_name == null || data.pre_animation_name == AnimationDataAdvanced.notAnimationName) {
                 frame = 0;
                 return;
             }
             string data2_name=data.pre_animation_name; // このループの最初のアニメーションを見つけて記録するための変数
             string data1_name = data.animationDataName;//この変数は上の変数の次のアニメーションの名前を記録している。
-            while (data2_name != null && DataBase.getAniD(data2_name) != null &&
+            while (data2_name != null && data2_name!=AnimationDataAdvanced.notAnimationName&&DataBase.getAniD(data2_name) != null &&
                     DataBase.getAniD(data2_name).next_animation_name == data1_name )
             {
                 data1_name = data2_name;
