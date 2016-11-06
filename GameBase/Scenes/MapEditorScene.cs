@@ -44,7 +44,11 @@ namespace CommonPart {
         {
             setup_windows();
         }
-
+        protected void backToTitle()
+        {
+            new TitleSceneWithWindows(scenem);
+            close();
+        }
         protected override void setup_windows() {
             int nx = 0;int ny = 0;
             int dx = 0; int dy = 25;
@@ -73,6 +77,8 @@ namespace CommonPart {
             windows[0].AddColoum(new Button(nx, ny, "", "open AniD", Command.openAniD, false));
             nx = 5; ny += dy;
             windows[0].AddColoum(new Button(nx, ny, "", "open MusicGallery", Command.openMusicGallery, false));
+            nx = 5; ny += dy;
+            windows[0].AddColoum(new Button(nx, ny, "", "close Editor", Command.closeThis, false));
             nx = 5; ny += dy;
             windows[0].AddColoum(new Button(nx, ny, "", "add Texture", Command.addTex, false));
 
@@ -230,6 +236,9 @@ namespace CommonPart {
                     break;
                 case Command.openMusicGallery:
                     openMusicGallery();
+                    break;
+                case Command.closeThis:
+                    backToTitle();
                     break;
                 case Command.addTex:
                     addTex();

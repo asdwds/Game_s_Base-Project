@@ -66,6 +66,7 @@
     <Compile Include="Scenes\abstract SceneWithWindows.cs" />
     <Compile Include="Scenes\AnimationDataBaseEditor.cs" />
     <Compile Include="Scenes\MusicGalleryScene.cs" />
+    <Compile Include="Scenes\TitleSceneWithWindows.cs" />
     <Compile Include="Scenes\UnitTypeDataEditor.cs" />
     <Compile Include="Scenes\MapEditorScene.cs" />
     <Compile Include="Scenes\KeyConfig.cs" />
