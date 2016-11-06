@@ -14,7 +14,8 @@ namespace CommonPart
 
         public override Command is_left()
         {
-            stop();
+            Console.WriteLine("AnimationButton:is_left()");
+            stopAndGoToStart();
             return base.is_left();
         }
         public override Command update_with_mouse_manager(MouseManager m)

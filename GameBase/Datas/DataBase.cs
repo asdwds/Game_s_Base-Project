@@ -173,36 +173,50 @@ namespace CommonPart
         private static void setup_Animation()
         {
             defaultBlankAnimationData = new AnimationDataAdvanced("defaultblank", 1000, 1, defaultBlankTextureName);
-            FileStream aniD_file = File.Open(aniDFileName, FileMode.OpenOrCreate);
+            FileStream aniD_file = File.Open(aniDFileName, FileMode.OpenOrCreate,FileAccess.Read);
             aniD_file.Position = 0;
             BinaryReader aniD_br = new BinaryReader(aniD_file);
+            Console.WriteLine("in setup_Animation");
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            Console.WriteLine("file exits?: " + File.Exists(aniDFileName));
+            Console.WriteLine("Filelength:" + aniD_br.BaseStream.Length);
             while (aniD_br.BaseStream.Position < aniD_br.BaseStream.Length)
             {
                 try
                 {
                     bool repeat = aniD_br.ReadBoolean();
+                    Console.WriteLine("repeat:" + repeat);
                     int min_index = aniD_br.ReadInt32();
+                    Console.WriteLine("min:" + min_index.ToString());
                     int max_index = aniD_br.ReadInt32();
+                    Console.WriteLine("max:" + max_index.ToString());
                     int length = aniD_br.ReadInt32();
+                    Console.WriteLine("l:" + length.ToString());
                     int[] frames = new int[length];
-                    for (int i = 0; i < length; i++) { frames[i] = aniD_br.ReadInt32(); }
+                    for (int i = 0; i < length; i++) { frames[i] = aniD_br.ReadInt32(); Console.WriteLine(i + ":" + frames[i].ToString()); }
                     //ints end, strings start
                     string animeName = aniD_br.ReadString();
+                    Console.WriteLine("name:" + animeName);
                     string textureName = aniD_br.ReadString();
+                    Console.WriteLine("texname:" + textureName);
                     string preName = aniD_br.ReadString();
+                    Console.WriteLine("prename:" + preName);
                     string nexN = aniD_br.ReadString();
-                    AnimationAdDataDictionary.Add(animeName, new AnimationDataAdvanced(animeName, frames, min_index, textureName, repeat));
-                    getAniD(animeName).assignAnimationName(preName, false);
-                    getAniD(animeName).assignAnimationName(nexN, true);
+                    Console.WriteLine("nexname:" + nexN);
+                    addAniD(new AnimationDataAdvanced(animeName, frames, min_index, textureName, repeat));
+                    getAniD(aniDFileName).assignAnimationName(preName, false);
+                    getAniD(aniDFileName).assignAnimationName(nexN, true);
+                    Console.WriteLine(aniD_br.BaseStream.Position);
                 }
-                catch (EndOfStreamException e) { break; }
+                catch (EndOfStreamException e) { Console.WriteLine("setup animation: EndOfStream"); break; }
             }
+            Console.WriteLine(aniD_br.BaseStream.Position);
             aniD_br.Close(); aniD_file.Close();
 
         }
         private void save_Animation()
         {
-            FileStream aniD_file = File.Open(aniDFileName, FileMode.Create);
+            FileStream aniD_file = File.Open(aniDFileName, FileMode.Create,FileAccess.Write);
             aniD_file.Position = 0;
 
             BinaryWriter aniD_bw = new BinaryWriter(aniD_file);
