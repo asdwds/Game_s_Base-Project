@@ -19,12 +19,14 @@ namespace CommonPart
     };
     public enum Command
     {
-        left_and_go_back = -101, nothing = -100, apply_int = 110, apply_string = 111,
+        exit=-1000,
+        left_and_go_back = -101, nothing = -100, 
+        apply_int = 110, apply_string = 111,
         button_on = 112, button_off = 113, previousPage = 114, nextPage = 115, Scroll = 116, tru_fals = 117,
         selectInScroll = 118, closeThis = 119, reloadScroll = 120,buttonPressed1=121,buttonPressed2=122,
         openUTD = 200, UTDutButtonPressed = 201,
-        openAniD = 202, addTex = 203, /* 205 missed,*/ playAnimation = 206, newAniD = 207, applyAniD = 208,// open animation DataBase, add Texture,play animation,
-        openMusicGallery = 204,
+        openAniD = 202, addTex = 203, playAnimation = 206, newAniD = 207, applyAniD = 208,// open animation DataBase, add Texture,play animation,
+        openMusicGallery = 204,openMapEditor=205,
         specialIntChange1 = 301, specialIntChange2 = 302,
         CreateNewMapFile = 1001, LoadMapFile = 1002,
     };
@@ -280,6 +282,39 @@ namespace CommonPart
 
         #endregion
 
+        /// <summary>
+        /// Game1からのCotentを使って、DataBaseの内容を埋める.Tex/Animationはここで読み込む
+        /// </summary>
+        /// <param name="content"></param>
+        public static void Load_Contents(ContentManager c)
+        {
+            Content = c;
+            goToFolderDatas();
+            #region textures
+            FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate, FileAccess.Read);
+            texD_file.Position = 0;
+            BinaryReader texD_br = new BinaryReader(texD_file);
+            while (texD_br.BaseStream.Position < texD_br.BaseStream.Length)
+            {
+                try
+                {
+                    string n = texD_br.ReadString();
+                    if (n != defaultBlankTextureName)
+                    {
+                        tda(n);
+                    }
+                }
+                catch (EndOfStreamException e) { break; }
+            }
+            texD_br.Close(); texD_file.Close();
+            tda(defaultBlankTextureName);
+            #endregion
+            #region animation
+            setup_Animation();
+            #endregion
+            goToStartDirectory();
+        }
+
         #region Unload And Save
         public void Dispose()
         {
@@ -330,38 +365,7 @@ namespace CommonPart
         private DataBase() { }
         #endregion
 
-        /// <summary>
-        /// Game1からのCotentを使って、DataBaseの内容を埋める.Tex/Animationはここで読み込む
-        /// </summary>
-        /// <param name="content"></param>
-        public static void Load_Contents(ContentManager c)
-        {
-            Content = c;
-            goToFolderDatas();
-            #region textures
-            FileStream texD_file = File.Open(texDFileName, FileMode.OpenOrCreate, FileAccess.Read);
-            texD_file.Position = 0;
-            BinaryReader texD_br = new BinaryReader(texD_file);
-            while (texD_br.BaseStream.Position < texD_br.BaseStream.Length)
-            {
-                try
-                {
-                    string n = texD_br.ReadString();
-                    if (n != defaultBlankTextureName)
-                    {
-                        tda(n);
-                    }
-                }
-                catch (EndOfStreamException e) { break; }
-            }
-            texD_br.Close(); texD_file.Close();
-            tda(defaultBlankTextureName);
-            #endregion
-            #region animation
-            setup_Animation();
-            #endregion
-            goToStartDirectory();
-        }
+
 
         #region Method
         /// <summary>
@@ -486,35 +490,6 @@ namespace CommonPart
             if (id >= TexturesDataDictionary[name].x_max * TexturesDataDictionary[name].y_max) { x = y = 0; }
             return new Rectangle(x, y, w, h);
         }
-        /*
-        public static Rectangle getRectFromTextureNameAndIndex(string name, int id) {
-            int w = 0, h = 0;
-            int r = 0;
-            while (r < name.Length)
-            {
-                if (!char.IsNumber(name[r])) { r++; }
-                else { break; }
-            }//最初の数字のところまで行く。
-            while (r < name.Length)
-            {
-                if (char.IsNumber(name[r])) { w = w * 10 + (int)name[r] - (int)'0'; r++; }
-                else { r++; break; }
-            }//widthを読む
-            while (r < name.Length)
-            {
-                if (char.IsNumber(name[r])) { h = h * 10 + (int)name[r] - (int)'0'; r++; }
-                else { break; }
-            }//heightを読む
-            if (w == 0) { w = getTex(name).Width; }
-            if(h==0) { h = getTex(name).Height; }
-            int max_forX = TexturesDataDictionary[name].getTex().Width / w;// how many single textures on a line
-            int max_forY = TexturesDataDictionary[name].getTex().Height / h;// how many rows of textures
-            int x = id % max_forX * w;
-            int y = id / max_forX * h;
-            if (id >= max_forX * max_forY) { x = y = 0; }
-            return new Rectangle(x, y, w, h);
-        }*/
-        //上のメソッドの別バージョン、多分使わない。
         public static UnitType getUnitType(string typename)
         {
             if (typename == null)

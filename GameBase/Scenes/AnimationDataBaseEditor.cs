@@ -26,7 +26,7 @@ namespace CommonPart {
             windows.Add(new Window_WithColoum(5, 5, 220, 160));
             windows[0].AddColoum(new Coloum(nx, ny, "version: "+DataBase.ThisSystemVersionNumber.ToString(), Command.nothing));
             nx = 5; ny += dy;dx = 110;
-            windows[0].AddColoum(new Button(nx, ny, "", "close AniD", Command.closeThis, false));
+            windows[0].AddColoum(new Button(nx, ny, "", "open MapEdi", Command.openMapEditor, false));
             nx += dx;
             windows[0].AddColoum(new Button(nx, ny, "", "add Texture", Command.addTex, false));
             nx = 5; ny += dy; 
@@ -52,10 +52,15 @@ namespace CommonPart {
             base.SceneDraw(d);
             //window_AniD.draw(d);
         }//SceneDraw
+        protected void openMapEditorScene()
+        {
+            close();
+            new MapEditorScene(scenem);
+        }
         protected void openUTD()
         {
-            new UTDEditorScene(scenem);
             close();
+            new UTDEditorScene(scenem);
         }
         protected override void switch_windowsIcommand(int i)
         {
@@ -66,8 +71,8 @@ namespace CommonPart {
                 case Command.openUTD:
                     openUTD();
                     break;
-                case Command.closeThis:
-                    close();
+                case Command.openMapEditor:
+                    openMapEditorScene();
                     break;
                 case Command.addTex:
                     addTex();

@@ -37,6 +37,10 @@ namespace CommonPart
         #region protected variable
         bool useImageAsBackGround = false;
         string BackGroundImageName=null;
+        /// <summary>
+        /// Sceneから注目されているかされていないか
+        /// </summary>
+        protected bool selected = false;
         #endregion
 
 
@@ -53,12 +57,15 @@ namespace CommonPart
         {
             if (k != null)
             {
+                selected = true;
                 update_with_key_manager(k);
             }
             if (m != null)
             {
+                selected = true;
                 update_with_mouse_manager(m);
             }
+            if(k==null && m == null) { selected = false; }
         }
         public virtual void update_with_key_manager(KeyManager k)
         { }
@@ -237,7 +244,21 @@ namespace CommonPart
         {
             base.draw(d);
             for(int i=0;i<coloums.Count;i++) {
-                if (now_coloums_index == i && !coloums[now_coloums_index].selected) {
+                if (!selected)  //this Window is not selected. Its Coloums will not be Highlighted
+                {
+                    if (now_coloums_index == i && coloums[now_coloums_index].selected)
+                    {
+                        coloums[now_coloums_index].selected = false;
+                        coloums[i].draw(d, x, y);
+                        coloums[i].selected = true;
+                    }
+                    else
+                    {
+                        coloums[i].draw(d, x, y);
+                    }
+                }
+                //This window is selected. Its Coloums will be Highlighted if it is selected
+                else if (now_coloums_index == i && !coloums[now_coloums_index].selected) {
                     coloums[now_coloums_index].selected = true;
                     coloums[i].draw(d, x, y);
                     coloums[i].selected= false;
@@ -293,7 +314,7 @@ namespace CommonPart
                     }
                     if (k.IsKeyDownOnce(KeyID.Select))
                     {
-                        selected();
+                        selectColoum();
                     }
                 }// if has any coloum or not
             }
@@ -307,11 +328,11 @@ namespace CommonPart
                     if (coloums[ii].PosInside(m.MousePosition(), x, y))
                     // PosInsideは画面上の絶対座標を使って判定している。windowの位置によって描画位置が変わるcoloumsにはx,y補正が必要 
                     {
-                        if (now_coloums_index != ii) { coloums[now_coloums_index].is_left(); }
+                        if (now_coloums_index < coloums.Count&&now_coloums_index>=0&& now_coloums_index != ii) { coloums[now_coloums_index].is_left(); }
                         now_coloums_index = ii;
                         if (m.IsButtomDownOnce(MouseButton.Left))
                         {
-                            selected();
+                            selectColoum();
                         }
                         return; // coloumsの上だと、mouse dragableの処理を飛ばす
                     }
@@ -323,7 +344,7 @@ namespace CommonPart
         /// <summary>
         /// coloums[now_coloums_index]に対して、is_selected()を呼ぶ。
         /// </summary>
-        protected virtual void selected()
+        protected virtual void selectColoum()
         {
             keyResponseToWindow = false;
             mouseResponseToWindow = false;

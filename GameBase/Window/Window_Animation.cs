@@ -135,7 +135,7 @@ namespace CommonPart
             coloums.Clear();
             //repeat,min,max,length,frames,name,texname,pre,next
             int nx = 100, ny = 200; int dy = 30;
-            AddColoum(new AnimationButton(nx, ny, ad.animationDataName, ad, Command.playAnimation));
+            AddColoum(new AnimationColoum(nx, ny, ad.animationDataName, ad, Command.playAnimation));
 
             nx = 10; ny = 10;
             AddColoum(new Button(nx, ny, "repeat:", ad.repeat.ToString(), Command.tru_fals, false));
